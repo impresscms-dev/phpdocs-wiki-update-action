@@ -1,13 +1,33 @@
-name: 'Hello World'
-description: 'Greet someone and record the time'
+name: 'Update wiki with PHP project documentation'
+description: 'Update project wiki with automatic generated PHP project documentation'
 inputs:
-  who-to-greet:  # id of input
-    description: 'Who to greet'
+  WIKI_GITHUB_UPDATE_TOKEN:
+    description: GitHub token to use for updating project wiki
     required: true
-    default: 'World'
-outputs:
-  time: # id of output
-    description: 'The time we we greeted you'
+  WIKI_GITHUB_UPDATE_USER:
+    description: GitHub username for whom this token belongs
+    required: true
+  TEMP_DOCS_FOLDER:
+    description: Temporaly doc folder where project documenation will be generated
+    required: false
+    default: .docs
+  ENGINE:
+    description: What documentation generator should be used
+    required: false
+    default: phpdoc-md
+  CLASS_ROOT_NAMESPACE:
+    description: Root class namespace that should be used for documentation
+    required: true
+  INCLUDE:
+    description: Defines what classes should be included in generated documenation (can be used here wildcards operations)
+    required: false
+    default: []
+  PREFIX_LINES:
+    description: Lines that will be used to prefix generated wiki content
+    required: false
+    default: |
+      ##### Notice: Wiki was automatic generated from project sources as project API documentation. Do not edit manually!
+
 runs:
   using: 'node12'
   main: 'index.js'
