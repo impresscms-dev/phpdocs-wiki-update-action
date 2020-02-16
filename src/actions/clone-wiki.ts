@@ -2,33 +2,50 @@ import ActionInterface from "../ActionInterface";
 import {spawnSync} from "child_process";
 import {debug, info, getInput} from "@actions/core";
 import {existsSync, mkdirSync} from "fs";
+import execCommand from "../helpers/execCommand";
+import GitInfo from "../GitInfo";
+import GeneratorInterface from "../GeneratorInterface";
 
 export default class implements ActionInterface {
 
     /**
      * @inheritDoc
      */
-    exec(generator: import("../GeneratorInterface").default): void {
+    getDescription(): string {
+        return 'Cloning old wiki...';
+    }
+
+    /**
+     * @inheritDoc
+     */
+    shouldRun(generator: GeneratorInterface, info: GitInfo): boolean {
+        return true;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    exec(generator: GeneratorInterface, gitInfo: GitInfo): void {
         info('Cloning old wiki...');
         let oldDocsDir = this.getOldDocsPath();
         if (existsSync(oldDocsDir)) {
             throw new Error(oldDocsDir + ' already exists but shouldn\'t');
         }
         mkdirSync(oldDocsDir);
-        this.execCommand('git', ['init'], oldDocsDir);
-        this.execCommand('git', [
+        execCommand('git', ['init'], oldDocsDir);
+        execCommand('git', [
             'remote',
             'add',
             'origin',
-            `https://${this.getUpdateUser()}:${this.getUpdateToken()}@github.com/${this.getCurrentRepositoryName()}.wiki.git`
+            `https://${this.getUpdateUser()}:${this.getUpdateToken()}@github.com/${gitInfo.getCurrentRepositoryName()}.wiki.git`
         ], oldDocsDir);
-        this.execCommand('git', [
+        execCommand('git', [
             'config',
             '--local',
             'gc.auto',
             '0'
         ], oldDocsDir);
-        this.execCommand('git', [
+        execCommand('git', [
             '-c',
             'protocol.version=2',
             'fetch',
@@ -39,39 +56,55 @@ export default class implements ActionInterface {
             '--depth=1',
             'origin'
         ], oldDocsDir);
-        //git checkout ${BRANCH_NAME} 2>/dev/null || git checkout -b ${BRANCH_NAME}
-        this.execCommand('git', [
+        if (this.branchExist(gitInfo.branchOrTagName, oldDocsDir)) {
+            execCommand('git', ['checkout', gitInfo.branchOrTagName], oldDocsDir);
+        } else {
+            execCommand('git', ['checkout', '-b', gitInfo.branchOrTagName], oldDocsDir);
+        }
+        execCommand('git', [
             'reset',
             '--hard'
         ], oldDocsDir);
     }
 
-    protected getCurrentRepositoryName(): string {
-        // todo: make this dynamical
-        return '???';
+    /**
+     * Checks if branch already exist on dir
+     *
+     * @param string branch Branch to check
+     * @param string cwd Dir where to check
+     */
+    protected branchExist(branch: string, cwd: string): boolean {
+        return spawnSync(
+            'git',
+            [
+                'branch',
+                '--list',
+                branch
+                ],
+            {
+                cwd
+            }
+        ).output.toString().trim() == branch;
     }
 
+    /**
+     * Gets GitHub token that will be used for update action
+     */
     protected getUpdateToken(): string {
         return getInput('WIKI_GITHUB_UPDATE_TOKEN');
     }
 
+    /**
+     * Get GitHub user for witch token belongs
+     */
     protected getUpdateUser(): string {
         return getInput('WIKI_GITHUB_UPDATE_USER');
     }
 
+    /**
+     * Get old docs path
+     */
     protected getOldDocsPath(): string {
         return getInput('TEMP_DOCS_FOLDER') + '.old';
-    }
-
-    protected execCommand(cmd: string, args: Array<string>, cwd) {
-        debug(
-            spawnSync(
-                cmd,
-                args,
-                {
-                    cwd
-                }
-            ).output.toString()
-        );
     }
 };

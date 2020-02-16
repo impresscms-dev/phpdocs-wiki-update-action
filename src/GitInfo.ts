@@ -87,4 +87,18 @@ export default class GitInfo {
         ).output.toString();
     }
 
+    /**
+     * Gets current repository name
+     */
+    public getCurrentRepositoryName(): string {
+        return process.env.GITHUB_REPOSITORY;
+    }
+
+    /**
+     * Get last commit SHA hash from last main branch commit
+     */
+    public getCurrentLastCommitSHA(): string {
+        return process.env.GITHUB_SHA;
+    }
+
 }

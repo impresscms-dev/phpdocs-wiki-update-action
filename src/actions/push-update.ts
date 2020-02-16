@@ -1,8 +1,8 @@
 import ActionInterface from "../ActionInterface";
-import {spawnSync} from "child_process";
-import {debug} from "@actions/core";
+import {getInput} from "@actions/core";
 import GeneratorInterface from "../GeneratorInterface";
 import GitInfo from "../GitInfo";
+import GeneratorActionStepDefinition from "../GeneratorActionStepDefinition";
 import execCommand from "../helpers/execCommand";
 
 export default class implements ActionInterface {
@@ -10,28 +10,27 @@ export default class implements ActionInterface {
     /**
      * @inheritDoc
      */
-    getDescription(): string {
-        return 'Installing required composer packages...';
+    getDescription(): string|null {
+        return "Pushing docs update...";
     }
 
     /**
      * @inheritDoc
      */
     shouldRun(generator: GeneratorInterface, info: GitInfo): boolean {
-        return generator.getComposerRequirements().length > 0;
+        return true;
     }
 
     /**
      * @inheritDoc
      */
     exec(generator: GeneratorInterface, info: GitInfo): void {
-        let packages = generator.getComposerRequirements();
-        if (packages.length == 0) {
-            return;
-        }
-        execCommand('composer',  [
-            'require',
-            '--dev'
-        ].concat(packages), process.cwd())
+        const cwd = getInput('TEMP_DOCS_FOLDER');
+        execCommand('git', [
+            'push',
+            '-u',
+            'origin',
+            info.branchOrTagName
+        ], cwd);
     }
 };
