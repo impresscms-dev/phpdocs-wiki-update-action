@@ -1,6 +1,4 @@
 import ActionInterface from '../ActionInterface'
-import {spawnSync} from 'child_process'
-import {debug} from '@actions/core'
 import GeneratorInterface from '../GeneratorInterface'
 import GitInfo from '../GitInfo'
 import execCommand from '../helpers/execCommand'
@@ -24,7 +22,7 @@ export default class implements ActionInterface {
    * @inheritDoc
    */
   exec(generator: GeneratorInterface, info: GitInfo): void {
-    let packages = generator.getComposerRequirements()
+    let packages = generator.getComposerRequirements();
     if (packages.length == 0) {
       return
     }

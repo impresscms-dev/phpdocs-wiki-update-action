@@ -22,9 +22,9 @@ export default class implements ActionInterface {
    * @inheritDoc
    */
   exec(generator: GeneratorInterface, info: GitInfo): void {
-    const fs = require('fs-extra')
-    const newDocs = getInput('temp_docs_folder')
-    const oldDocs = newDocs + '.old'
+    const fs = require('fs-extra');
+    const newDocs = getInput('temp_docs_folder');
+    const oldDocs = newDocs + '.old';
     fs.copySync(oldDocs + '/.git', newDocs + '/.git', {
       preserveTimestamps: true
     })

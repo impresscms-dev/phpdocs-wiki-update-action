@@ -2,10 +2,10 @@ import ActionInterface from '../ActionInterface'
 import {debug, getInput} from '@actions/core'
 import GeneratorInterface from '../GeneratorInterface'
 import GitInfo from '../GitInfo'
-import {readFileSync, writeFileSync, renameSync} from 'fs'
+import {readFileSync, renameSync, writeFileSync} from 'fs'
 import {basename, dirname, extname} from 'path'
 
-const readDirSync = require('recursive-readdir-sync')
+const readDirSync = require('recursive-readdir-sync');
 
 export default class implements ActionInterface {
   /**
@@ -26,16 +26,67 @@ export default class implements ActionInterface {
    * @inheritDoc
    */
   exec(generator: GeneratorInterface, info: GitInfo): void {
-    const newDocs = getInput('temp_docs_folder')
-    let filenames = this.generateNewStructData(newDocs)
-    let flippedFilenames = this.flipKeysWithValues(filenames)
+    const newDocs = getInput('temp_docs_folder');
+    let filenames = this.generateNewStructData(newDocs);
+    let flippedFilenames = this.flipKeysWithValues(filenames);
     for (let newFilename in filenames) {
-      let oldFilename = filenames[newFilename]
+      let oldFilename = filenames[newFilename];
       if (oldFilename != newFilename) {
         this.renameFile(newDocs, oldFilename, newFilename)
       }
       this.fixesToNewStyleLinks(newDocs + '/' + newFilename, flippedFilenames)
     }
+  }
+
+  /**
+   * Generate filenames data for new struck
+   *
+   * @param string cwd Docs path
+   */
+  generateNewStructData(cwd: string): { [x: string]: string } {
+    let newStructData: { [x: string]: string } = {};
+    let files = readDirSync(cwd).map((file: any) => {
+      let short_filename = basename(file);
+      let path_without_filename = dirname(file);
+      let path_prefix = path_without_filename.substr(cwd.length);
+      return {
+        filename: short_filename,
+        short_path: path_prefix
+      }
+    });
+    files
+        .filter((fileInfo: { filename: string; short_path: string }) => {
+          return fileInfo.short_path == ''
+        })
+        .forEach((fileInfo: { filename: string; short_path: string }) => {
+          newStructData[fileInfo.filename] = fileInfo.filename
+        });
+    files
+        .filter((fileInfo: { filename: string; short_path: string }) => {
+          return fileInfo.short_path != ''
+        })
+        .forEach((fileInfo: { filename: string; short_path: string }) => {
+          let oldFilePath = fileInfo.short_path + '/' + fileInfo.filename;
+          if (typeof newStructData[fileInfo.filename] != 'undefined') {
+            newStructData[fileInfo.filename] = oldFilePath
+          } else {
+            let filenameWithoutExt = fileInfo.filename
+                .split('.')
+                .slice(0, -1)
+                .join('.');
+            let ext = extname(fileInfo.filename);
+            let newFilename =
+                '"' +
+                filenameWithoutExt +
+                ' (' +
+                fileInfo.short_path.replace('/', '\\') +
+                ')' +
+                ext +
+                '"';
+            newStructData[newFilename] = oldFilePath
+          }
+        });
+    return newStructData
   }
 
   /**
@@ -46,11 +97,11 @@ export default class implements ActionInterface {
    * @param string newFilename New filename
    */
   protected renameFile(
-    newDocs: string,
+      newDocs: string,
     oldFilename: string,
     newFilename: string
   ): void {
-    debug(` Renaming ${oldFilename} -> ${newFilename}...`)
+    debug(` Renaming ${oldFilename} -> ${newFilename}...`);
     renameSync(newDocs + '/' + oldFilename, newDocs + '/' + newFilename)
   }
 
@@ -64,22 +115,22 @@ export default class implements ActionInterface {
     filename: string,
     filenames: {[x: string]: string}
   ): void {
-    debug(` Fixing ${filename}...`)
-    let content = readFileSync(filename).toString()
+    debug(` Fixing ${filename}...`);
+    let content = readFileSync(filename).toString();
     let newContent = content.replace(
-      /\[([^\]]+)\]\(([^\)]+)\)/gm,
-      (full_msg: string, link: string, name: string) =>
-        '[' +
-        filenames[link]
-          .split('.')
-          .slice(0, -1)
-          .join('.') +
-        '](' +
-        name +
-        ')'
-    )
+        /\[([^\]]+)\]\(([^\)]+)\)/gm,
+        (full_msg: string, link: string, name: string) =>
+            '[' +
+            filenames[link]
+                .split('.')
+                .slice(0, -1)
+                .join('.') +
+            '](' +
+            name +
+            ')'
+    );
     if (newContent != content) {
-      debug('  Changed.')
+      debug('  Changed.');
       writeFileSync(filename, newContent)
     }
   }
@@ -92,61 +143,10 @@ export default class implements ActionInterface {
   protected flipKeysWithValues(obj: {
     [x: string]: string
   }): {[x: string]: string} {
-    let ret: {[x: string]: string} = {}
+    let ret: { [x: string]: string } = {};
     for (let x in obj) {
       ret[obj[x]] = x
     }
     return ret
-  }
-
-  /**
-   * Generate filenames data for new struck
-   *
-   * @param string cwd Docs path
-   */
-  generateNewStructData(cwd: string): {[x: string]: string} {
-    let newStructData: {[x: string]: string} = {}
-    let files = readDirSync(cwd).map((file: any) => {
-      let short_filename = basename(file)
-      let path_without_filename = dirname(file)
-      let path_prefix = path_without_filename.substr(cwd.length)
-      return {
-        filename: short_filename,
-        short_path: path_prefix
-      }
-    })
-    files
-      .filter((fileInfo: {filename: string; short_path: string}) => {
-        return fileInfo.short_path == ''
-      })
-      .forEach((fileInfo: {filename: string; short_path: string}) => {
-        newStructData[fileInfo.filename] = fileInfo.filename
-      })
-    files
-      .filter((fileInfo: {filename: string; short_path: string}) => {
-        return fileInfo.short_path != ''
-      })
-      .forEach((fileInfo: {filename: string; short_path: string}) => {
-        let oldFilePath = fileInfo.short_path + '/' + fileInfo.filename
-        if (typeof newStructData[fileInfo.filename] != 'undefined') {
-          newStructData[fileInfo.filename] = oldFilePath
-        } else {
-          let filenameWithoutExt = fileInfo.filename
-            .split('.')
-            .slice(0, -1)
-            .join('.')
-          let ext = extname(fileInfo.filename)
-          let newFilename =
-            '"' +
-            filenameWithoutExt +
-            ' (' +
-            fileInfo.short_path.replace('/', '\\') +
-            ')' +
-            ext +
-            '"'
-          newStructData[newFilename] = oldFilePath
-        }
-      })
-    return newStructData
   }
 }

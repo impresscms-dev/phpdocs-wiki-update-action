@@ -1,6 +1,6 @@
 import ActionInterface from '../ActionInterface'
 import {spawnSync} from 'child_process'
-import {debug, info, getInput} from '@actions/core'
+import {getInput, info} from '@actions/core'
 import {existsSync, mkdirSync} from 'fs'
 import execCommand from '../helpers/execCommand'
 import GitInfo from '../GitInfo'
@@ -25,39 +25,39 @@ export default class implements ActionInterface {
    * @inheritDoc
    */
   exec(generator: GeneratorInterface, gitInfo: GitInfo): void {
-    info('Cloning old wiki...')
-    let oldDocsDir = this.getOldDocsPath()
-    if (existsSync(oldDocsDir)) {
-      throw new Error(oldDocsDir + " already exists but shouldn't")
-    }
-    mkdirSync(oldDocsDir)
-    execCommand('git', ['init'], oldDocsDir)
-    execCommand(
-      'git',
-      [
-        'remote',
-        'add',
-        'origin',
-        `https://${this.getUpdateUser()}:${this.getUpdateToken()}@github.com/${gitInfo.getCurrentRepositoryName()}.wiki.git`
-      ],
-      oldDocsDir
-    )
-    execCommand('git', ['config', '--local', 'gc.auto', '0'], oldDocsDir)
-    execCommand(
-      'git',
-      [
-        '-c',
-        'protocol.version=2',
-        'fetch',
-        '--no-tags',
-        '--prune',
-        '--progress',
-        '--no-recurse-submodules',
-        '--depth=1',
-        'origin'
-      ],
-      oldDocsDir
-    )
+      info('Cloning old wiki...');
+      let oldDocsDir = this.getOldDocsPath();
+      if (existsSync(oldDocsDir)) {
+          throw new Error(oldDocsDir + " already exists but shouldn't")
+      }
+      mkdirSync(oldDocsDir);
+      execCommand('git', ['init'], oldDocsDir);
+      execCommand(
+          'git',
+          [
+              'remote',
+              'add',
+              'origin',
+              `https://${this.getUpdateUser()}:${this.getUpdateToken()}@github.com/${gitInfo.getCurrentRepositoryName()}.wiki.git`
+          ],
+          oldDocsDir
+      );
+      execCommand('git', ['config', '--local', 'gc.auto', '0'], oldDocsDir);
+      execCommand(
+          'git',
+          [
+              '-c',
+              'protocol.version=2',
+              'fetch',
+              '--no-tags',
+              '--prune',
+              '--progress',
+              '--no-recurse-submodules',
+              '--depth=1',
+              'origin'
+          ],
+          oldDocsDir
+      );
     if (this.branchExist(gitInfo.branchOrTagName, oldDocsDir)) {
       execCommand('git', ['checkout', gitInfo.branchOrTagName], oldDocsDir)
     } else {

@@ -1,4 +1,3 @@
-import * as core from '@actions/core'
 import {InputOptions} from '@actions/core'
 import GitInfo from './GitInfo'
 import GeneratorActionStepDefinition from './GeneratorActionStepDefinition'

@@ -1,13 +1,13 @@
 import GeneratorInterface from '../GeneratorInterface'
-import {debug, getInput, InputOptions, info} from '@actions/core'
+import {InputOptions} from '@actions/core'
 import GitInfo from '../GitInfo'
 import execCommand from '../helpers/execCommand'
 import {spawnSync} from 'child_process'
-import {writeFileSync, renameSync} from 'fs'
+import {renameSync, writeFileSync} from 'fs'
 import {EOL} from 'os'
 import GeneratorActionStepDefinition from '../GeneratorActionStepDefinition'
 
-const picomatch = require('picomatch')
+const picomatch = require('picomatch');
 
 export default class PHPDocMDGenerator implements GeneratorInterface {
   /**
@@ -91,22 +91,22 @@ export default class PHPDocMDGenerator implements GeneratorInterface {
     include: Array<string>,
     tempDocsPath: string
   ) {
-    execCommand('composer', ['install', '-a'], cwd)
-    let classes = Object.keys(this.readComposerConfig()).filter(key =>
-      picomatch.isMatch(key, include)
-    )
-    let config = {
-      rootNamespace,
-      destDirectory: tempDocsPath,
-      format: 'github',
-      classes
-    }
-    let contents =
-      '<?php' +
-      EOL +
-      'return json_decode(' +
-      JSON.stringify(JSON.stringify(config)) +
-      ', false);'
+      execCommand('composer', ['install', '-a'], cwd);
+      let classes = Object.keys(this.readComposerConfig()).filter(key =>
+          picomatch.isMatch(key, include)
+      );
+      let config = {
+          rootNamespace,
+          destDirectory: tempDocsPath,
+          format: 'github',
+          classes
+      };
+      let contents =
+          '<?php' +
+          EOL +
+          'return json_decode(' +
+          JSON.stringify(JSON.stringify(config)) +
+          ', false);';
     writeFileSync(cwd + '/.phpdoc-md', contents)
   }
 
