@@ -23,19 +23,19 @@ export default class implements ActionInterface {
    * @inheritDoc
    */
   exec(generator: GeneratorInterface, info: GitInfo): void {
-      const cwd = getInput('temp_docs_folder');
-      execCommand('git', ['add', '-u', ':/'], cwd);
-      execCommand('git', ['add', '.'], cwd);
-      try {
-          execCommand(
-              'git',
-              [
-                  'commit',
-                  '-m',
-                  `Automatically generated for https://github.com/${info.getCurrentRepositoryName()}/commit/${info.getCurrentLastCommitSHA()}`
-              ],
-              cwd
-          )
+    const cwd = getInput('temp_docs_folder');
+    execCommand('git', ['add', '-u', ':/'], cwd);
+    execCommand('git', ['add', '.'], cwd);
+    try {
+      execCommand(
+        'git',
+        [
+          'commit',
+          '-m',
+          `Automatically generated for https://github.com/${info.getCurrentRepositoryName()}/commit/${info.getCurrentLastCommitSHA()}`
+        ],
+        cwd
+      )
     } catch (e) {
       debug('Nothing to commit')
     }

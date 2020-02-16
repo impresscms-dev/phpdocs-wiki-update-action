@@ -41,17 +41,31 @@ export default class GitInfo {
     if (branch === 'HEAD') {
       this.isTag = true;
       this.branchOrTagName = spawnSync(
-          'git',
-          ['describe', '--tags', '--abbrev=0'],
-          {
-            stdio: 'pipe',
-            cwd: this.cwd
-          }
+        'git',
+        ['describe', '--tags', '--abbrev=0'],
+        {
+          stdio: 'pipe',
+          cwd: this.cwd
+        }
       ).output.toString()
     } else {
       this.branchOrTagName = branch;
       this.isTag = false
     }
+  }
+
+  /**
+   * Gets current repository name
+   */
+  getCurrentRepositoryName(): string {
+    return (typeof process.env['GITHUB_REPOSITORY'] == 'undefined') ? '' : process.env['GITHUB_REPOSITORY'];
+  }
+
+  /**
+   * Get last commit SHA hash from last main branch commit
+   */
+  getCurrentLastCommitSHA(): string {
+    return (typeof process.env['GITHUB_SHA'] == 'undefined') ? '' : process.env['GITHUB_SHA'];
   }
 
   /**
@@ -68,19 +82,5 @@ export default class GitInfo {
         cwd: this.cwd
       }
     ).output.toString()
-  }
-
-  /**
-   * Gets current repository name
-   */
-  getCurrentRepositoryName(): string {
-    return (typeof process.env['GITHUB_REPOSITORY'] == 'undefined')?'':process.env['GITHUB_REPOSITORY'];
-  }
-
-  /**
-   * Get last commit SHA hash from last main branch commit
-   */
-  getCurrentLastCommitSHA(): string {
-    return (typeof process.env['GITHUB_SHA'] == 'undefined')?'':process.env['GITHUB_SHA'];
   }
 }

@@ -54,38 +54,35 @@ export default class implements ActionInterface {
         short_path: path_prefix
       }
     });
-    files
-        .filter((fileInfo: { filename: string; short_path: string }) => {
-          return fileInfo.short_path == ''
-        })
-        .forEach((fileInfo: { filename: string; short_path: string }) => {
-          newStructData[fileInfo.filename] = fileInfo.filename
-        });
-    files
-        .filter((fileInfo: { filename: string; short_path: string }) => {
-          return fileInfo.short_path != ''
-        })
-        .forEach((fileInfo: { filename: string; short_path: string }) => {
-          let oldFilePath = fileInfo.short_path + '/' + fileInfo.filename;
-          if (typeof newStructData[fileInfo.filename] != 'undefined') {
-            newStructData[fileInfo.filename] = oldFilePath
-          } else {
-            let filenameWithoutExt = fileInfo.filename
-                .split('.')
-                .slice(0, -1)
-                .join('.');
-            let ext = extname(fileInfo.filename);
-            let newFilename =
-                '"' +
-                filenameWithoutExt +
-                ' (' +
-                fileInfo.short_path.replace('/', '\\') +
-                ')' +
-                ext +
-                '"';
-            newStructData[newFilename] = oldFilePath
-          }
-        });
+    for (const fileInfo of files.filter((fileInfo: { filename: string; short_path: string }) => {
+      return fileInfo.short_path == ''
+    })) {
+      newStructData[fileInfo.filename] = fileInfo.filename
+    }
+
+    for (const fileInfo of files.filter((fileInfo: { filename: string; short_path: string }) => {
+      return fileInfo.short_path != ''
+    })) {
+      let oldFilePath = fileInfo.short_path + '/' + fileInfo.filename;
+      if (typeof newStructData[fileInfo.filename] != 'undefined') {
+        newStructData[fileInfo.filename] = oldFilePath
+      } else {
+        let filenameWithoutExt = fileInfo.filename
+          .split('.')
+          .slice(0, -1)
+          .join('.');
+        let ext = extname(fileInfo.filename);
+        let newFilename =
+          '"' +
+          filenameWithoutExt +
+          ' (' +
+          fileInfo.short_path.replace('/', '\\') +
+          ')' +
+          ext +
+          '"';
+        newStructData[newFilename] = oldFilePath
+      }
+    }
     return newStructData
   }
 
@@ -97,7 +94,7 @@ export default class implements ActionInterface {
    * @param string newFilename New filename
    */
   protected renameFile(
-      newDocs: string,
+    newDocs: string,
     oldFilename: string,
     newFilename: string
   ): void {
@@ -113,21 +110,21 @@ export default class implements ActionInterface {
    */
   protected fixesToNewStyleLinks(
     filename: string,
-    filenames: {[x: string]: string}
+    filenames: { [x: string]: string }
   ): void {
     debug(` Fixing ${filename}...`);
     let content = readFileSync(filename).toString();
     let newContent = content.replace(
-        /\[([^\]]+)\]\(([^\)]+)\)/gm,
-        (full_msg: string, link: string, name: string) =>
-            '[' +
-            filenames[link]
-                .split('.')
-                .slice(0, -1)
-                .join('.') +
-            '](' +
-            name +
-            ')'
+      /\[([^\]]+)\]\(([^\)]+)\)/gm,
+      (full_msg: string, link: string, name: string) =>
+        '[' +
+        filenames[link]
+          .split('.')
+          .slice(0, -1)
+          .join('.') +
+        '](' +
+        name +
+        ')'
     );
     if (newContent != content) {
       debug('  Changed.');
@@ -142,7 +139,7 @@ export default class implements ActionInterface {
    */
   protected flipKeysWithValues(obj: {
     [x: string]: string
-  }): {[x: string]: string} {
+  }): { [x: string]: string } {
     let ret: { [x: string]: string } = {};
     for (let x in obj) {
       ret[obj[x]] = x

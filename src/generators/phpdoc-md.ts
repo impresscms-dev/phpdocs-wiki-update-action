@@ -91,22 +91,22 @@ export default class PHPDocMDGenerator implements GeneratorInterface {
     include: Array<string>,
     tempDocsPath: string
   ) {
-      execCommand('composer', ['install', '-a'], cwd);
-      let classes = Object.keys(this.readComposerConfig()).filter(key =>
-          picomatch.isMatch(key, include)
-      );
-      let config = {
-          rootNamespace,
-          destDirectory: tempDocsPath,
-          format: 'github',
-          classes
-      };
-      let contents =
-          '<?php' +
-          EOL +
-          'return json_decode(' +
-          JSON.stringify(JSON.stringify(config)) +
-          ', false);';
+    execCommand('composer', ['install', '-a'], cwd);
+    let classes = Object.keys(this.readComposerConfig()).filter(key =>
+      picomatch.isMatch(key, include)
+    );
+    let config = {
+      rootNamespace,
+      destDirectory: tempDocsPath,
+      format: 'github',
+      classes
+    };
+    let contents =
+      '<?php' +
+      EOL +
+      'return json_decode(' +
+      JSON.stringify(JSON.stringify(config)) +
+      ', false);';
     writeFileSync(cwd + '/.phpdoc-md', contents)
   }
 

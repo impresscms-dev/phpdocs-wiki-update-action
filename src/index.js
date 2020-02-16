@@ -17,34 +17,34 @@ try {
   }
 
   let info = new GitInfo(
-      process.cwd()
+    process.cwd()
   );
 
   [
-      'install',
-      'clone-wiki',
-      'exec-before-generator-actions',
-      'generate',
-      'exec-after-generator-actions',
-      'flatten-file-structure',
-      'prefix',
-      'copy-old-git-data-to-new-place',
-      'configure-commit-author',
-      'check-status',
-      'commit',
-      'push-update'
+    'install',
+    'clone-wiki',
+    'exec-before-generator-actions',
+    'generate',
+    'exec-after-generator-actions',
+    'flatten-file-structure',
+    'prefix',
+    'copy-old-git-data-to-new-place',
+    'configure-commit-author',
+    'check-status',
+    'commit',
+    'push-update'
   ].map(
-      (action) => require(`./actions/${action}`).default
+    (action) => require(`./actions/${action}`).default
   ).filter(
-      (actionInstance) => (actionInstance instanceof ActionInterface) && actionInstance.shouldRun(generator, info)
+    (actionInstance) => (actionInstance instanceof ActionInterface) && actionInstance.shouldRun(generator, info)
   ).forEach(
-      (actionInstance) => {
-        let desc = actionInstance.getDescription();
-        if (desc !== null) {
-          core.info(desc);
-        }
-        actionInstance.exec(generator, info);
+    (actionInstance) => {
+      let desc = actionInstance.getDescription();
+      if (desc !== null) {
+        core.info(desc);
       }
+      actionInstance.exec(generator, info);
+    }
   )
 } catch (error) {
   core.setFailed(error.message);

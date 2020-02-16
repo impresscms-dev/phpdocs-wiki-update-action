@@ -2,7 +2,6 @@ import ActionInterface from '../ActionInterface'
 import {getInput} from '@actions/core'
 import GeneratorInterface from '../GeneratorInterface'
 import GitInfo from '../GitInfo'
-import GeneratorActionStepDefinition from '../GeneratorActionStepDefinition'
 
 export default class implements ActionInterface {
   /**
@@ -23,10 +22,8 @@ export default class implements ActionInterface {
    * @inheritDoc
    */
   exec(generator: GeneratorInterface, info: GitInfo): void {
-    generator
-      .getAfterActions(getInput, info)
-      .forEach((definition: GeneratorActionStepDefinition) =>
-        definition.exec(info)
-      )
+    for (const definition of generator.getAfterActions(getInput, info)) {
+      definition.exec(info);
+    }
   }
 }
