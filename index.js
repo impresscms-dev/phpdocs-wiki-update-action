@@ -1,12 +1,11 @@
-import GeneratorInterface from "./src/GeneratorInterface";
-import GitInfo from "./src/GitInfo";
-import ActionInterface from "./src/ActionInterface";
-
 const core = require('@actions/core');
+const GitInfo = require('./src/GitInfo.ts');
+const GeneratorInterface = require('./src/GeneratorInterface.ts');
+const ActionInterface = require('./src/ActionInterface.ts');
 
 try {
-  const engineName = core.getInput('ENGINE');
-  const generatorName = require(`./src/${engineName}.ts`);
+  const engineName = core.getInput('engine');
+  const generatorName = require(`./src/generators/${engineName}.ts`);
   const generator = new generatorName();
 
   if (!(generator instanceof GeneratorInterface)) {
