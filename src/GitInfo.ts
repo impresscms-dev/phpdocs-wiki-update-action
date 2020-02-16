@@ -63,6 +63,7 @@ export default class GitInfo {
             ).output.toString();
         } else {
             this.branchOrTagName = branch;
+            this.isTag = false;
         }
     }
 
@@ -91,14 +92,16 @@ export default class GitInfo {
      * Gets current repository name
      */
     public getCurrentRepositoryName(): string {
-        return process.env.GITHUB_REPOSITORY;
+        // @ts-ignore
+        return process.env["GITHUB_REPOSITORY"].toString();
     }
 
     /**
      * Get last commit SHA hash from last main branch commit
      */
     public getCurrentLastCommitSHA(): string {
-        return process.env.GITHUB_SHA;
+        // @ts-ignore
+        return process.env["GITHUB_SHA"].toString();
     }
 
 }
