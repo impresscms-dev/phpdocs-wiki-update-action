@@ -1,7 +1,8 @@
 name: 'Update wiki with PHP project documentation'
 description: 'Update project wiki with automatic generated PHP project documentation'
-icon: book
-color: purple
+branding:
+  icon: book
+  color: purple
 inputs:
   WIKI_GITHUB_UPDATE_TOKEN:
     description: GitHub token to use for updating project wiki
