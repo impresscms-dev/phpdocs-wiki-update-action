@@ -22,6 +22,7 @@
     "child_process": "^1.0.2",
     "fs-extra": "^8.1.0",
     "picomatch": "^2.2.1",
-    "recursive-readdir-sync": "^1.0.6"
+    "recursive-readdir-sync": "^1.0.6",
+    "semver": "^7.1.3"
   }
 }
