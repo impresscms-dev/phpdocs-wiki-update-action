@@ -52,9 +52,7 @@ export default class PHPDocMDGenerator implements GeneratorInterface {
                this.generateConfig,
                process.cwd(),
                getInput('CLASS_ROOT_NAMESPACE'),
-               JSON.parse(
-                   getInput('INCLUDE')
-               ),
+               getInput('INCLUDE').split(EOL),
                getInput('TEMP_DOCS_FOLDER')
            )
         ];
