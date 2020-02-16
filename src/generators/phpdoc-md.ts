@@ -103,7 +103,12 @@ export default class PHPDocMDGenerator implements GeneratorInterface {
     }
     writeFileSync(
       cwd.concat('/.phpdoc-md'),
-      '<?php'.concat(EOL, 'return json_decode(', JSON.stringify(JSON.stringify(config)), ', false);')
+      '<?php'.concat(
+        EOL,
+        'return json_decode(',
+        JSON.stringify(JSON.stringify(config)),
+        ', false);'
+      )
     )
   }
 

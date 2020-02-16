@@ -34,7 +34,10 @@ export default class implements ActionInterface {
       if (oldFilename != newFilename) {
         this.renameFile(newDocs, oldFilename, newFilename)
       }
-      this.fixesToNewStyleLinks(newDocs.concat('/', newFilename), flippedFilenames)
+      this.fixesToNewStyleLinks(
+        newDocs.concat('/', newFilename),
+        flippedFilenames
+      )
     }
   }
 
@@ -76,7 +79,14 @@ export default class implements ActionInterface {
           .slice(0, -1)
           .join('.')
         let ext = extname(fileInfo.filename)
-        let newFilename = '"'.concat(filenameWithoutExt, ' (', fileInfo.short_path.replace('/', '\\'), ')', ext, '"')
+        let newFilename = '"'.concat(
+          filenameWithoutExt,
+          ' (',
+          fileInfo.short_path.replace('/', '\\'),
+          ')',
+          ext,
+          '"'
+        )
         newStructData[newFilename] = oldFilePath
       }
     }
@@ -96,7 +106,10 @@ export default class implements ActionInterface {
     newFilename: string
   ): void {
     debug(` Renaming ${oldFilename} -> ${newFilename}...`)
-    renameSync(newDocs.concat('/', oldFilename), newDocs.concat('/', newFilename))
+    renameSync(
+      newDocs.concat('/', oldFilename),
+      newDocs.concat('/', newFilename)
+    )
   }
 
   /**
@@ -114,7 +127,15 @@ export default class implements ActionInterface {
     let newContent = content.replace(
       /\[([^\]]+)\]\(([^\)]+)\)/gm,
       (full_msg: string, link: string, name: string) =>
-        '['.concat(filenames[link].split('.').slice(0, -1).join('.'), '](', name, ')')
+        '['.concat(
+          filenames[link]
+            .split('.')
+            .slice(0, -1)
+            .join('.'),
+          '](',
+          name,
+          ')'
+        )
     )
     if (newContent != content) {
       debug('  Changed.')
