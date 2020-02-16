@@ -23,9 +23,9 @@ export default class implements ActionInterface {
    * @inheritDoc
    */
   exec(generator: GeneratorInterface, info: GitInfo): void {
-    const cwd = getInput('temp_docs_folder');
-    execCommand('git', ['add', '-u', ':/'], cwd);
-    execCommand('git', ['add', '.'], cwd);
+    const cwd = getInput('temp_docs_folder')
+    execCommand('git', ['add', '-u', ':/'], cwd)
+    execCommand('git', ['add', '.'], cwd)
     try {
       execCommand(
         'git',

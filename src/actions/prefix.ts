@@ -4,7 +4,7 @@ import GeneratorInterface from '../GeneratorInterface'
 import GitInfo from '../GitInfo'
 import {readFileSync, writeFileSync} from 'fs'
 
-const readDirSync = require('recursive-readdir-sync');
+const readDirSync = require('recursive-readdir-sync')
 
 export default class implements ActionInterface {
   /**
@@ -25,11 +25,11 @@ export default class implements ActionInterface {
    * @inheritDoc
    */
   exec(generator: GeneratorInterface, info: GitInfo): void {
-    const newDocs = getInput('temp_docs_folder');
-    const prefix = this.getPrefixLines();
+    const newDocs = getInput('temp_docs_folder')
+    const prefix = this.getPrefixLines()
     readDirSync(newDocs).forEach((file: any) => {
-      debug(' ' + file.toString());
-      writeFileSync(file.toString(), prefix + readFileSync(file.toString()))
+      debug(' '.concat(file.toString()))
+      writeFileSync(file.toString(), prefix.concat(readFileSync(file.toString()).toString()))
     })
   }
 

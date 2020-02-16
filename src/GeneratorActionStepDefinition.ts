@@ -1,6 +1,6 @@
-import {getInput, info} from '@actions/core';
-import GitInfo from './GitInfo';
-import GeneratorInterface from './GeneratorInterface';
+import {getInput, info} from '@actions/core'
+import GitInfo from './GitInfo'
+import GeneratorInterface from './GeneratorInterface'
 
 /**
  * Class to define generator action step
@@ -9,22 +9,22 @@ export default class GeneratorActionStepDefinition {
   /**
    * Description of action
    */
-  public readonly description: string;
+  readonly description: string
 
   /**
    * Callback for action
    */
-  public readonly execCallback: Function;
+  readonly execCallback: Function
 
   /**
    * Extra arguments for callback
    */
-  public readonly args: Array<any>;
+  readonly args: any[]
 
   /**
    * Linked generator
    */
-  public readonly generator: GeneratorInterface | null;
+  readonly generator: GeneratorInterface | null
 
   /**
    * Constructor
@@ -38,11 +38,11 @@ export default class GeneratorActionStepDefinition {
     generator: GeneratorInterface | null,
     description: string,
     execCallback: Function,
-    ...args: Array<any>
+    ...args: any[]
   ) {
-    this.description = description;
-    this.execCallback = execCallback;
-    this.args = args;
+    this.description = description
+    this.execCallback = execCallback
+    this.args = args
     this.generator = generator
   }
 
@@ -52,8 +52,8 @@ export default class GeneratorActionStepDefinition {
    * @param gitInfo
    */
   exec(gitInfo: GitInfo): void {
-    info(this.description);
-    let args = [getInput, gitInfo].concat(this.args);
+    info(this.description)
+    let args = [getInput, gitInfo].concat(this.args)
     this.execCallback.apply(this.generator, args)
   }
 }

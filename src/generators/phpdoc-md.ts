@@ -7,13 +7,13 @@ import {renameSync, writeFileSync} from 'fs'
 import {EOL} from 'os'
 import GeneratorActionStepDefinition from '../GeneratorActionStepDefinition'
 
-const picomatch = require('picomatch');
+const picomatch = require('picomatch')
 
 export default class PHPDocMDGenerator implements GeneratorInterface {
   /**
    * @inheritDoc
    */
-  getComposerRequirements(): Array<string> {
+  getComposerRequirements(): string[] {
     return ['clean/phpdoc-md']
   }
 
@@ -35,14 +35,14 @@ export default class PHPDocMDGenerator implements GeneratorInterface {
   getAfterActions(
     getInput: (name: string, options?: InputOptions) => string,
     gitInfo: GitInfo
-  ): Array<GeneratorActionStepDefinition> {
+  ): GeneratorActionStepDefinition[] {
     return [
       new GeneratorActionStepDefinition(
         null,
         'Renaming README.md to Home.md...',
         renameSync,
-        getInput('temp_docs_folder') + '/README.md',
-        getInput('temp_docs_folder') + '/HOME.md'
+        getInput('temp_docs_folder').concat('/README.md'),
+        getInput('temp_docs_folder').concat('/HOME.md')
       )
     ]
   }
@@ -53,7 +53,7 @@ export default class PHPDocMDGenerator implements GeneratorInterface {
   getBeforeActions(
     getInput: (name: string, options?: InputOptions) => string,
     info: GitInfo
-  ): Array<GeneratorActionStepDefinition> {
+  ): GeneratorActionStepDefinition[] {
     return [
       new GeneratorActionStepDefinition(
         this,
@@ -88,26 +88,23 @@ export default class PHPDocMDGenerator implements GeneratorInterface {
   protected generateConfig(
     cwd: string,
     rootNamespace: string,
-    include: Array<string>,
+    include: string[],
     tempDocsPath: string
-  ) {
-    execCommand('composer', ['install', '-a'], cwd);
+  ): void {
+    execCommand('composer', ['install', '-a'], cwd)
     let classes = Object.keys(this.readComposerConfig()).filter(key =>
       picomatch.isMatch(key, include)
-    );
+    )
     let config = {
       rootNamespace,
       destDirectory: tempDocsPath,
       format: 'github',
       classes
-    };
-    let contents =
-      '<?php' +
-      EOL +
-      'return json_decode(' +
-      JSON.stringify(JSON.stringify(config)) +
-      ', false);';
-    writeFileSync(cwd + '/.phpdoc-md', contents)
+    }
+    writeFileSync(
+      cwd.concat('/.phpdoc-md'),
+      '<?php'.concat(EOL, 'return json_decode(', JSON.stringify(JSON.stringify(config)), ', false);')
+    )
   }
 
   /**

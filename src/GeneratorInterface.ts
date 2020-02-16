@@ -6,7 +6,7 @@ export default interface GeneratorInterface {
   /**
    * If some composer packages are needed gets list names for installation
    */
-  getComposerRequirements(): Array<string>
+  getComposerRequirements(): string[]
 
   /**
    * Executes this action before generating documentation
@@ -17,7 +17,7 @@ export default interface GeneratorInterface {
   getBeforeActions(
     getInput: (name: string, options?: InputOptions) => string,
     info: GitInfo
-  ): Array<GeneratorActionStepDefinition>
+  ): GeneratorActionStepDefinition[]
 
   /**
    * Generate documentation
@@ -39,7 +39,7 @@ export default interface GeneratorInterface {
   getAfterActions(
     getInput: (name: string, options?: InputOptions) => string,
     info: GitInfo
-  ): Array<GeneratorActionStepDefinition>
+  ): GeneratorActionStepDefinition[]
 
   /**
    * Checks if all required input options are defined for generator

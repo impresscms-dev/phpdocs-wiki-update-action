@@ -23,12 +23,12 @@ export default class implements ActionInterface {
    * @inheritDoc
    */
   exec(generator: GeneratorInterface, info: GitInfo): void {
-    const cwd = getInput('temp_docs_folder');
+    const cwd = getInput('temp_docs_folder')
     execCommand(
       'git',
       ['config', '--local', 'user.email', info.lastCommitEmail],
       cwd
-    );
+    )
     execCommand(
       'git',
       ['config', '--local', 'user.name', info.lastCommitAuthor],

@@ -22,7 +22,7 @@ export default class implements ActionInterface {
    * @inheritDoc
    */
   exec(generator: GeneratorInterface, info: GitInfo): void {
-    let packages = generator.getComposerRequirements();
+    let packages = generator.getComposerRequirements()
     if (packages.length == 0) {
       return
     }

@@ -25,13 +25,13 @@ export default class implements ActionInterface {
    * @inheritDoc
    */
   exec(generator: GeneratorInterface, gitInfo: GitInfo): void {
-    info('Cloning old wiki...');
-    const oldDocsDir = this.getOldDocsPath();
+    info('Cloning old wiki...')
+    const oldDocsDir = this.getOldDocsPath()
     if (existsSync(oldDocsDir)) {
-      throw new Error(oldDocsDir + " already exists but shouldn't");
+      throw new Error(oldDocsDir.concat(" already exists but shouldn't"))
     }
-    mkdirSync(oldDocsDir);
-    execCommand('git', ['init'], oldDocsDir);
+    mkdirSync(oldDocsDir)
+    execCommand('git', ['init'], oldDocsDir)
     execCommand(
       'git',
       [
@@ -41,8 +41,8 @@ export default class implements ActionInterface {
         `https://${this.getUpdateUser()}:${this.getUpdateToken()}@github.com/${gitInfo.getCurrentRepositoryName()}.wiki.git`
       ],
       oldDocsDir
-    );
-    execCommand('git', ['config', '--local', 'gc.auto', '0'], oldDocsDir);
+    )
+    execCommand('git', ['config', '--local', 'gc.auto', '0'], oldDocsDir)
     execCommand(
       'git',
       [
@@ -57,7 +57,7 @@ export default class implements ActionInterface {
         'origin'
       ],
       oldDocsDir
-    );
+    )
     if (this.branchExist(gitInfo.branchOrTagName, oldDocsDir)) {
       execCommand('git', ['checkout', gitInfo.branchOrTagName], oldDocsDir)
     } else {
@@ -104,6 +104,6 @@ export default class implements ActionInterface {
    * Get old docs path
    */
   protected getOldDocsPath(): string {
-    return getInput('temp_docs_folder') + '.old'
+    return getInput('temp_docs_folder').concat('.old')
   }
 }

@@ -23,7 +23,7 @@ export default class implements ActionInterface {
    */
   exec(generator: GeneratorInterface, info: GitInfo): void {
     for (const definition of generator.getAfterActions(getInput, info)) {
-      definition.exec(info);
+      definition.exec(info)
     }
   }
 }
