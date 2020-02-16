@@ -51,7 +51,7 @@ This action supports such arguments (used in `with` keyword):
 | engine | No | phpdoc-md | *all* | What documentation generator should be used? At current moment only `phpdoc-md` is supported. |
 | class_root_namespace | No | | phpdoc-md | Root class namespace that should be used for documentation |
 | include | No | | phpdoc-md | Defines what classes should be included in generated documentation (supports glob style wildcards syntax; each line means one rule) |
-| prefix_lines | No | ##### Notice: Wiki was automatic generated from project sources as project API documentation. Do not edit manually! | phpdoc-md | Lines that will be used to prefix generated wiki content |
+| prefix_lines | No | `##### Notice: Wiki was automatic generated from project sources as project API documentation. Do not edit manually!` | phpdoc-md | Lines that will be used to prefix generated wiki content |
 
 ## How to contribute? 
 
