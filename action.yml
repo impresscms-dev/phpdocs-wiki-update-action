@@ -1,31 +1,31 @@
 name: 'Update wiki with PHP project documentation'
-description: 'Update project wiki with automatic generated PHP project documentation'
+description: 'Updates project wiki with automatic generated PHP project documentation'
 branding:
   icon: book
   color: purple
 inputs:
-  WIKI_GITHUB_UPDATE_TOKEN:
+  wiki_github_update_token:
     description: GitHub token to use for updating project wiki
     required: true
-  WIKI_GITHUB_UPDATE_USER:
+  wiki_github_update_user:
     description: GitHub username for whom this token belongs
     required: true
-  TEMP_DOCS_FOLDER:
+  temp_docs_folder:
     description: Temporaly doc folder where project documenation will be generated
     required: false
     default: .docs
-  ENGINE:
+  engine:
     description: What documentation generator should be used
     required: false
     default: phpdoc-md
-  CLASS_ROOT_NAMESPACE:
+  class_root_namespace:
     description: Root class namespace that should be used for documentation
-    required: true
-  INCLUDE:
-    description: Defines what classes should be included in generated documenation (can be used here wildcards operations)
     required: false
-    default: []
-  PREFIX_LINES:
+  include:
+    description: Defines what classes should be included in generated documentation (supports glob style wildcards syntax; each line means one rule)
+    required: false
+    default:
+  prefix_lines:
     description: Lines that will be used to prefix generated wiki content
     required: false
     default: |

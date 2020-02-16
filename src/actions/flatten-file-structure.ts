@@ -27,7 +27,7 @@ export default class implements ActionInterface {
      * @inheritDoc
      */
     exec(generator: GeneratorInterface, info: GitInfo): void {
-        const newDocs = getInput('TEMP_DOCS_FOLDER');
+        const newDocs = getInput('temp_docs_folder');
         let filenames = this.generateNewStructData(newDocs);
         let flippedFilenames = this.flipKeysWithValues(filenames);
         for(let newFilename in filenames) {

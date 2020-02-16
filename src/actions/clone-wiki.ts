@@ -91,20 +91,20 @@ export default class implements ActionInterface {
      * Gets GitHub token that will be used for update action
      */
     protected getUpdateToken(): string {
-        return getInput('WIKI_GITHUB_UPDATE_TOKEN');
+        return getInput('wiki_github_update_token');
     }
 
     /**
      * Get GitHub user for witch token belongs
      */
     protected getUpdateUser(): string {
-        return getInput('WIKI_GITHUB_UPDATE_USER');
+        return getInput('wiki_github_update_user');
     }
 
     /**
      * Get old docs path
      */
     protected getOldDocsPath(): string {
-        return getInput('TEMP_DOCS_FOLDER') + '.old';
+        return getInput('temp_docs_folder') + '.old';
     }
 };

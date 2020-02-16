@@ -23,7 +23,7 @@ export default class PHPDocMDGenerator implements GeneratorInterface {
      * @inheritDoc
      */
     checkIfAllInputOptionsDefined(getInput: (name: string, options?: InputOptions) => string): boolean {
-        return getInput('CLASS_ROOT_NAMESPACE').length > 0 && getInput('INCLUDE').length > 0;
+        return getInput('class_root_namespace').length > 0 && getInput('include').length > 0;
     }
 
     /**
@@ -35,8 +35,8 @@ export default class PHPDocMDGenerator implements GeneratorInterface {
                 null,
                 'Renaming README.md to Home.md...',
                 renameSync,
-                getInput('TEMP_DOCS_FOLDER') + '/README.md',
-                getInput('TEMP_DOCS_FOLDER') + '/HOME.md'
+                getInput('temp_docs_folder') + '/README.md',
+                getInput('temp_docs_folder') + '/HOME.md'
             )
         ];
     }
@@ -51,9 +51,9 @@ export default class PHPDocMDGenerator implements GeneratorInterface {
                'Generating generator config...',
                this.generateConfig,
                process.cwd(),
-               getInput('CLASS_ROOT_NAMESPACE'),
-               getInput('INCLUDE').split(EOL),
-               getInput('TEMP_DOCS_FOLDER')
+               getInput('class_root_namespace'),
+               getInput('include').split(EOL),
+               getInput('temp_docs_folder')
            )
         ];
     }

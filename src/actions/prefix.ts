@@ -26,7 +26,7 @@ export default class implements ActionInterface {
      * @inheritDoc
      */
     exec(generator: GeneratorInterface, info: GitInfo): void {
-        const newDocs = getInput('TEMP_DOCS_FOLDER');
+        const newDocs = getInput('temp_docs_folder');
         const prefix = this.getPrefixLines();
         readDirSync(newDocs).forEach(
             (file) => {
@@ -43,6 +43,6 @@ export default class implements ActionInterface {
      * Gets prefix that should be used for each file
      */
     protected getPrefixLines() : string {
-        return getInput('PREFIX_LINES');
+        return getInput('prefix_lines');
     }
 };
