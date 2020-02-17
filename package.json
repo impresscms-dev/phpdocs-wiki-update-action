@@ -13,7 +13,7 @@
     "format": "prettier --write **/*.ts",
     "format-check": "prettier --check **/*.ts",
     "lint": "eslint src/**/*.ts",
-    "pack": "ncc build",
+    "pack": "ncc build -m",
     "all": "npm install && npm run build && npm run format && npm run lint && npm run pack"
   },
   "keywords": [

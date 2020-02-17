@@ -70,7 +70,8 @@
     "@typescript-eslint/unbound-method": "error",
     "no-useless-escape": "off",
     "import/no-anonymous-default-export": "off",
-    "@typescript-eslint/no-explicit-any": "off"
+    "@typescript-eslint/no-explicit-any": "off",
+    "@typescript-eslint/unbound-method": "off"
   },
   "env": {
     "node": true,
