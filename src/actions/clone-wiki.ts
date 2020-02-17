@@ -82,7 +82,7 @@ export default class implements ActionInterface {
         cwd
       })
         .output.toString()
-        .trim() == branch
+        .trim() === branch
     )
   }
 

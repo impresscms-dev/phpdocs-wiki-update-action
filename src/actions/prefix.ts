@@ -27,13 +27,13 @@ export default class implements ActionInterface {
   exec(generator: GeneratorInterface, info: GitInfo): void {
     const newDocs = getInput('temp_docs_folder')
     const prefix = this.getPrefixLines()
-    readDirSync(newDocs).forEach((file: any) => {
+    for (const file of readDirSync(newDocs)) {
       debug(' '.concat(file.toString()))
       writeFileSync(
         file.toString(),
         prefix.concat(readFileSync(file.toString()).toString())
       )
-    })
+    }
   }
 
   /**

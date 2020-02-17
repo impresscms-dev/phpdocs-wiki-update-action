@@ -53,7 +53,7 @@ export default class GeneratorActionStepDefinition {
    */
   exec(gitInfo: GitInfo): void {
     info(this.description)
-    let args = [getInput, gitInfo].concat(this.args)
+    const args = [getInput, gitInfo].concat(this.args)
     this.execCallback.apply(this.generator, args)
   }
 }

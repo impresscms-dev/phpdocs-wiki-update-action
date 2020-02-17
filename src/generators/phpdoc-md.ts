@@ -1,5 +1,5 @@
 import GeneratorInterface from '../GeneratorInterface'
-import {InputOptions} from '@actions/core'
+import {getInput} from '@actions/core'
 import GitInfo from '../GitInfo'
 import execCommand from '../helpers/execCommand'
 import {spawnSync} from 'child_process'
@@ -20,9 +20,7 @@ export default class PHPDocMDGenerator implements GeneratorInterface {
   /**
    * @inheritDoc
    */
-  checkIfAllInputOptionsDefined(
-    getInput: (name: string, options?: InputOptions) => string
-  ): boolean {
+  checkIfAllInputOptionsDefined(): boolean {
     return (
       getInput('class_root_namespace').length > 0 &&
       getInput('include').length > 0
@@ -32,10 +30,7 @@ export default class PHPDocMDGenerator implements GeneratorInterface {
   /**
    * @inheritDoc
    */
-  getAfterActions(
-    getInput: (name: string, options?: InputOptions) => string,
-    gitInfo: GitInfo
-  ): GeneratorActionStepDefinition[] {
+  getAfterActions(gitInfo: GitInfo): GeneratorActionStepDefinition[] {
     return [
       new GeneratorActionStepDefinition(
         null,
@@ -50,10 +45,7 @@ export default class PHPDocMDGenerator implements GeneratorInterface {
   /**
    * @inheritDoc
    */
-  getBeforeActions(
-    getInput: (name: string, options?: InputOptions) => string,
-    info: GitInfo
-  ): GeneratorActionStepDefinition[] {
+  getBeforeActions(info: GitInfo): GeneratorActionStepDefinition[] {
     return [
       new GeneratorActionStepDefinition(
         this,
@@ -70,10 +62,7 @@ export default class PHPDocMDGenerator implements GeneratorInterface {
   /**
    * @inheritDoc
    */
-  generate(
-    getInput: (name: string, options?: InputOptions) => string,
-    info: GitInfo
-  ): void {
+  generate(info: GitInfo): void {
     execCommand('./vendor/bin/phpdoc-md', [], process.cwd())
   }
 
@@ -92,10 +81,10 @@ export default class PHPDocMDGenerator implements GeneratorInterface {
     tempDocsPath: string
   ): void {
     execCommand('composer', ['install', '-a'], cwd)
-    let classes = Object.keys(this.readComposerConfig()).filter(key =>
+    const classes = Object.keys(this.readComposerConfig()).filter(key =>
       picomatch.isMatch(key, include)
     )
-    let config = {
+    const config = {
       rootNamespace,
       destDirectory: tempDocsPath,
       format: 'github',
