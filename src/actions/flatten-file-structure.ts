@@ -2,8 +2,7 @@ import ActionInterface from '../ActionInterface'
 import {debug, getInput} from '@actions/core'
 import {readFileSync, renameSync, writeFileSync} from 'fs'
 import {basename, dirname, extname} from 'path'
-
-const readDirSync = require('recursive-readdir-sync')
+import readDirSync = require('recursive-readdir-sync');
 
 export default class implements ActionInterface {
   /**
