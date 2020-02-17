@@ -45,7 +45,7 @@ export default class implements ActionInterface {
    * @param string cwd Docs path
    */
   generateNewStructData(cwd: string): { [x: string]: string } {
-    let newStructData: { [x: string]: string } = {}
+    const newStructData: { [x: string]: string } = {}
     const files = this.getAllFilesInfo(cwd)
     for (const fileInfo of this.filterFileInfoByShortPath(files, false)) {
       newStructData[fileInfo.filename] = fileInfo.filename
@@ -75,7 +75,7 @@ export default class implements ActionInterface {
     debug(` Fixing ${filename}...`)
     const content = readFileSync(filename).toString()
     const newContent = content.replace(
-      /\[([^\]]+)\]\(([^\)]+)\)/gm,
+      /\[([^\]]+)]\(([^\)]+)\)/gm,
       (fullMsg: string, link: string, name: string) =>
         '['.concat(
           filenames[link]
@@ -101,7 +101,7 @@ export default class implements ActionInterface {
   protected flipKeysWithValues(obj: {
     [x: string]: string
   }): { [x: string]: string } {
-    let ret: { [x: string]: string } = {}
+    const ret: { [x: string]: string } = {}
     for (const x in obj) {
       ret[obj[x]] = x
     }
