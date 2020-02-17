@@ -1,7 +1,5 @@
 import ActionInterface from '../ActionInterface'
 import {debug, getInput} from '@actions/core'
-import GeneratorInterface from '../GeneratorInterface'
-import GitInfo from '../GitInfo'
 import {readFileSync, renameSync, writeFileSync} from 'fs'
 import {basename, dirname, extname} from 'path'
 
@@ -18,14 +16,14 @@ export default class implements ActionInterface {
   /**
    * @inheritDoc
    */
-  shouldRun(generator: GeneratorInterface, info: GitInfo): boolean {
+  shouldRun(): boolean {
     return true
   }
 
   /**
    * @inheritDoc
    */
-  exec(generator: GeneratorInterface, info: GitInfo): void {
+  exec(): void {
     const newDocs = getInput('temp_docs_folder')
     const filenames = this.generateNewStructData(newDocs)
     const flippedFilenames = this.flipKeysWithValues(filenames)

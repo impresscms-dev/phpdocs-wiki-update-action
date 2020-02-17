@@ -1,6 +1,5 @@
 import GeneratorInterface from '../GeneratorInterface'
 import {getInput} from '@actions/core'
-import GitInfo from '../GitInfo'
 import execCommand from '../helpers/execCommand'
 import {spawnSync} from 'child_process'
 import {renameSync, writeFileSync} from 'fs'
@@ -30,7 +29,7 @@ export default class PHPDocMDGenerator implements GeneratorInterface {
   /**
    * @inheritDoc
    */
-  getAfterActions(gitInfo: GitInfo): GeneratorActionStepDefinition[] {
+  getAfterActions(): GeneratorActionStepDefinition[] {
     return [
       new GeneratorActionStepDefinition(
         null,
@@ -45,7 +44,7 @@ export default class PHPDocMDGenerator implements GeneratorInterface {
   /**
    * @inheritDoc
    */
-  getBeforeActions(info: GitInfo): GeneratorActionStepDefinition[] {
+  getBeforeActions(): GeneratorActionStepDefinition[] {
     return [
       new GeneratorActionStepDefinition(
         this,
@@ -62,7 +61,7 @@ export default class PHPDocMDGenerator implements GeneratorInterface {
   /**
    * @inheritDoc
    */
-  generate(info: GitInfo): void {
+  generate(): void {
     execCommand('./vendor/bin/phpdoc-md', [], process.cwd())
   }
 

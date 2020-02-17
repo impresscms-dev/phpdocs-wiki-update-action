@@ -1,6 +1,5 @@
 import ActionInterface from '../ActionInterface'
 import GeneratorInterface from '../GeneratorInterface'
-import GitInfo from '../GitInfo'
 import execCommand from '../helpers/execCommand'
 
 export default class implements ActionInterface {
@@ -14,14 +13,14 @@ export default class implements ActionInterface {
   /**
    * @inheritDoc
    */
-  shouldRun(generator: GeneratorInterface, info: GitInfo): boolean {
+  shouldRun(generator: GeneratorInterface): boolean {
     return generator.getComposerRequirements().length > 0
   }
 
   /**
    * @inheritDoc
    */
-  exec(generator: GeneratorInterface, info: GitInfo): void {
+  exec(generator: GeneratorInterface): void {
     const packages = generator.getComposerRequirements()
     if (packages.length === 0) {
       return

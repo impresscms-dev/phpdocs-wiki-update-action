@@ -1,7 +1,5 @@
 import ActionInterface from '../ActionInterface'
 import {debug, getInput} from '@actions/core'
-import GeneratorInterface from '../GeneratorInterface'
-import GitInfo from '../GitInfo'
 import {readFileSync, writeFileSync} from 'fs'
 
 const readDirSync = require('recursive-readdir-sync')
@@ -17,14 +15,14 @@ export default class implements ActionInterface {
   /**
    * @inheritDoc
    */
-  shouldRun(generator: GeneratorInterface, info: GitInfo): boolean {
+  shouldRun(): boolean {
     return this.getPrefixLines().length > 0
   }
 
   /**
    * @inheritDoc
    */
-  exec(generator: GeneratorInterface, info: GitInfo): void {
+  exec(): void {
     const newDocs = getInput('temp_docs_folder')
     const prefix = this.getPrefixLines()
     for (const file of readDirSync(newDocs)) {
