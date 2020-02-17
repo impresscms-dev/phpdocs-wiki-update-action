@@ -38,7 +38,7 @@ export default class GeneratorActionStepDefinition {
     generator: GeneratorInterface | null,
     description: string,
     execCallback: Function,
-    ...args: (number | string | boolean | Function | null)[]
+    ...args: (number | string | boolean | Function | null | number[] | string[] | boolean[] | Function[] | null[])[]
   ) {
     this.description = description
     this.execCallback = execCallback
