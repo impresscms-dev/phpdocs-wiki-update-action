@@ -17,7 +17,7 @@ export default class implements ActionInterface {
   /**
    * @inheritDoc
    */
-  shouldRun(generator: GeneratorInterface, info: GitInfo): boolean {
+  shouldRun(generator: GeneratorInterface, gitInfo: GitInfo): boolean {
     return true
   }
 

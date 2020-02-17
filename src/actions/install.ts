@@ -22,8 +22,8 @@ export default class implements ActionInterface {
    * @inheritDoc
    */
   exec(generator: GeneratorInterface, info: GitInfo): void {
-    let packages = generator.getComposerRequirements()
-    if (packages.length == 0) {
+    const packages = generator.getComposerRequirements()
+    if (packages.length === 0) {
       return
     }
     execCommand(
