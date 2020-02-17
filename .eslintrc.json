@@ -69,7 +69,8 @@
     "@typescript-eslint/type-annotation-spacing": "error",
     "@typescript-eslint/unbound-method": "error",
     "no-useless-escape": "off",
-    "import/no-anonymous-default-export": "off"
+    "import/no-anonymous-default-export": "off",
+    "@typescript-eslint/no-explicit-any": "off"
   },
   "env": {
     "node": true,
