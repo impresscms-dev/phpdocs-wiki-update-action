@@ -1,5 +1,5 @@
-[![License](https://img.shields.io/github/license/imponeer/phpdocs-wiki-update-action.svg?maxAge=2592000)](LICENSE)
-[![GitHub release](https://img.shields.io/github/release/imponeer/phpdocs-wiki-update-action.svg?maxAge=2592000)](https://github.com/imponeer/phpdocs-wiki-update-action/releases)
+[![License](https://img.shields.io/github/license/imponeer/phpdocs-wiki-update-action.svg)](LICENSE)
+[![GitHub release](https://img.shields.io/github/release/imponeer/phpdocs-wiki-update-action.svg)](https://github.com/imponeer/phpdocs-wiki-update-action/releases)
 
 # Update wiki with PHP project documentation
 
