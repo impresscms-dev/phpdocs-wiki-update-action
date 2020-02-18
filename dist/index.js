@@ -1,1 +1,596 @@
-module.exports=function(t,e){"use strict";var n={};function __webpack_require__(e){if(n[e]){return n[e].exports}var o=n[e]={i:e,l:false,exports:{}};t[e].call(o.exports,o,o.exports,__webpack_require__);o.l=true;return o.exports}__webpack_require__.ab=__dirname+"/";function startup(){return __webpack_require__(676)}return startup()}({32:function(){eval("require")("./GeneratorInterface.js")},36:function(t,e,n){"use strict";Object.defineProperty(e,"__esModule",{value:true});const o=n(129);class GitInfo{constructor(t){this.cwd=t;this.lastCommitEmail=this.execGitShowCommand("%ae");this.lastCommitAuthor=this.execGitShowCommand("%an");const e=o.spawnSync("git",["rev-parse","--abbrev-ref","HEAD"],{stdio:"pipe",cwd:this.cwd}).output.toString();if(e==="HEAD"){this.isTag=true;this.branchOrTagName=o.spawnSync("git",["describe","--tags","--abbrev=0"],{stdio:"pipe",cwd:this.cwd}).output.toString()}else{this.branchOrTagName=e;this.isTag=false}}getCurrentRepositoryName(){return typeof process.env["GITHUB_REPOSITORY"]=="undefined"?"":process.env["GITHUB_REPOSITORY"]}getCurrentLastCommitSHA(){return typeof process.env["GITHUB_SHA"]=="undefined"?"":process.env["GITHUB_SHA"]}execGitShowCommand(t){return o.spawnSync("git",["show","-s",`--format='${t}'`,"HEAD"],{stdio:"pipe",cwd:this.cwd}).output.toString()}}e.default=GitInfo},87:function(t){t.exports=require("os")},129:function(t){t.exports=require("child_process")},199:function(t,e,n){"use strict";const o=n(622);const r="\\\\/";const s=`[^${r}]`;const u="\\.";const i="\\+";const a="\\?";const c="\\/";const p="(?=.)";const l="[^/]";const f=`(?:${c}|$)`;const h=`(?:^|${c})`;const _=`${u}{1,2}${f}`;const d=`(?!${u})`;const g=`(?!${h}${_})`;const A=`(?!${u}{0,1}${f})`;const R=`(?!${_})`;const E=`[^.${c}]`;const C=`${l}*?`;const y={DOT_LITERAL:u,PLUS_LITERAL:i,QMARK_LITERAL:a,SLASH_LITERAL:c,ONE_CHAR:p,QMARK:l,END_ANCHOR:f,DOTS_SLASH:_,NO_DOT:d,NO_DOTS:g,NO_DOT_SLASH:A,NO_DOTS_SLASH:R,QMARK_NO_DOT:E,STAR:C,START_ANCHOR:h};const b={...y,SLASH_LITERAL:`[${r}]`,QMARK:s,STAR:`${s}*?`,DOTS_SLASH:`${u}{1,2}(?:[${r}]|$)`,NO_DOT:`(?!${u})`,NO_DOTS:`(?!(?:^|[${r}])${u}{1,2}(?:[${r}]|$))`,NO_DOT_SLASH:`(?!${u}{0,1}(?:[${r}]|$))`,NO_DOTS_SLASH:`(?!${u}{1,2}(?:[${r}]|$))`,QMARK_NO_DOT:`[^.${r}]`,START_ANCHOR:`(?:^|[${r}])`,END_ANCHOR:`(?:[${r}]|$)`};const m={alnum:"a-zA-Z0-9",alpha:"a-zA-Z",ascii:"\\x00-\\x7F",blank:" \\t",cntrl:"\\x00-\\x1F\\x7F",digit:"0-9",graph:"\\x21-\\x7E",lower:"a-z",print:"\\x20-\\x7E ",punct:"\\-!\"#$%&'()\\*+,./:;<=>?@[\\]^_`{|}~",space:" \\t\\r\\n\\v\\f",upper:"A-Z",word:"A-Za-z0-9_",xdigit:"A-Fa-f0-9"};t.exports={MAX_LENGTH:1024*64,POSIX_REGEX_SOURCE:m,REGEX_BACKSLASH:/\\(?![*+?^${}(|)[\]])/g,REGEX_NON_SPECIAL_CHARS:/^[^@![\].,$*+?^{}()|\\\/]+/,REGEX_SPECIAL_CHARS:/[-*+?.^${}(|)[\]]/,REGEX_SPECIAL_CHARS_BACKREF:/(\\?)((\W)(\3*))/g,REGEX_SPECIAL_CHARS_GLOBAL:/([-*+?.^${}(|)[\]])/g,REGEX_REMOVE_BACKSLASH:/(?:\[.*?[^\\]\]|\\(?=.))/g,REPLACEMENTS:{"***":"*","**/**":"**","**/**/**":"**"},CHAR_0:48,CHAR_9:57,CHAR_UPPERCASE_A:65,CHAR_LOWERCASE_A:97,CHAR_UPPERCASE_Z:90,CHAR_LOWERCASE_Z:122,CHAR_LEFT_PARENTHESES:40,CHAR_RIGHT_PARENTHESES:41,CHAR_ASTERISK:42,CHAR_AMPERSAND:38,CHAR_AT:64,CHAR_BACKWARD_SLASH:92,CHAR_CARRIAGE_RETURN:13,CHAR_CIRCUMFLEX_ACCENT:94,CHAR_COLON:58,CHAR_COMMA:44,CHAR_DOT:46,CHAR_DOUBLE_QUOTE:34,CHAR_EQUAL:61,CHAR_EXCLAMATION_MARK:33,CHAR_FORM_FEED:12,CHAR_FORWARD_SLASH:47,CHAR_GRAVE_ACCENT:96,CHAR_HASH:35,CHAR_HYPHEN_MINUS:45,CHAR_LEFT_ANGLE_BRACKET:60,CHAR_LEFT_CURLY_BRACE:123,CHAR_LEFT_SQUARE_BRACKET:91,CHAR_LINE_FEED:10,CHAR_NO_BREAK_SPACE:160,CHAR_PERCENT:37,CHAR_PLUS:43,CHAR_QUESTION_MARK:63,CHAR_RIGHT_ANGLE_BRACKET:62,CHAR_RIGHT_CURLY_BRACE:125,CHAR_RIGHT_SQUARE_BRACKET:93,CHAR_SEMICOLON:59,CHAR_SINGLE_QUOTE:39,CHAR_SPACE:32,CHAR_TAB:9,CHAR_UNDERSCORE:95,CHAR_VERTICAL_LINE:124,CHAR_ZERO_WIDTH_NOBREAK_SPACE:65279,SEP:o.sep,extglobChars(t){return{"!":{type:"negate",open:"(?:(?!(?:",close:`))${t.STAR})`},"?":{type:"qmark",open:"(?:",close:")?"},"+":{type:"plus",open:"(?:",close:")+"},"*":{type:"star",open:"(?:",close:")*"},"@":{type:"at",open:"(?:",close:")"}}},globChars(t){return t===true?b:y}}},203:function(){eval("require")("./ActionInterface.js")},265:function(t,e,n){"use strict";const o=n(622);const r=process.platform==="win32";const{REGEX_BACKSLASH:s,REGEX_REMOVE_BACKSLASH:u,REGEX_SPECIAL_CHARS:i,REGEX_SPECIAL_CHARS_GLOBAL:a}=n(199);e.isObject=(t=>t!==null&&typeof t==="object"&&!Array.isArray(t));e.hasRegexChars=(t=>i.test(t));e.isRegexChar=(t=>t.length===1&&e.hasRegexChars(t));e.escapeRegex=(t=>t.replace(a,"\\$1"));e.toPosixSlashes=(t=>t.replace(s,"/"));e.removeBackslashes=(t=>{return t.replace(u,t=>{return t==="\\"?"":t})});e.supportsLookbehinds=(()=>{const t=process.version.slice(1).split(".").map(Number);if(t.length===3&&t[0]>=9||t[0]===8&&t[1]>=10){return true}return false});e.isWindows=(t=>{if(t&&typeof t.windows==="boolean"){return t.windows}return r===true||o.sep==="\\"});e.escapeLast=((t,n,o)=>{const r=t.lastIndexOf(n,o);if(r===-1)return t;if(t[r-1]==="\\")return e.escapeLast(t,n,r-1);return`${t.slice(0,r)}\\${t.slice(r)}`});e.removePrefix=((t,e={})=>{let n=t;if(n.startsWith("./")){n=n.slice(2);e.prefix="./"}return n});e.wrapOutput=((t,e={},n={})=>{const o=n.contains?"":"^";const r=n.contains?"":"$";let s=`${o}(?:${t})${r}`;if(e.negated===true){s=`(?:^(?!${s}).*$)`}return s})},279:function(t,e,n){"use strict";Object.defineProperty(e,"__esModule",{value:true});const o=n(470);class GeneratorActionStepDefinition{constructor(t,e,n,...o){this.description=e;this.execCallback=n;this.args=o;this.generator=t}exec(t){o.info(this.description);const e=[o.getInput,t].concat(this.args);this.execCallback.apply(this.generator,e)}}e.default=GeneratorActionStepDefinition},366:function(t,e,n){"use strict";const o=n(622);const r=n(537);const s=n(806);const u=n(265);const i=n(199);const a=t=>t&&typeof t==="object"&&!Array.isArray(t);const c=(t,e,n=false)=>{if(Array.isArray(t)){const o=t.map(t=>c(t,e,n));const r=t=>{for(const e of o){const n=e(t);if(n)return n}return false};return r}const o=a(t)&&t.tokens&&t.input;if(t===""||typeof t!=="string"&&!o){throw new TypeError("Expected pattern to be a non-empty string")}const r=e||{};const s=u.isWindows(e);const i=o?c.compileRe(t,e):c.makeRe(t,e,false,true);const p=i.state;delete i.state;let l=()=>false;if(r.ignore){const t={...e,ignore:null,onMatch:null,onResult:null};l=c(r.ignore,t,n)}const f=(n,o=false)=>{const{isMatch:u,match:a,output:f}=c.test(n,i,e,{glob:t,posix:s});const h={glob:t,state:p,regex:i,posix:s,input:n,output:f,match:a,isMatch:u};if(typeof r.onResult==="function"){r.onResult(h)}if(u===false){h.isMatch=false;return o?h:false}if(l(n)){if(typeof r.onIgnore==="function"){r.onIgnore(h)}h.isMatch=false;return o?h:false}if(typeof r.onMatch==="function"){r.onMatch(h)}return o?h:true};if(n){f.state=p}return f};c.test=((t,e,n,{glob:o,posix:r}={})=>{if(typeof t!=="string"){throw new TypeError("Expected input to be a string")}if(t===""){return{isMatch:false,output:""}}const s=n||{};const i=s.format||(r?u.toPosixSlashes:null);let a=t===o;let p=a&&i?i(t):t;if(a===false){p=i?i(t):t;a=p===o}if(a===false||s.capture===true){if(s.matchBase===true||s.basename===true){a=c.matchBase(t,e,n,r)}else{a=e.exec(p)}}return{isMatch:Boolean(a),match:a,output:p}});c.matchBase=((t,e,n,r=u.isWindows(n))=>{const s=e instanceof RegExp?e:c.makeRe(e,n);return s.test(o.basename(t))});c.isMatch=((t,e,n)=>c(e,n)(t));c.parse=((t,e)=>{if(Array.isArray(t))return t.map(t=>c.parse(t,e));return s(t,{...e,fastpaths:false})});c.scan=((t,e)=>r(t,e));c.compileRe=((t,e,n=false,o=false)=>{if(n===true){return t.output}const r=e||{};const s=r.contains?"":"^";const u=r.contains?"":"$";let i=`${s}(?:${t.output})${u}`;if(t&&t.negated===true){i=`^(?!${i}).*$`}const a=c.toRegex(i,e);if(o===true){a.state=t}return a});c.makeRe=((t,e,n=false,o=false)=>{if(!t||typeof t!=="string"){throw new TypeError("Expected a non-empty string")}const r=e||{};let u={negated:false,fastpaths:true};let i="";let a;if(t.startsWith("./")){t=t.slice(2);i=u.prefix="./"}if(r.fastpaths!==false&&(t[0]==="."||t[0]==="*")){a=s.fastpaths(t,e)}if(a===undefined){u=s(t,e);u.prefix=i+(u.prefix||"")}else{u.output=a}return c.compileRe(u,e,n,o)});c.toRegex=((t,e)=>{try{const n=e||{};return new RegExp(t,n.flags||(n.nocase?"i":""))}catch(t){if(e&&e.debug===true)throw t;return/$^/}});c.constants=i;t.exports=c},431:function(t,e,n){"use strict";var o=this&&this.__importStar||function(t){if(t&&t.__esModule)return t;var e={};if(t!=null)for(var n in t)if(Object.hasOwnProperty.call(t,n))e[n]=t[n];e["default"]=t;return e};Object.defineProperty(e,"__esModule",{value:true});const r=o(n(87));function issueCommand(t,e,n){const o=new Command(t,e,n);process.stdout.write(o.toString()+r.EOL)}e.issueCommand=issueCommand;function issue(t,e=""){issueCommand(t,{},e)}e.issue=issue;const s="::";class Command{constructor(t,e,n){if(!t){t="missing.command"}this.command=t;this.properties=e;this.message=n}toString(){let t=s+this.command;if(this.properties&&Object.keys(this.properties).length>0){t+=" ";let e=true;for(const n in this.properties){if(this.properties.hasOwnProperty(n)){const o=this.properties[n];if(o){if(e){e=false}else{t+=","}t+=`${n}=${escapeProperty(o)}`}}}}t+=`${s}${escapeData(this.message)}`;return t}}function escapeData(t){return(t||"").replace(/%/g,"%25").replace(/\r/g,"%0D").replace(/\n/g,"%0A")}function escapeProperty(t){return(t||"").replace(/%/g,"%25").replace(/\r/g,"%0D").replace(/\n/g,"%0A").replace(/:/g,"%3A").replace(/,/g,"%2C")}},470:function(t,e,n){"use strict";var o=this&&this.__awaiter||function(t,e,n,o){function adopt(t){return t instanceof n?t:new n(function(e){e(t)})}return new(n||(n=Promise))(function(n,r){function fulfilled(t){try{step(o.next(t))}catch(t){r(t)}}function rejected(t){try{step(o["throw"](t))}catch(t){r(t)}}function step(t){t.done?n(t.value):adopt(t.value).then(fulfilled,rejected)}step((o=o.apply(t,e||[])).next())})};var r=this&&this.__importStar||function(t){if(t&&t.__esModule)return t;var e={};if(t!=null)for(var n in t)if(Object.hasOwnProperty.call(t,n))e[n]=t[n];e["default"]=t;return e};Object.defineProperty(e,"__esModule",{value:true});const s=n(431);const u=r(n(87));const i=r(n(622));var a;(function(t){t[t["Success"]=0]="Success";t[t["Failure"]=1]="Failure"})(a=e.ExitCode||(e.ExitCode={}));function exportVariable(t,e){process.env[t]=e;s.issueCommand("set-env",{name:t},e)}e.exportVariable=exportVariable;function setSecret(t){s.issueCommand("add-mask",{},t)}e.setSecret=setSecret;function addPath(t){s.issueCommand("add-path",{},t);process.env["PATH"]=`${t}${i.delimiter}${process.env["PATH"]}`}e.addPath=addPath;function getInput(t,e){const n=process.env[`INPUT_${t.replace(/ /g,"_").toUpperCase()}`]||"";if(e&&e.required&&!n){throw new Error(`Input required and not supplied: ${t}`)}return n.trim()}e.getInput=getInput;function setOutput(t,e){s.issueCommand("set-output",{name:t},e)}e.setOutput=setOutput;function setFailed(t){process.exitCode=a.Failure;error(t)}e.setFailed=setFailed;function debug(t){s.issueCommand("debug",{},t)}e.debug=debug;function error(t){s.issue("error",t)}e.error=error;function warning(t){s.issue("warning",t)}e.warning=warning;function info(t){process.stdout.write(t+u.EOL)}e.info=info;function startGroup(t){s.issue("group",t)}e.startGroup=startGroup;function endGroup(){s.issue("endgroup")}e.endGroup=endGroup;function group(t,e){return o(this,void 0,void 0,function*(){startGroup(t);let n;try{n=yield e()}finally{endGroup()}return n})}e.group=group;function saveState(t,e){s.issueCommand("save-state",{name:t},e)}e.saveState=saveState;function getState(t){return process.env[`STATE_${t}`]||""}e.getState=getState},509:function(t,e,n){"use strict";var o=this&&this.__importDefault||function(t){return t&&t.__esModule?t:{default:t}};Object.defineProperty(e,"__esModule",{value:true});const r=n(470);const s=o(n(988));const u=n(129);const i=n(747);const a=n(87);const c=o(n(279));const p=n(827);class PHPDocMDGenerator{getComposerRequirements(){return["clean/phpdoc-md"]}checkIfAllInputOptionsDefined(){return r.getInput("class_root_namespace").length>0&&r.getInput("include").length>0}getAfterActions(){return[new c.default(null,"Renaming README.md to Home.md...",i.renameSync,r.getInput("temp_docs_folder").concat("/README.md"),r.getInput("temp_docs_folder").concat("/HOME.md"))]}getBeforeActions(){return[new c.default(this,"Generating generator config...",this.generateConfig,process.cwd(),r.getInput("class_root_namespace"),r.getInput("include").split(a.EOL),r.getInput("temp_docs_folder"))]}generate(){s.default("./vendor/bin/phpdoc-md",[],process.cwd())}generateConfig(t,e,n,o){s.default("composer",["install","-a"],t);const r=Object.keys(this.readComposerConfig()).filter(t=>p.isMatch(t,n));const u={rootNamespace:e,destDirectory:o,format:"github",classes:r};i.writeFileSync(t.concat("/.phpdoc-md"),"<?php".concat(a.EOL,"return json_decode(",JSON.stringify(JSON.stringify(u)),", false);"))}readComposerConfig(){return JSON.parse(u.spawnSync("php",["-r",'include_once "../vendor/autoload.php"; echo json_encode(include("./vendor/composer/autoload_classmap.php"));']).output.toString().trim())}}e.default=PHPDocMDGenerator},537:function(t,e,n){"use strict";const o=n(265);const{CHAR_ASTERISK:r,CHAR_AT:s,CHAR_BACKWARD_SLASH:u,CHAR_COMMA:i,CHAR_DOT:a,CHAR_EXCLAMATION_MARK:c,CHAR_FORWARD_SLASH:p,CHAR_LEFT_CURLY_BRACE:l,CHAR_LEFT_PARENTHESES:f,CHAR_LEFT_SQUARE_BRACKET:h,CHAR_PLUS:_,CHAR_QUESTION_MARK:d,CHAR_RIGHT_CURLY_BRACE:g,CHAR_RIGHT_PARENTHESES:A,CHAR_RIGHT_SQUARE_BRACKET:R}=n(199);const E=t=>{return t===p||t===u};const C=t=>{if(t.isPrefix!==true){t.depth=t.isGlobstar?Infinity:1}};const y=(t,e)=>{const n=e||{};const y=t.length-1;const b=n.parts===true||n.scanToEnd===true;const m=[];const S=[];const $=[];let x=t;let v=-1;let H=0;let w=0;let T=false;let O=false;let L=false;let k=false;let I=false;let G=false;let N=false;let P=false;let M=false;let D=0;let B;let U;let K={value:"",depth:0,isGlob:false};const F=()=>v>=y;const q=()=>x.charCodeAt(v+1);const j=()=>{B=U;return x.charCodeAt(++v)};while(v<y){U=j();let t;if(U===u){N=K.backslashes=true;U=j();if(U===l){G=true}continue}if(G===true||U===l){D++;while(F()!==true&&(U=j())){if(U===u){N=K.backslashes=true;j();continue}if(U===l){D++;continue}if(G!==true&&U===a&&(U=j())===a){T=K.isBrace=true;L=K.isGlob=true;M=true;if(b===true){continue}break}if(G!==true&&U===i){T=K.isBrace=true;L=K.isGlob=true;M=true;if(b===true){continue}break}if(U===g){D--;if(D===0){G=false;T=K.isBrace=true;M=true;break}}}if(b===true){continue}break}if(U===p){m.push(v);S.push(K);K={value:"",depth:0,isGlob:false};if(M===true)continue;if(B===a&&v===H+1){H+=2;continue}w=v+1;continue}if(n.noext!==true){const t=U===_||U===s||U===r||U===d||U===c;if(t===true&&q()===f){L=K.isGlob=true;k=K.isExtglob=true;M=true;if(b===true){while(F()!==true&&(U=j())){if(U===u){N=K.backslashes=true;U=j();continue}if(U===A){L=K.isGlob=true;M=true;break}}continue}break}}if(U===r){if(B===r)I=K.isGlobstar=true;L=K.isGlob=true;M=true;if(b===true){continue}break}if(U===d){L=K.isGlob=true;M=true;if(b===true){continue}break}if(U===h){while(F()!==true&&(t=j())){if(t===u){N=K.backslashes=true;j();continue}if(t===R){O=K.isBracket=true;L=K.isGlob=true;M=true;if(b===true){continue}break}}}if(n.nonegate!==true&&U===c&&v===H){P=K.negated=true;H++;continue}if(n.noparen!==true&&U===f){while(F()!==true&&(U=j())){if(U===u){N=K.backslashes=true;U=j();continue}if(U===A){L=K.isGlob=true;M=true;if(b===true){continue}break}}}if(L===true){M=true;if(b===true){continue}break}}if(n.noext===true){k=false;L=false}let X=x;let Q="";let W="";if(H>0){Q=x.slice(0,H);x=x.slice(H);w-=H}if(X&&L===true&&w>0){X=x.slice(0,w);W=x.slice(w)}else if(L===true){X="";W=x}else{X=x}if(X&&X!==""&&X!=="/"&&X!==x){if(E(X.charCodeAt(X.length-1))){X=X.slice(0,-1)}}if(n.unescape===true){if(W)W=o.removeBackslashes(W);if(X&&N===true){X=o.removeBackslashes(X)}}const V={prefix:Q,input:t,start:H,base:X,glob:W,isBrace:T,isBracket:O,isGlob:L,isExtglob:k,isGlobstar:I,negated:P};if(n.tokens===true){V.maxDepth=0;if(!E(U)){S.push(K)}V.tokens=S}if(n.parts===true||n.tokens===true){let e;for(let o=0;o<m.length;o++){const r=e?e+1:H;const s=m[o];const u=t.slice(r,s);if(n.tokens){if(o===0&&H!==0){S[o].isPrefix=true;S[o].value=Q}else{S[o].value=u}C(S[o]);V.maxDepth+=S[o].depth}if(o!==0||u!==""){$.push(u)}e=s}if(e&&e+1<t.length){const o=t.slice(e+1);$.push(o);if(n.tokens){S[S.length-1].value=o;C(S[S.length-1]);V.maxDepth+=S[S.length-1].depth}}V.slashes=m;V.parts=$}return V};t.exports=y},622:function(t){t.exports=require("path")},676:function(t,e,n){function __ncc_wildcard$0(t){if(t==="phpdoc-md")return n(509)}const o=n(470);const r=n(36);const s=n(32);const u=n(203);try{const t=o.getInput("engine");const e=__ncc_wildcard$0(t);const n=new e;if(!(n instanceof s)){throw new TypeError("Selected engine doesn't implements GeneratorInterface")}if(!n.checkIfAllInputOptionsDefined(o.getInput)){throw new TypeError("Not all required arguments defined for selected engine")}let i=new r(process.cwd());["install","clone-wiki","exec-before-generator-actions","generate","exec-after-generator-actions","flatten-file-structure","prefix","copy-old-git-data-to-new-place","configure-commit-author","check-status","commit","push-update"].map(t=>require(`./actions/${t}`).default).filter(t=>t instanceof u&&t.shouldRun(n,i)).forEach(t=>{let e=t.getDescription();if(e!==null){o.info(e)}t.exec(n,i)})}catch(t){o.setFailed(t.message)}},747:function(t){t.exports=require("fs")},806:function(t,e,n){"use strict";const o=n(199);const r=n(265);const{MAX_LENGTH:s,POSIX_REGEX_SOURCE:u,REGEX_NON_SPECIAL_CHARS:i,REGEX_SPECIAL_CHARS_BACKREF:a,REPLACEMENTS:c}=o;const p=(t,e)=>{if(typeof e.expandRange==="function"){return e.expandRange(...t,e)}t.sort();const n=`[${t.join("-")}]`;try{new RegExp(n)}catch(e){return t.map(t=>r.escapeRegex(t)).join("..")}return n};const l=(t,e)=>{return`Missing ${t}: "${e}" - use "\\\\${e}" to match literal characters`};const f=(t,e)=>{if(typeof t!=="string"){throw new TypeError("Expected a string")}t=c[t]||t;const n={...e};const f=typeof n.maxLength==="number"?Math.min(s,n.maxLength):s;let h=t.length;if(h>f){throw new SyntaxError(`Input length: ${h}, exceeds maximum allowed length: ${f}`)}const _={type:"bos",value:"",output:n.prepend||""};const d=[_];const g=n.capture?"":"?:";const A=r.isWindows(e);const R=o.globChars(A);const E=o.extglobChars(R);const{DOT_LITERAL:C,PLUS_LITERAL:y,SLASH_LITERAL:b,ONE_CHAR:m,DOTS_SLASH:S,NO_DOT:$,NO_DOT_SLASH:x,NO_DOTS_SLASH:v,QMARK:H,QMARK_NO_DOT:w,STAR:T,START_ANCHOR:O}=R;const L=t=>{return`(${g}(?:(?!${O}${t.dot?S:C}).)*?)`};const k=n.dot?"":$;const I=n.dot?H:w;let G=n.bash===true?L(n):T;if(n.capture){G=`(${G})`}if(typeof n.noext==="boolean"){n.noextglob=n.noext}const N={input:t,index:-1,start:0,dot:n.dot===true,consumed:"",output:"",prefix:"",backtrack:false,negated:false,brackets:0,braces:0,parens:0,quotes:0,globstar:false,tokens:d};t=r.removePrefix(t,N);h=t.length;const P=[];const M=[];const D=[];let B=_;let U;const K=()=>N.index===h-1;const F=N.peek=((e=1)=>t[N.index+e]);const q=N.advance=(()=>t[++N.index]);const j=()=>t.slice(N.index+1);const X=(t="",e=0)=>{N.consumed+=t;N.index+=e};const Q=t=>{N.output+=t.output!=null?t.output:t.value;X(t.value)};const W=()=>{let t=1;while(F()==="!"&&(F(2)!=="("||F(3)==="?")){q();N.start++;t++}if(t%2===0){return false}N.negated=true;N.start++;return true};const V=t=>{N[t]++;D.push(t)};const Y=t=>{N[t]--;D.pop()};const Z=t=>{if(B.type==="globstar"){const e=N.braces>0&&(t.type==="comma"||t.type==="brace");const n=t.extglob===true||P.length&&(t.type==="pipe"||t.type==="paren");if(t.type!=="slash"&&t.type!=="paren"&&!e&&!n){N.output=N.output.slice(0,-B.output.length);B.type="star";B.value="*";B.output=G;N.output+=B.output}}if(P.length&&t.type!=="paren"&&!E[t.value]){P[P.length-1].inner+=t.value}if(t.value||t.output)Q(t);if(B&&B.type==="text"&&t.type==="text"){B.value+=t.value;B.output=(B.output||"")+t.value;return}t.prev=B;d.push(t);B=t};const z=(t,e)=>{const o={...E[e],conditions:1,inner:""};o.prev=B;o.parens=N.parens;o.output=N.output;const r=(n.capture?"(":"")+o.open;V("parens");Z({type:t,value:e,output:N.output?"":m});Z({type:"paren",extglob:true,value:q(),output:r});P.push(o)};const J=t=>{let e=t.close+(n.capture?")":"");if(t.type==="negate"){let o=G;if(t.inner&&t.inner.length>1&&t.inner.includes("/")){o=L(n)}if(o!==G||K()||/^\)+$/.test(j())){e=t.close=`)$))${o}`}if(t.prev.type==="bos"&&K()){N.negatedExtglob=true}}Z({type:"paren",extglob:true,value:U,output:e});Y("parens")};if(n.fastpaths!==false&&!/(^[*!]|[\/()[\]{}"])/.test(t)){let o=false;let s=t.replace(a,(t,e,n,r,s,u)=>{if(r==="\\"){o=true;return t}if(r==="?"){if(e){return e+r+(s?H.repeat(s.length):"")}if(u===0){return I+(s?H.repeat(s.length):"")}return H.repeat(n.length)}if(r==="."){return C.repeat(n.length)}if(r==="*"){if(e){return e+r+(s?G:"")}return G}return e?t:`\\${t}`});if(o===true){if(n.unescape===true){s=s.replace(/\\/g,"")}else{s=s.replace(/\\+/g,t=>{return t.length%2===0?"\\\\":t?"\\":""})}}if(s===t&&n.contains===true){N.output=t;return N}N.output=r.wrapOutput(s,N,e);return N}while(!K()){U=q();if(U==="\0"){continue}if(U==="\\"){const t=F();if(t==="/"&&n.bash!==true){continue}if(t==="."||t===";"){continue}if(!t){U+="\\";Z({type:"text",value:U});continue}const e=/^\\+/.exec(j());let o=0;if(e&&e[0].length>2){o=e[0].length;N.index+=o;if(o%2!==0){U+="\\"}}if(n.unescape===true){U=q()||""}else{U+=q()||""}if(N.brackets===0){Z({type:"text",value:U});continue}}if(N.brackets>0&&(U!=="]"||B.value==="["||B.value==="[^")){if(n.posix!==false&&U===":"){const t=B.value.slice(1);if(t.includes("[")){B.posix=true;if(t.includes(":")){const t=B.value.lastIndexOf("[");const e=B.value.slice(0,t);const n=B.value.slice(t+2);const o=u[n];if(o){B.value=e+o;N.backtrack=true;q();if(!_.output&&d.indexOf(B)===1){_.output=m}continue}}}}if(U==="["&&F()!==":"||U==="-"&&F()==="]"){U=`\\${U}`}if(U==="]"&&(B.value==="["||B.value==="[^")){U=`\\${U}`}if(n.posix===true&&U==="!"&&B.value==="["){U="^"}B.value+=U;Q({value:U});continue}if(N.quotes===1&&U!=='"'){U=r.escapeRegex(U);B.value+=U;Q({value:U});continue}if(U==='"'){N.quotes=N.quotes===1?0:1;if(n.keepQuotes===true){Z({type:"text",value:U})}continue}if(U==="("){V("parens");Z({type:"paren",value:U});continue}if(U===")"){if(N.parens===0&&n.strictBrackets===true){throw new SyntaxError(l("opening","("))}const t=P[P.length-1];if(t&&N.parens===t.parens+1){J(P.pop());continue}Z({type:"paren",value:U,output:N.parens?")":"\\)"});Y("parens");continue}if(U==="["){if(n.nobracket===true||!j().includes("]")){if(n.nobracket!==true&&n.strictBrackets===true){throw new SyntaxError(l("closing","]"))}U=`\\${U}`}else{V("brackets")}Z({type:"bracket",value:U});continue}if(U==="]"){if(n.nobracket===true||B&&B.type==="bracket"&&B.value.length===1){Z({type:"text",value:U,output:`\\${U}`});continue}if(N.brackets===0){if(n.strictBrackets===true){throw new SyntaxError(l("opening","["))}Z({type:"text",value:U,output:`\\${U}`});continue}Y("brackets");const t=B.value.slice(1);if(B.posix!==true&&t[0]==="^"&&!t.includes("/")){U=`/${U}`}B.value+=U;Q({value:U});if(n.literalBrackets===false||r.hasRegexChars(t)){continue}const e=r.escapeRegex(B.value);N.output=N.output.slice(0,-B.value.length);if(n.literalBrackets===true){N.output+=e;B.value=e;continue}B.value=`(${g}${e}|${B.value})`;N.output+=B.value;continue}if(U==="{"&&n.nobrace!==true){V("braces");const t={type:"brace",value:U,output:"(",outputIndex:N.output.length,tokensIndex:N.tokens.length};M.push(t);Z(t);continue}if(U==="}"){const t=M[M.length-1];if(n.nobrace===true||!t){Z({type:"text",value:U,output:U});continue}let e=")";if(t.dots===true){const t=d.slice();const o=[];for(let e=t.length-1;e>=0;e--){d.pop();if(t[e].type==="brace"){break}if(t[e].type!=="dots"){o.unshift(t[e].value)}}e=p(o,n);N.backtrack=true}if(t.comma!==true&&t.dots!==true){const n=N.output.slice(0,t.outputIndex);const o=N.tokens.slice(t.tokensIndex);t.value=t.output="\\{";U=e=`\\}`;N.output=n;for(const t of o){N.output+=t.output||t.value}}Z({type:"brace",value:U,output:e});Y("braces");M.pop();continue}if(U==="|"){if(P.length>0){P[P.length-1].conditions++}Z({type:"text",value:U});continue}if(U===","){let t=U;const e=M[M.length-1];if(e&&D[D.length-1]==="braces"){e.comma=true;t="|"}Z({type:"comma",value:U,output:t});continue}if(U==="/"){if(B.type==="dot"&&N.index===N.start+1){N.start=N.index+1;N.consumed="";N.output="";d.pop();B=_;continue}Z({type:"slash",value:U,output:b});continue}if(U==="."){if(N.braces>0&&B.type==="dot"){if(B.value===".")B.output=C;const t=M[M.length-1];B.type="dots";B.output+=U;B.value+=U;t.dots=true;continue}if(N.braces+N.parens===0&&B.type!=="bos"&&B.type!=="slash"){Z({type:"text",value:U,output:C});continue}Z({type:"dot",value:U,output:C});continue}if(U==="?"){const t=B&&B.value==="(";if(!t&&n.noextglob!==true&&F()==="("&&F(2)!=="?"){z("qmark",U);continue}if(B&&B.type==="paren"){const t=F();let e=U;if(t==="<"&&!r.supportsLookbehinds()){throw new Error("Node.js v10 or higher is required for regex lookbehinds")}if(B.value==="("&&!/[!=<:]/.test(t)||t==="<"&&!/<([!=]|\w+>)/.test(j())){e=`\\${U}`}Z({type:"text",value:U,output:e});continue}if(n.dot!==true&&(B.type==="slash"||B.type==="bos")){Z({type:"qmark",value:U,output:w});continue}Z({type:"qmark",value:U,output:H});continue}if(U==="!"){if(n.noextglob!==true&&F()==="("){if(F(2)!=="?"||!/[!=<:]/.test(F(3))){z("negate",U);continue}}if(n.nonegate!==true&&N.index===0){W();continue}}if(U==="+"){if(n.noextglob!==true&&F()==="("&&F(2)!=="?"){z("plus",U);continue}if(B&&B.value==="("||n.regex===false){Z({type:"plus",value:U,output:y});continue}if(B&&(B.type==="bracket"||B.type==="paren"||B.type==="brace")||N.parens>0){Z({type:"plus",value:U});continue}Z({type:"plus",value:y});continue}if(U==="@"){if(n.noextglob!==true&&F()==="("&&F(2)!=="?"){Z({type:"at",extglob:true,value:U,output:""});continue}Z({type:"text",value:U});continue}if(U!=="*"){if(U==="$"||U==="^"){U=`\\${U}`}const t=i.exec(j());if(t){U+=t[0];N.index+=t[0].length}Z({type:"text",value:U});continue}if(B&&(B.type==="globstar"||B.star===true)){B.type="star";B.star=true;B.value+=U;B.output=G;N.backtrack=true;N.globstar=true;X(U);continue}let e=j();if(n.noextglob!==true&&/^\([^?]/.test(e)){z("star",U);continue}if(B.type==="star"){if(n.noglobstar===true){X(U);continue}const o=B.prev;const r=o.prev;const s=o.type==="slash"||o.type==="bos";const u=r&&(r.type==="star"||r.type==="globstar");if(n.bash===true&&(!s||e[0]&&e[0]!=="/")){Z({type:"star",value:U,output:""});continue}const i=N.braces>0&&(o.type==="comma"||o.type==="brace");const a=P.length&&(o.type==="pipe"||o.type==="paren");if(!s&&o.type!=="paren"&&!i&&!a){Z({type:"star",value:U,output:""});continue}while(e.slice(0,3)==="/**"){const n=t[N.index+4];if(n&&n!=="/"){break}e=e.slice(3);X("/**",3)}if(o.type==="bos"&&K()){B.type="globstar";B.value+=U;B.output=L(n);N.output=B.output;N.globstar=true;X(U);continue}if(o.type==="slash"&&o.prev.type!=="bos"&&!u&&K()){N.output=N.output.slice(0,-(o.output+B.output).length);o.output=`(?:${o.output}`;B.type="globstar";B.output=L(n)+(n.strictSlashes?")":"|$)");B.value+=U;N.globstar=true;N.output+=o.output+B.output;X(U);continue}if(o.type==="slash"&&o.prev.type!=="bos"&&e[0]==="/"){const t=e[1]!==void 0?"|$":"";N.output=N.output.slice(0,-(o.output+B.output).length);o.output=`(?:${o.output}`;B.type="globstar";B.output=`${L(n)}${b}|${b}${t})`;B.value+=U;N.output+=o.output+B.output;N.globstar=true;X(U+q());Z({type:"slash",value:"/",output:""});continue}if(o.type==="bos"&&e[0]==="/"){B.type="globstar";B.value+=U;B.output=`(?:^|${b}|${L(n)}${b})`;N.output=B.output;N.globstar=true;X(U+q());Z({type:"slash",value:"/",output:""});continue}N.output=N.output.slice(0,-B.output.length);B.type="globstar";B.output=L(n);B.value+=U;N.output+=B.output;N.globstar=true;X(U);continue}const o={type:"star",value:U,output:G};if(n.bash===true){o.output=".*?";if(B.type==="bos"||B.type==="slash"){o.output=k+o.output}Z(o);continue}if(B&&(B.type==="bracket"||B.type==="paren")&&n.regex===true){o.output=U;Z(o);continue}if(N.index===N.start||B.type==="slash"||B.type==="dot"){if(B.type==="dot"){N.output+=x;B.output+=x}else if(n.dot===true){N.output+=v;B.output+=v}else{N.output+=k;B.output+=k}if(F()!=="*"){N.output+=m;B.output+=m}}Z(o)}while(N.brackets>0){if(n.strictBrackets===true)throw new SyntaxError(l("closing","]"));N.output=r.escapeLast(N.output,"[");Y("brackets")}while(N.parens>0){if(n.strictBrackets===true)throw new SyntaxError(l("closing",")"));N.output=r.escapeLast(N.output,"(");Y("parens")}while(N.braces>0){if(n.strictBrackets===true)throw new SyntaxError(l("closing","}"));N.output=r.escapeLast(N.output,"{");Y("braces")}if(n.strictSlashes!==true&&(B.type==="star"||B.type==="bracket")){Z({type:"maybe_slash",value:"",output:`${b}?`})}if(N.backtrack===true){N.output="";for(const t of N.tokens){N.output+=t.output!=null?t.output:t.value;if(t.suffix){N.output+=t.suffix}}}return N};f.fastpaths=((t,e)=>{const n={...e};const u=typeof n.maxLength==="number"?Math.min(s,n.maxLength):s;const i=t.length;if(i>u){throw new SyntaxError(`Input length: ${i}, exceeds maximum allowed length: ${u}`)}t=c[t]||t;const a=r.isWindows(e);const{DOT_LITERAL:p,SLASH_LITERAL:l,ONE_CHAR:f,DOTS_SLASH:h,NO_DOT:_,NO_DOTS:d,NO_DOTS_SLASH:g,STAR:A,START_ANCHOR:R}=o.globChars(a);const E=n.dot?d:_;const C=n.dot?g:_;const y=n.capture?"":"?:";const b={negated:false,prefix:""};let m=n.bash===true?".*?":A;if(n.capture){m=`(${m})`}const S=t=>{if(t.noglobstar===true)return m;return`(${y}(?:(?!${R}${t.dot?h:p}).)*?)`};const $=t=>{switch(t){case"*":return`${E}${f}${m}`;case".*":return`${p}${f}${m}`;case"*.*":return`${E}${m}${p}${f}${m}`;case"*/*":return`${E}${m}${l}${f}${C}${m}`;case"**":return E+S(n);case"**/*":return`(?:${E}${S(n)}${l})?${C}${f}${m}`;case"**/*.*":return`(?:${E}${S(n)}${l})?${C}${m}${p}${f}${m}`;case"**/.*":return`(?:${E}${S(n)}${l})?${p}${f}${m}`;default:{const e=/^(.*?)\.(\w+)$/.exec(t);if(!e)return;const n=$(e[1]);if(!n)return;return n+p+e[2]}}};const x=r.removePrefix(t,b);let v=$(x);if(v&&n.strictSlashes!==true){v+=`${l}?`}return v});t.exports=f},827:function(t,e,n){"use strict";t.exports=n(366)},988:function(t,e,n){"use strict";Object.defineProperty(e,"__esModule",{value:true});const o=n(470);const r=n(129);function execCommand(t,e,n){o.debug(r.spawnSync(t,e,{cwd:n}).output.toString())}e.default=execCommand}});
+module.exports =
+  /******/ (function (modules, runtime) { // webpackBootstrap
+  /******/
+  "use strict";
+  /******/ 	// The module cache
+  /******/
+  var installedModules = {};
+  /******/
+  /******/ 	// The require function
+  /******/
+  function __webpack_require__(moduleId) {
+    /******/
+    /******/ 		// Check if module is in cache
+    /******/
+    if (installedModules[moduleId]) {
+      /******/
+      return installedModules[moduleId].exports;
+      /******/
+    }
+    /******/ 		// Create a new module (and put it into the cache)
+    /******/
+    var module = installedModules[moduleId] = {
+      /******/      i: moduleId,
+      /******/      l: false,
+      /******/      exports: {}
+      /******/
+    };
+    /******/
+    /******/ 		// Execute the module function
+    /******/
+    modules[moduleId].call(module.exports, module, module.exports, __webpack_require__);
+    /******/
+    /******/ 		// Flag the module as loaded
+    /******/
+    module.l = true;
+    /******/
+    /******/ 		// Return the exports of the module
+    /******/
+    return module.exports;
+    /******/
+  }
+
+  /******/
+  /******/
+  /******/
+  __webpack_require__.ab = __dirname + "/";
+  /******/
+  /******/ 	// the startup function
+  /******/
+  function startup() {
+    /******/ 		// Load entry module and return exports
+    /******/
+    return __webpack_require__(325);
+    /******/
+  };
+  /******/
+  /******/ 	// run startup
+  /******/
+  return startup();
+  /******/
+})
+  /************************************************************************/
+  /******/ ({
+
+    /***/ 36:
+    /***/ (function (module, __unusedexports, __webpack_require__) {
+
+      "use strict";
+
+      const child_process_1 = __webpack_require__(129);
+      module.exports = class GitInfo {
+        /**
+         * Constructor
+         */
+        constructor(cwd) {
+          this.cwd = cwd;
+          this.lastCommitEmail = this.execGitShowCommand('%ae');
+          this.lastCommitAuthor = this.execGitShowCommand('%an');
+          const branch = child_process_1.spawnSync('git', ['rev-parse', '--abbrev-ref', 'HEAD'], {
+            stdio: 'pipe',
+            cwd: this.cwd
+          }).output.toString();
+          if (branch === 'HEAD') {
+            this.isTag = true;
+            this.branchOrTagName = child_process_1.spawnSync('git', ['describe', '--tags', '--abbrev=0'], {
+              stdio: 'pipe',
+              cwd: this.cwd
+            }).output.toString();
+          } else {
+            this.branchOrTagName = branch;
+            this.isTag = false;
+          }
+        }
+
+        /**
+         * Gets current repository name
+         */
+        getCurrentRepositoryName() {
+          return typeof process.env['GITHUB_REPOSITORY'] == 'undefined'
+            ? ''
+            : process.env['GITHUB_REPOSITORY'];
+        }
+
+        /**
+         * Get last commit SHA hash from last main branch commit
+         */
+        getCurrentLastCommitSHA() {
+          return typeof process.env['GITHUB_SHA'] == 'undefined'
+            ? ''
+            : process.env['GITHUB_SHA'];
+        }
+
+        /**
+         * Execute git show command and returns output
+         *
+         * @param string format What return as git show command format
+         */
+        execGitShowCommand(format) {
+          return child_process_1.spawnSync('git', ['show', '-s', `--format='${format}'`, 'HEAD'], {
+            stdio: 'pipe',
+            cwd: this.cwd
+          }).output.toString();
+        }
+      };
+
+
+      /***/
+    }),
+
+    /***/ 87:
+    /***/ (function (module) {
+
+      module.exports = require("os");
+
+      /***/
+    }),
+
+    /***/ 129:
+    /***/ (function (module) {
+
+      module.exports = require("child_process");
+
+      /***/
+    }),
+
+    /***/ 325:
+    /***/ (function (__unusedmodule, exports, __webpack_require__) {
+
+      "use strict";
+
+      var __importDefault = (this && this.__importDefault) || function (mod) {
+        return (mod && mod.__esModule) ? mod : {"default": mod};
+      };
+      Object.defineProperty(exports, "__esModule", {value: true});
+      const core_1 = __webpack_require__(470);
+      const GitInfo_1 = __importDefault(__webpack_require__(36));
+
+      class Main {
+        /**
+         * Constructor
+         */
+        constructor() {
+          /**
+           * Action to execute
+           */
+          this.actions = [
+            'install',
+            'clone-wiki',
+            'exec-before-generator-actions',
+            'generate',
+            'exec-after-generator-actions',
+            'flatten-file-structure',
+            'prefix',
+            'copy-old-git-data-to-new-place',
+            'configure-commit-author',
+            'check-status',
+            'commit',
+            'push-update'
+          ];
+          this.generator = this.makeGeneratorInstance();
+          this.gitInfo = new GitInfo_1.default(process.cwd());
+        }
+
+        /**
+         * Gets engine name
+         */
+        getEngineName() {
+          return 'phpdoc-md';
+          return core_1.getInput('engine');
+        }
+
+        /**
+         * Makes generator instance
+         */
+        makeGeneratorInstance() {
+          const name = `./generators/${this.getEngineName()}`;
+          const signature = require(name).default;
+          return new signature();
+        }
+
+        /**
+         * Validates all parameters before starting generator
+         */
+        validate() {
+          if (!this.generator.checkIfAllInputOptionsDefined()) {
+            throw new TypeError("Not all required arguments defined for selected engine");
+          }
+        }
+
+        /**
+         * Get all actions instances that should run
+         */
+        getAllActions() {
+          return this.actions.map((action) => require(`./actions/${action}`).default).filter((actionInstance) => actionInstance.shouldRun(this.generator, this.gitInfo));
+        }
+      }
+
+      try {
+        const app = new Main();
+        app.validate();
+        for (const actionInstance of app.getAllActions()) {
+          let desc = actionInstance.getDescription();
+          if (desc !== null) {
+            core_1.info(desc);
+          }
+          actionInstance.exec(app.generator, app.gitInfo);
+        }
+      } catch (error) {
+        core_1.setFailed(error.message);
+      }
+
+
+      /***/
+    }),
+
+    /***/ 431:
+    /***/ (function (__unusedmodule, exports, __webpack_require__) {
+
+      "use strict";
+
+      var __importStar = (this && this.__importStar) || function (mod) {
+        if (mod && mod.__esModule) return mod;
+        var result = {};
+        if (mod != null) for (var k in mod) if (Object.hasOwnProperty.call(mod, k)) result[k] = mod[k];
+        result["default"] = mod;
+        return result;
+      };
+      Object.defineProperty(exports, "__esModule", {value: true});
+      const os = __importStar(__webpack_require__(87));
+
+      /**
+       * Commands
+       *
+       * Command Format:
+       *   ::name key=value,key=value::message
+       *
+       * Examples:
+       *   ::warning::This is the message
+       *   ::set-env name=MY_VAR::some value
+       */
+      function issueCommand(command, properties, message) {
+        const cmd = new Command(command, properties, message);
+        process.stdout.write(cmd.toString() + os.EOL);
+      }
+
+      exports.issueCommand = issueCommand;
+
+      function issue(name, message = '') {
+        issueCommand(name, {}, message);
+      }
+
+      exports.issue = issue;
+      const CMD_STRING = '::';
+
+      class Command {
+        constructor(command, properties, message) {
+          if (!command) {
+            command = 'missing.command';
+          }
+          this.command = command;
+          this.properties = properties;
+          this.message = message;
+        }
+
+        toString() {
+          let cmdStr = CMD_STRING + this.command;
+          if (this.properties && Object.keys(this.properties).length > 0) {
+            cmdStr += ' ';
+            let first = true;
+            for (const key in this.properties) {
+              if (this.properties.hasOwnProperty(key)) {
+                const val = this.properties[key];
+                if (val) {
+                  if (first) {
+                    first = false;
+                  } else {
+                    cmdStr += ',';
+                  }
+                  cmdStr += `${key}=${escapeProperty(val)}`;
+                }
+              }
+            }
+          }
+          cmdStr += `${CMD_STRING}${escapeData(this.message)}`;
+          return cmdStr;
+        }
+      }
+
+      function escapeData(s) {
+        return (s || '')
+          .replace(/%/g, '%25')
+          .replace(/\r/g, '%0D')
+          .replace(/\n/g, '%0A');
+      }
+
+      function escapeProperty(s) {
+        return (s || '')
+          .replace(/%/g, '%25')
+          .replace(/\r/g, '%0D')
+          .replace(/\n/g, '%0A')
+          .replace(/:/g, '%3A')
+          .replace(/,/g, '%2C');
+      }
+
+//# sourceMappingURL=command.js.map
+
+      /***/
+    }),
+
+    /***/ 470:
+    /***/ (function (__unusedmodule, exports, __webpack_require__) {
+
+      "use strict";
+
+      var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+        function adopt(value) {
+          return value instanceof P ? value : new P(function (resolve) {
+            resolve(value);
+          });
+        }
+
+        return new (P || (P = Promise))(function (resolve, reject) {
+          function fulfilled(value) {
+            try {
+              step(generator.next(value));
+            } catch (e) {
+              reject(e);
+            }
+          }
+
+          function rejected(value) {
+            try {
+              step(generator["throw"](value));
+            } catch (e) {
+              reject(e);
+            }
+          }
+
+          function step(result) {
+            result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected);
+          }
+
+          step((generator = generator.apply(thisArg, _arguments || [])).next());
+        });
+      };
+      var __importStar = (this && this.__importStar) || function (mod) {
+        if (mod && mod.__esModule) return mod;
+        var result = {};
+        if (mod != null) for (var k in mod) if (Object.hasOwnProperty.call(mod, k)) result[k] = mod[k];
+        result["default"] = mod;
+        return result;
+      };
+      Object.defineProperty(exports, "__esModule", {value: true});
+      const command_1 = __webpack_require__(431);
+      const os = __importStar(__webpack_require__(87));
+      const path = __importStar(__webpack_require__(622));
+      /**
+       * The code to exit an action
+       */
+      var ExitCode;
+      (function (ExitCode) {
+        /**
+         * A code indicating that the action was successful
+         */
+        ExitCode[ExitCode["Success"] = 0] = "Success";
+        /**
+         * A code indicating that the action was a failure
+         */
+        ExitCode[ExitCode["Failure"] = 1] = "Failure";
+      })(ExitCode = exports.ExitCode || (exports.ExitCode = {}));
+//-----------------------------------------------------------------------
+// Variables
+//-----------------------------------------------------------------------
+      /**
+       * Sets env variable for this action and future actions in the job
+       * @param name the name of the variable to set
+       * @param val the value of the variable
+       */
+      function exportVariable(name, val) {
+        process.env[name] = val;
+        command_1.issueCommand('set-env', {name}, val);
+      }
+
+      exports.exportVariable = exportVariable;
+
+      /**
+       * Registers a secret which will get masked from logs
+       * @param secret value of the secret
+       */
+      function setSecret(secret) {
+        command_1.issueCommand('add-mask', {}, secret);
+      }
+
+      exports.setSecret = setSecret;
+
+      /**
+       * Prepends inputPath to the PATH (for this action and future actions)
+       * @param inputPath
+       */
+      function addPath(inputPath) {
+        command_1.issueCommand('add-path', {}, inputPath);
+        process.env['PATH'] = `${inputPath}${path.delimiter}${process.env['PATH']}`;
+      }
+
+      exports.addPath = addPath;
+
+      /**
+       * Gets the value of an input.  The value is also trimmed.
+       *
+       * @param     name     name of the input to get
+       * @param     options  optional. See InputOptions.
+       * @returns   string
+       */
+      function getInput(name, options) {
+        const val = process.env[`INPUT_${name.replace(/ /g, '_').toUpperCase()}`] || '';
+        if (options && options.required && !val) {
+          throw new Error(`Input required and not supplied: ${name}`);
+        }
+        return val.trim();
+      }
+
+      exports.getInput = getInput;
+
+      /**
+       * Sets the value of an output.
+       *
+       * @param     name     name of the output to set
+       * @param     value    value to store
+       */
+      function setOutput(name, value) {
+        command_1.issueCommand('set-output', {name}, value);
+      }
+
+      exports.setOutput = setOutput;
+//-----------------------------------------------------------------------
+// Results
+//-----------------------------------------------------------------------
+      /**
+       * Sets the action status to failed.
+       * When the action exits it will be with an exit code of 1
+       * @param message add error issue message
+       */
+      function setFailed(message) {
+        process.exitCode = ExitCode.Failure;
+        error(message);
+      }
+
+      exports.setFailed = setFailed;
+//-----------------------------------------------------------------------
+// Logging Commands
+//-----------------------------------------------------------------------
+      /**
+       * Writes debug message to user log
+       * @param message debug message
+       */
+      function debug(message) {
+        command_1.issueCommand('debug', {}, message);
+      }
+
+      exports.debug = debug;
+
+      /**
+       * Adds an error issue
+       * @param message error issue message
+       */
+      function error(message) {
+        command_1.issue('error', message);
+      }
+
+      exports.error = error;
+
+      /**
+       * Adds an warning issue
+       * @param message warning issue message
+       */
+      function warning(message) {
+        command_1.issue('warning', message);
+      }
+
+      exports.warning = warning;
+
+      /**
+       * Writes info to log with console.log.
+       * @param message info message
+       */
+      function info(message) {
+        process.stdout.write(message + os.EOL);
+      }
+
+      exports.info = info;
+
+      /**
+       * Begin an output group.
+       *
+       * Output until the next `groupEnd` will be foldable in this group
+       *
+       * @param name The name of the output group
+       */
+      function startGroup(name) {
+        command_1.issue('group', name);
+      }
+
+      exports.startGroup = startGroup;
+
+      /**
+       * End an output group.
+       */
+      function endGroup() {
+        command_1.issue('endgroup');
+      }
+
+      exports.endGroup = endGroup;
+
+      /**
+       * Wrap an asynchronous function call in a group.
+       *
+       * Returns the same type as the function itself.
+       *
+       * @param name The name of the group
+       * @param fn The function to wrap in the group
+       */
+      function group(name, fn) {
+        return __awaiter(this, void 0, void 0, function* () {
+          startGroup(name);
+          let result;
+          try {
+            result = yield fn();
+          } finally {
+            endGroup();
+          }
+          return result;
+        });
+      }
+
+      exports.group = group;
+//-----------------------------------------------------------------------
+// Wrapper action state
+//-----------------------------------------------------------------------
+      /**
+       * Saves state for current action, the state can only be retrieved by this action's post job execution.
+       *
+       * @param     name     name of the state to store
+       * @param     value    value to store
+       */
+      function saveState(name, value) {
+        command_1.issueCommand('save-state', {name}, value);
+      }
+
+      exports.saveState = saveState;
+
+      /**
+       * Gets the value of an state set by this action's main execution.
+       *
+       * @param     name     name of the state to get
+       * @returns   string
+       */
+      function getState(name) {
+        return process.env[`STATE_${name}`] || '';
+      }
+
+      exports.getState = getState;
+//# sourceMappingURL=core.js.map
+
+      /***/
+    }),
+
+    /***/ 622:
+    /***/ (function (module) {
+
+      module.exports = require("path");
+
+      /***/
+    })
+
+    /******/
+  });

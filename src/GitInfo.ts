@@ -1,6 +1,6 @@
 import {spawnSync} from 'child_process'
 
-export default class GitInfo {
+export = class GitInfo {
   /**
    * Last commit author name
    */

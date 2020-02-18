@@ -7,7 +7,7 @@ import {EOL} from 'os'
 import GeneratorActionStepDefinition from '../GeneratorActionStepDefinition'
 import picomatch = require('picomatch');
 
-export default class PHPDocMDGenerator implements GeneratorInterface {
+export default class implements GeneratorInterface {
   /**
    * @inheritDoc
    */

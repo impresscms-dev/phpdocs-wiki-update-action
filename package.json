@@ -2,7 +2,7 @@
   "name": "phpdocs-wiki-update-action",
   "version": "0.0.0",
   "description": "This action generate documentation for PHP project and updates wiki.",
-  "main": "src/index.js",
+  "main": "src/index.ts",
   "repository": {
     "type": "git",
     "url": "git@github.com:imponeer/phpdocs-wiki-update-action.git"
@@ -13,8 +13,9 @@
     "format": "prettier --write **/*.ts",
     "format-check": "prettier --check **/*.ts",
     "lint": "eslint src/**/*.ts",
-    "pack": "ncc build -m",
-    "all": "npm install && npm run build && npm run format && npm run lint && npm run pack"
+    "pack": "ncc build",
+    "all": "npm install && npm run build && npm run format && npm run lint && npm run pack",
+    "fast-all": "npm install && npm run build && npm run pack"
   },
   "keywords": [
     "github actions",
