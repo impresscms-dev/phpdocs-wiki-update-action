@@ -12,23 +12,6 @@ class Main {
    * GitInfo of main repo
    */
   readonly gitInfo: GitInfo
-  /**
-   * Action to execute
-   */
-  protected readonly actions: string[] = [
-    'install',
-    'clone-wiki',
-    'exec-before-generator-actions',
-    'generate',
-    'exec-after-generator-actions',
-    'flatten-file-structure',
-    'prefix',
-    'copy-old-git-data-to-new-place',
-    'configure-commit-author',
-    'check-status',
-    'commit',
-    'push-update'
-  ]
 
   /**
    * Constructor
@@ -39,27 +22,37 @@ class Main {
   }
 
   /**
-   * Validates all parameters before starting generator
-   */
-  validate(): void {
-    if (!this.generator.checkIfAllInputOptionsDefined()) {
-      throw new TypeError(
-        'Not all required arguments defined for selected engine'
-      )
-    }
-  }
-
-  /**
    * Get all actions instances that should run
    */
   getAllActions(): ActionInterface[] {
-    return this.actions
-      .map((action: string) => {
-        return require(`./actions/${action}`).default
-      })
+    const ret = [];
+
+
+    this.actions.forEach(
+      (actionName: string) => {
+        const included: ActionInterface = (async () => {
+          return await import(`./actions/${action}`);
+        })
+      }
+    )
+
+    return
+  .
+    map(
+      (action: string) => dynamicInclude(`./actions/${action}`)
+    )
       .filter((actionInstance: ActionInterface) =>
         actionInstance.shouldRun(this.generator, this.gitInfo)
       )
+  }
+
+  /**
+   * Loads action
+   *
+   * @param string action Action name
+   */
+  protected loadAction(action: string): Promise<ActionInterface> {
+    return import(`./actions/${action}`)
   }
 
   /**

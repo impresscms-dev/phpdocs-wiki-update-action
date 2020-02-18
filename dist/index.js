@@ -151,6 +151,13 @@ module.exports =
       var __importDefault = (this && this.__importDefault) || function (mod) {
         return (mod && mod.__esModule) ? mod : {"default": mod};
       };
+      var __importStar = (this && this.__importStar) || function (mod) {
+        if (mod && mod.__esModule) return mod;
+        var result = {};
+        if (mod != null) for (var k in mod) if (Object.hasOwnProperty.call(mod, k)) result[k] = mod[k];
+        result["default"] = mod;
+        return result;
+      };
       Object.defineProperty(exports, "__esModule", {value: true});
       const core_1 = __webpack_require__(470);
       const GitInfo_1 = __importDefault(__webpack_require__(36));
@@ -182,11 +189,32 @@ module.exports =
         }
 
         /**
+         * Validates all parameters before starting generator
+         */
+        validate() {
+          if (!this.generator.checkIfAllInputOptionsDefined()) {
+            throw new TypeError('Not all required arguments defined for selected engine');
+          }
+        }
+
+        /**
+         * Loads all actions and than execute action
+         *
+         * @param callback waitFunc Callback to execute after all actions loaded
+         */
+        loadAllActions(waitFunc) {
+          const promises = this.actions.map((actionName) => Promise.resolve().then(() => __importStar(require(`./actions/${actionName}`))));
+          Promise.all(promises).then(results => {
+            waitFunc(results);
+          });
+        }
+
+        /**
          * Gets engine name
          */
         getEngineName() {
           return 'phpdoc-md';
-          return core_1.getInput('engine');
+          //return getInput('engine')
         }
 
         /**
@@ -197,34 +225,23 @@ module.exports =
           const signature = require(name).default;
           return new signature();
         }
-
-        /**
-         * Validates all parameters before starting generator
-         */
-        validate() {
-          if (!this.generator.checkIfAllInputOptionsDefined()) {
-            throw new TypeError("Not all required arguments defined for selected engine");
-          }
-        }
-
-        /**
-         * Get all actions instances that should run
-         */
-        getAllActions() {
-          return this.actions.map((action) => require(`./actions/${action}`).default).filter((actionInstance) => actionInstance.shouldRun(this.generator, this.gitInfo));
-        }
       }
 
       try {
         const app = new Main();
         app.validate();
-        for (const actionInstance of app.getAllActions()) {
-          let desc = actionInstance.getDescription();
-          if (desc !== null) {
-            core_1.info(desc);
+        app.loadAllActions((actions) => {
+          for (const actionInstance of actions) {
+            if (!actionInstance.shouldRun(app.generator, app.gitInfo)) {
+              continue;
+            }
+            const desc = actionInstance.getDescription();
+            if (desc !== null) {
+              core_1.info(desc);
+            }
+            actionInstance.exec(app.generator, app.gitInfo);
           }
-          actionInstance.exec(app.generator, app.gitInfo);
-        }
+        });
       } catch (error) {
         core_1.setFailed(error.message);
       }
