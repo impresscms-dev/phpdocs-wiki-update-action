@@ -1,7 +1,7 @@
 import GitInfo from './GitInfo'
-import GeneratorActionStepDefinition from "./GeneratorActionStepDefinition";
+import GeneratorActionStepDefinition from './GeneratorActionStepDefinition'
 
-interface GeneratorInterface {
+export default interface GeneratorInterface {
   /**
    * If some composer packages are needed gets list names for installation
    */
@@ -35,5 +35,3 @@ interface GeneratorInterface {
    */
   checkIfAllInputOptionsDefined(): boolean
 }
-
-export = GeneratorInterface
