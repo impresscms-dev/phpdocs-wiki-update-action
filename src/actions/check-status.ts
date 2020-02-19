@@ -1,6 +1,6 @@
 import ActionInterface from '../ActionInterface'
 import {getInput} from '@actions/core'
-import execCommand from '../helpers/execCommand'
+import {execCommand} from '../helpers'
 
 export default class implements ActionInterface {
   /**

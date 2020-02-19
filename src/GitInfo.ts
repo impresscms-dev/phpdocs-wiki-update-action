@@ -83,4 +83,11 @@ export = class GitInfo {
       cwd: this.cwd
     }).output.toString()
   }
+
+  /**
+   * Creates GitInfo for current process
+   */
+  static createInstance(): GitInfo {
+    return new GitInfo(process.cwd())
+  }
 }

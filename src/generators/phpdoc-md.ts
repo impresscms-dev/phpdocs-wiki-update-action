@@ -1,6 +1,6 @@
 import GeneratorInterface from '../GeneratorInterface'
 import {getInput} from '@actions/core'
-import execCommand from '../helpers/execCommand'
+import {execCommand} from '../helpers'
 import {spawnSync} from 'child_process'
 import {renameSync, writeFileSync} from 'fs'
 import {EOL} from 'os'

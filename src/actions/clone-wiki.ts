@@ -2,7 +2,7 @@ import ActionInterface from '../ActionInterface'
 import {spawnSync} from 'child_process'
 import {getInput, info} from '@actions/core'
 import {existsSync, mkdirSync} from 'fs'
-import execCommand from '../helpers/execCommand'
+import {execCommand} from '../helpers'
 import GitInfo from '../GitInfo'
 import GeneratorInterface from '../GeneratorInterface'
 
