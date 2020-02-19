@@ -1,4 +1,4 @@
-import {debug} from '@actions/core'
+import {debug, getInput} from '@actions/core'
 import {spawnSync} from 'child_process'
 import GeneratorInterface from './GeneratorInterface'
 import ActionInterface from './ActionInterface'
@@ -39,7 +39,7 @@ export function execCommand(cmd: string, args: string[], cwd: string): void {
 export async function makeGeneratorInstance(
   engineName: string
 ): Promise<GeneratorInterface> {
-  const signature = await import(`./generators/${engineName}`)
+  const signature = (await import(`./generators/${engineName}`)).default
   return new signature()
 }
 
@@ -47,8 +47,8 @@ export async function makeGeneratorInstance(
  * Gets engine name
  */
 export function getSelectedEngineName(): string {
-  return 'phpdoc-md'
-  //return getInput('engine')
+  //return 'phpdoc-md'
+  return getInput('engine')
 }
 
 /**
@@ -57,7 +57,7 @@ export function getSelectedEngineName(): string {
  * @param string action Action name
  */
 export async function loadAction(action: string): Promise<ActionInterface> {
-  const signature = await import(`./actions/${action}`)
+  const signature = (await import(`./actions/${action}`)).default
   return new signature()
 }
 

@@ -13,9 +13,8 @@
     "format": "prettier --write **/*.ts",
     "format-check": "prettier --check **/*.ts",
     "lint": "eslint src/**/*.ts",
-    "pack": "ncc build",
-    "all": "npm install && npm run build && npm run format && npm run lint && npm run pack",
-    "fast-all": "npm install && npm run build && npm run pack"
+    "all": "npm install && npm run build && npm run format && npm run lint",
+    "fast-all": "npm install && npm run build"
   },
   "keywords": [
     "github actions",
@@ -40,8 +39,7 @@
   "devDependencies": {
     "@types/node": "^12.7.12",
     "@typescript-eslint/parser": "^2.20.0",
-    "@zeit/ncc": "^0.20.5",
-    "eslint": "^6.0.0",
+    "eslint": "^5.0.0",
     "eslint-plugin-github": "^2.0.0",
     "prettier": "^1.19.1",
     "semver": "^7.1.3",
