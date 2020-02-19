@@ -1,9 +1,10 @@
-import {debug, getInput} from '@actions/core'
+import {debug, getInput, info} from '@actions/core'
 import {spawnSync} from 'child_process'
 import GeneratorInterface from './GeneratorInterface'
 import ActionInterface from './ActionInterface'
 import path from 'path'
 import {readFileSync} from 'fs'
+import GitInfo from "./GitInfo";
 
 /**
  * Validates generator data
@@ -94,4 +95,26 @@ export async function getAllActionsInstances(): Promise<ActionInterface[]> {
     actions.push(await loadAction(name))
   }
   return actions
+}
+
+/**
+ * Executes generator
+ *
+ * @param string generatorName Generator name
+ */
+export async function execGenerator(generatorName: string) {
+  const generator = await makeGeneratorInstance(generatorName)
+  validateGenerator(generator)
+  const gitInfo = GitInfo.createInstance()
+  const actions = await getAllActionsInstances();
+  for (const action of actions) {
+    if (!action.shouldRun(generator, gitInfo)) {
+      continue
+    }
+    const desc = action.getDescription()
+    if (desc !== null) {
+      info(desc)
+    }
+    action.exec(generator, gitInfo)
+  }
 }

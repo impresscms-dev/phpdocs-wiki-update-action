@@ -1,13 +1,4 @@
 "use strict";
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
@@ -23,6 +14,7 @@ const core_1 = require("@actions/core");
 const child_process_1 = require("child_process");
 const path_1 = __importDefault(require("path"));
 const fs_1 = require("fs");
+const GitInfo_1 = __importDefault(require("./GitInfo"));
 /**
  * Validates generator data
  *
@@ -47,14 +39,13 @@ function execCommand(cmd, args, cwd) {
     }).output.toString());
 }
 exports.execCommand = execCommand;
+
 /**
  * Makes generator instance
  */
-function makeGeneratorInstance(engineName) {
-    return __awaiter(this, void 0, void 0, function* () {
-        const signature = (yield Promise.resolve().then(() => __importStar(require(`./generators/${engineName}`)))).default;
-        return new signature();
-    });
+async function makeGeneratorInstance(engineName) {
+  const signature = (await Promise.resolve().then(() => __importStar(require(`./generators/${engineName}`)))).default;
+  return new signature();
 }
 exports.makeGeneratorInstance = makeGeneratorInstance;
 /**
@@ -65,16 +56,15 @@ function getSelectedEngineName() {
     return core_1.getInput('engine');
 }
 exports.getSelectedEngineName = getSelectedEngineName;
+
 /**
  * Loads action
  *
  * @param string action Action name
  */
-function loadAction(action) {
-    return __awaiter(this, void 0, void 0, function* () {
-        const signature = (yield Promise.resolve().then(() => __importStar(require(`./actions/${action}`)))).default;
-        return new signature();
-    });
+async function loadAction(action) {
+  const signature = (await Promise.resolve().then(() => __importStar(require(`./actions/${action}`)))).default;
+  return new signature();
 }
 exports.loadAction = loadAction;
 /**
@@ -100,16 +90,40 @@ function getActionsNames() {
     return readPackageJSON().actions;
 }
 exports.getActionsNames = getActionsNames;
+
 /**
  * Get all actions instances
  */
-function getAllActionsInstances() {
-    return __awaiter(this, void 0, void 0, function* () {
-        let actions = [];
-        for (const name of getActionsNames()) {
-            actions.push(yield loadAction(name));
-        }
-        return actions;
-    });
+async function getAllActionsInstances() {
+  let actions = [];
+  for (const name of getActionsNames()) {
+    actions.push(await loadAction(name));
+  }
+  return actions;
 }
+
 exports.getAllActionsInstances = getAllActionsInstances;
+
+/**
+ * Executes generator
+ *
+ * @param string generatorName Generator name
+ */
+async function execGenerator(generatorName) {
+  const generator = await makeGeneratorInstance(generatorName);
+  validateGenerator(generator);
+  const gitInfo = GitInfo_1.default.createInstance();
+  const actions = await getAllActionsInstances();
+  for (const action of actions) {
+    if (!action.shouldRun(generator, gitInfo)) {
+      continue;
+    }
+    const desc = action.getDescription();
+    if (desc !== null) {
+      core_1.info(desc);
+    }
+    action.exec(generator, gitInfo);
+  }
+}
+
+exports.execGenerator = execGenerator;
