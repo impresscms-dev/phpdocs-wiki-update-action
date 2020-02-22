@@ -3335,7 +3335,9 @@ class default_1 {
      */
     generateConfig(cwd, rootNamespace, include, tempDocsPath) {
         helpers_1.execCommand('composer', ['install', '-a'], cwd);
-        const classes = Object.keys(this.readComposerConfig()).filter(key => picomatch.isMatch(key, include));
+        const classes = Object.keys(this.readComposerConfig())
+            .filter(key => key !== null)
+            .filter(key => picomatch.isMatch(key, include));
         const config = {
             rootNamespace,
             destDirectory: tempDocsPath,
