@@ -6263,9 +6263,17 @@ const child_process_1 = __webpack_require__(129);
  * @param string cwd Where to execute
  */
 function execCommand(cmd, args, cwd) {
-    core_1.debug(child_process_1.spawnSync(cmd, args, {
+    const proc = child_process_1.spawnSync(cmd, args, {
         cwd
-    }).output.toString());
+    });
+    if (proc.status === 0) {
+        if (proc.output !== null) {
+            core_1.debug(proc.output.toString());
+        }
+    }
+    else {
+        throw new Error(`${cmd} ${args.join(' ')} execution failed`);
+    }
 }
 exports.execCommand = execCommand;
 

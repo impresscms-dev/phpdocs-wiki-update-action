@@ -5,7 +5,7 @@ import {spawnSync} from 'child_process'
 import {renameSync, writeFileSync} from 'fs'
 import {EOL} from 'os'
 import GeneratorActionStepDefinition from '../GeneratorActionStepDefinition'
-import picomatch = require('picomatch');
+import picomatch = require('picomatch')
 
 export default class implements GeneratorInterface {
   /**

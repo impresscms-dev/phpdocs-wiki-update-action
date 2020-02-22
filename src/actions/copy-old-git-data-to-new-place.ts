@@ -1,6 +1,6 @@
 import ActionInterface from '../ActionInterface'
 import {getInput} from '@actions/core'
-import fs = require('fs-extra');
+import fs = require('fs-extra')
 
 export default class CopyOldGitDataToNewPlaceAction implements ActionInterface {
   /**

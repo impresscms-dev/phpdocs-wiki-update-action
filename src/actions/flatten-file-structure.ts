@@ -2,7 +2,7 @@ import ActionInterface from '../ActionInterface'
 import {debug, getInput} from '@actions/core'
 import {readFileSync, renameSync, writeFileSync} from 'fs'
 import {basename, dirname, extname} from 'path'
-import readDirSync = require('recursive-readdir-sync');
+import readDirSync = require('recursive-readdir-sync')
 
 export default class FlattenFileStructureAction implements ActionInterface {
   /**
@@ -43,8 +43,8 @@ export default class FlattenFileStructureAction implements ActionInterface {
    *
    * @param string cwd Docs path
    */
-  generateNewStructData(cwd: string): { [x: string]: string } {
-    const newStructData: { [x: string]: string } = {}
+  generateNewStructData(cwd: string): {[x: string]: string} {
+    const newStructData: {[x: string]: string} = {}
     const files = this.getAllFilesInfo(cwd)
     for (const fileInfo of this.filterFileInfoByShortPath(files, false)) {
       newStructData[fileInfo.filename] = fileInfo.filename
@@ -69,7 +69,7 @@ export default class FlattenFileStructureAction implements ActionInterface {
    */
   protected fixesToNewStyleLinks(
     filename: string,
-    filenames: { [x: string]: string }
+    filenames: {[x: string]: string}
   ): void {
     debug(` Fixing ${filename}...`)
     const content = readFileSync(filename).toString()
@@ -99,8 +99,8 @@ export default class FlattenFileStructureAction implements ActionInterface {
    */
   protected flipKeysWithValues(obj: {
     [x: string]: string
-  }): { [x: string]: string } {
-    const ret: { [x: string]: string } = {}
+  }): {[x: string]: string} {
+    const ret: {[x: string]: string} = {}
     for (const x in obj) {
       ret[obj[x]] = x
     }
@@ -114,7 +114,7 @@ export default class FlattenFileStructureAction implements ActionInterface {
    */
   private getAllFilesInfo(
     cwd: string
-  ): { filename: string; shortPath: string }[] {
+  ): {filename: string; shortPath: string}[] {
     return readDirSync(cwd).map((file: string) => {
       const shortFilename = basename(file)
       const pathWithoutFilename = dirname(file)
@@ -152,10 +152,10 @@ export default class FlattenFileStructureAction implements ActionInterface {
    * @param boolean withShortPath Should have anything in short path
    */
   private filterFileInfoByShortPath(
-    files: { filename: string; shortPath: string }[],
+    files: {filename: string; shortPath: string}[],
     withShortPath: boolean
-  ): { filename: string; shortPath: string }[] {
-    return files.filter((fileInfo: { filename: string; shortPath: string }) => {
+  ): {filename: string; shortPath: string}[] {
+    return files.filter((fileInfo: {filename: string; shortPath: string}) => {
       return withShortPath
         ? fileInfo.shortPath !== ''
         : fileInfo.shortPath === ''

@@ -1,4 +1,4 @@
-import {getInput, info, setFailed} from '@actions/core'
+import {debug, getInput, info, setFailed} from '@actions/core'
 import actions from './data/actions'
 import generators from './data/generators'
 import GitInfo from './GitInfo'
@@ -27,5 +27,6 @@ try {
     action.exec(generator, gitInfo)
   }
 } catch (error) {
+  debug(error)
   setFailed(error.message)
 }

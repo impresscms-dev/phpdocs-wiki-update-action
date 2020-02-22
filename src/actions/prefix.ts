@@ -1,7 +1,7 @@
 import ActionInterface from '../ActionInterface'
 import {debug, getInput} from '@actions/core'
 import {readFileSync, writeFileSync} from 'fs'
-import readDirSync = require('recursive-readdir-sync');
+import readDirSync = require('recursive-readdir-sync')
 
 export default class PrefixAction implements ActionInterface {
   /**

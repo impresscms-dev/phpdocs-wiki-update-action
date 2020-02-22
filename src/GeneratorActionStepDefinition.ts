@@ -49,7 +49,7 @@ export default class GeneratorActionStepDefinition {
       | boolean[]
       | Function[]
       | null[]
-      )[]
+    )[]
   ) {
     this.description = description
     this.execCallback = execCallback

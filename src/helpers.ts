@@ -9,9 +9,14 @@ import {spawnSync} from 'child_process'
  * @param string cwd Where to execute
  */
 export function execCommand(cmd: string, args: string[], cwd: string): void {
-  debug(
-    spawnSync(cmd, args, {
-      cwd
-    }).output.toString()
-  )
+  const proc = spawnSync(cmd, args, {
+    cwd
+  })
+  if (proc.status === 0) {
+    if (proc.output !== null) {
+      debug(proc.output.toString())
+    }
+  } else {
+    throw new Error(`${cmd} ${args.join(' ')} execution failed`)
+  }
 }
