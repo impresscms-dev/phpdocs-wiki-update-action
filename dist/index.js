@@ -6260,6 +6260,7 @@ exports.execCommand = execCommand;
  * @param string cwd Where to execute
  */
 function execCommandAndReturn(cmd, args, cwd) {
+    core_1.debug(` Executing ${cmd} ${args.join(' ')} in ${cwd}...`);
     const proc = child_process_1.spawnSync(cmd, args, {
         cwd
     });
@@ -6268,7 +6269,7 @@ function execCommandAndReturn(cmd, args, cwd) {
         core_1.debug(out);
         return out;
     }
-    throw new Error(`${cmd} ${args.join(' ')} execution failed`);
+    throw new Error(`Execution failed`);
 }
 exports.execCommandAndReturn = execCommandAndReturn;
 

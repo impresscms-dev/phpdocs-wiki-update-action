@@ -25,6 +25,7 @@ export function execCommandAndReturn(
   args: string[],
   cwd: string
 ): string {
+  debug(` Executing ${cmd} ${args.join(' ')} in ${cwd}...`)
   const proc = spawnSync(cmd, args, {
     cwd
   })
@@ -33,5 +34,5 @@ export function execCommandAndReturn(
     debug(out)
     return out
   }
-  throw new Error(`${cmd} ${args.join(' ')} execution failed`)
+  throw new Error(`Execution failed`)
 }
