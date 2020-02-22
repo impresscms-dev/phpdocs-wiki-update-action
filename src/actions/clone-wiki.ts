@@ -1,11 +1,9 @@
 import ActionInterface from '../ActionInterface'
-import {spawnSync} from 'child_process'
 import {getInput} from '@actions/core'
 import {existsSync, mkdirSync} from 'fs'
-import {execCommand} from '../helpers'
+import {execCommand, execCommandAndReturn} from '../helpers'
 import GitInfo from '../GitInfo'
 import GeneratorInterface from '../GeneratorInterface'
-import {EOL} from 'os'
 
 export default class CloneWikiAction implements ActionInterface {
   /**
@@ -78,11 +76,8 @@ export default class CloneWikiAction implements ActionInterface {
    */
   protected branchExist(branch: string, cwd: string): boolean {
     return (
-      spawnSync('git', ['branch', '--list', branch], {
-        cwd
-      })
-        .output.join(EOL)
-        .trim() === branch
+      execCommandAndReturn('git', ['branch', '--list', branch], cwd).trim() ===
+      branch
     )
   }
 

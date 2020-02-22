@@ -10,12 +10,28 @@ import {EOL} from 'os'
  * @param string cwd Where to execute
  */
 export function execCommand(cmd: string, args: string[], cwd: string): void {
+  execCommandAndReturn(cmd, args, cwd)
+}
+
+/**
+ * Executes command and return result as string
+ *
+ * @param string cmd  Command to be executed
+ * @param Array<string> args Command arguments
+ * @param string cwd Where to execute
+ */
+export function execCommandAndReturn(
+  cmd: string,
+  args: string[],
+  cwd: string
+): string {
   const proc = spawnSync(cmd, args, {
     cwd
   })
   if (proc.status === 0) {
-    debug(proc.output.join(EOL).trim())
-  } else {
-    throw new Error(`${cmd} ${args.join(' ')} execution failed`)
+    const out = proc.output.join(EOL).trim()
+    debug(out)
+    return out
   }
+  throw new Error(`${cmd} ${args.join(' ')} execution failed`)
 }

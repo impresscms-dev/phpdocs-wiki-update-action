@@ -100,8 +100,7 @@ exports.default = GenerateAction;
 
 "use strict";
 
-const child_process_1 = __webpack_require__(129);
-const os_1 = __webpack_require__(87);
+const helpers_1 = __webpack_require__(872);
 module.exports = class GitInfo {
     /**
      * Constructor
@@ -110,20 +109,10 @@ module.exports = class GitInfo {
         this.cwd = cwd;
         this.lastCommitEmail = this.execGitShowCommand('%ae');
         this.lastCommitAuthor = this.execGitShowCommand('%an');
-        const branch = child_process_1.spawnSync('git', ['rev-parse', '--abbrev-ref', 'HEAD'], {
-            stdio: 'pipe',
-            cwd: this.cwd
-        })
-            .output.join(os_1.EOL)
-            .trim();
+        const branch = helpers_1.execCommandAndReturn('git', ['rev-parse', '--abbrev-ref', 'HEAD'], this.cwd);
         if (branch === 'HEAD') {
             this.isTag = true;
-            this.branchOrTagName = child_process_1.spawnSync('git', ['describe', '--tags', '--abbrev=0'], {
-                stdio: 'pipe',
-                cwd: this.cwd
-            })
-                .output.join(os_1.EOL)
-                .trim();
+            this.branchOrTagName = helpers_1.execCommandAndReturn('git', ['describe', '--tags', '--abbrev=0'], this.cwd);
         }
         else {
             this.branchOrTagName = branch;
@@ -152,12 +141,7 @@ module.exports = class GitInfo {
      * @param string format What return as git show command format
      */
     execGitShowCommand(format) {
-        return child_process_1.spawnSync('git', ['show', '-s', `--format='${format}'`, 'HEAD'], {
-            stdio: 'pipe',
-            cwd: this.cwd
-        })
-            .output.join(os_1.EOL)
-            .trim();
+        return helpers_1.execCommandAndReturn('git', ['show', '-s', `--format='${format}'`, 'HEAD'], this.cwd);
     }
     /**
      * Creates GitInfo for current process
@@ -1065,11 +1049,9 @@ exports.default = FlattenFileStructureAction;
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-const child_process_1 = __webpack_require__(129);
 const core_1 = __webpack_require__(470);
 const fs_1 = __webpack_require__(747);
 const helpers_1 = __webpack_require__(872);
-const os_1 = __webpack_require__(87);
 class CloneWikiAction {
     /**
      * @inheritDoc
@@ -1126,11 +1108,8 @@ class CloneWikiAction {
      * @param string cwd Dir where to check
      */
     branchExist(branch, cwd) {
-        return (child_process_1.spawnSync('git', ['branch', '--list', branch], {
-            cwd
-        })
-            .output.join(os_1.EOL)
-            .trim() === branch);
+        return (helpers_1.execCommandAndReturn('git', ['branch', '--list', branch], cwd).trim() ===
+            branch);
     }
     /**
      * Gets GitHub token that will be used for update action
@@ -3306,7 +3285,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const core_1 = __webpack_require__(470);
 const helpers_1 = __webpack_require__(872);
-const child_process_1 = __webpack_require__(129);
 const fs_1 = __webpack_require__(747);
 const os_1 = __webpack_require__(87);
 const GeneratorActionStepDefinition_1 = __importDefault(__webpack_require__(279));
@@ -3370,12 +3348,10 @@ class default_1 {
      * Reads autoload classes from composer
      */
     readComposerConfig() {
-        return JSON.parse(child_process_1.spawnSync('php', [
+        return JSON.parse(helpers_1.execCommandAndReturn('php', [
             '-r',
             'include_once "../vendor/autoload.php"; echo json_encode(include("./vendor/composer/autoload_classmap.php"));'
-        ])
-            .output.join(os_1.EOL)
-            .trim());
+        ], process.cwd()));
     }
 }
 exports.default = default_1;
@@ -6273,17 +6249,28 @@ const os_1 = __webpack_require__(87);
  * @param string cwd Where to execute
  */
 function execCommand(cmd, args, cwd) {
+    execCommandAndReturn(cmd, args, cwd);
+}
+exports.execCommand = execCommand;
+/**
+ * Executes command and return result as string
+ *
+ * @param string cmd  Command to be executed
+ * @param Array<string> args Command arguments
+ * @param string cwd Where to execute
+ */
+function execCommandAndReturn(cmd, args, cwd) {
     const proc = child_process_1.spawnSync(cmd, args, {
         cwd
     });
     if (proc.status === 0) {
-        core_1.debug(proc.output.join(os_1.EOL).trim());
+        const out = proc.output.join(os_1.EOL).trim();
+        core_1.debug(out);
+        return out;
     }
-    else {
-        throw new Error(`${cmd} ${args.join(' ')} execution failed`);
-    }
+    throw new Error(`${cmd} ${args.join(' ')} execution failed`);
 }
-exports.execCommand = execCommand;
+exports.execCommandAndReturn = execCommandAndReturn;
 
 
 /***/ }),

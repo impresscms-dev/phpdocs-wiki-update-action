@@ -1,5 +1,4 @@
-import {spawnSync} from 'child_process'
-import {EOL} from 'os'
+import {execCommandAndReturn} from './helpers'
 
 export = class GitInfo {
   /**
@@ -35,24 +34,18 @@ export = class GitInfo {
     this.lastCommitEmail = this.execGitShowCommand('%ae')
     this.lastCommitAuthor = this.execGitShowCommand('%an')
 
-    const branch = spawnSync('git', ['rev-parse', '--abbrev-ref', 'HEAD'], {
-      stdio: 'pipe',
-      cwd: this.cwd
-    })
-      .output.join(EOL)
-      .trim()
+    const branch = execCommandAndReturn(
+      'git',
+      ['rev-parse', '--abbrev-ref', 'HEAD'],
+      this.cwd
+    )
     if (branch === 'HEAD') {
       this.isTag = true
-      this.branchOrTagName = spawnSync(
+      this.branchOrTagName = execCommandAndReturn(
         'git',
         ['describe', '--tags', '--abbrev=0'],
-        {
-          stdio: 'pipe',
-          cwd: this.cwd
-        }
+        this.cwd
       )
-        .output.join(EOL)
-        .trim()
     } else {
       this.branchOrTagName = branch
       this.isTag = false
@@ -83,12 +76,11 @@ export = class GitInfo {
    * @param string format What return as git show command format
    */
   private execGitShowCommand(format: string): string {
-    return spawnSync('git', ['show', '-s', `--format='${format}'`, 'HEAD'], {
-      stdio: 'pipe',
-      cwd: this.cwd
-    })
-      .output.join(EOL)
-      .trim()
+    return execCommandAndReturn(
+      'git',
+      ['show', '-s', `--format='${format}'`, 'HEAD'],
+      this.cwd
+    )
   }
 
   /**

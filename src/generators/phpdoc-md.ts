@@ -1,7 +1,6 @@
 import GeneratorInterface from '../GeneratorInterface'
 import {getInput} from '@actions/core'
-import {execCommand} from '../helpers'
-import {spawnSync} from 'child_process'
+import {execCommand, execCommandAndReturn} from '../helpers'
 import {renameSync, writeFileSync} from 'fs'
 import {EOL} from 'os'
 import GeneratorActionStepDefinition from '../GeneratorActionStepDefinition'
@@ -102,14 +101,16 @@ export default class implements GeneratorInterface {
   /**
    * Reads autoload classes from composer
    */
-  protected readComposerConfig(): object {
+  protected readComposerConfig(): {[x: string]: string} {
     return JSON.parse(
-      spawnSync('php', [
-        '-r',
-        'include_once "../vendor/autoload.php"; echo json_encode(include("./vendor/composer/autoload_classmap.php"));'
-      ])
-        .output.join(EOL)
-        .trim()
+      execCommandAndReturn(
+        'php',
+        [
+          '-r',
+          'include_once "../vendor/autoload.php"; echo json_encode(include("./vendor/composer/autoload_classmap.php"));'
+        ],
+        process.cwd()
+      )
     )
   }
 }
