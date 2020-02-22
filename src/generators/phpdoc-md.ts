@@ -108,7 +108,7 @@ export default class implements GeneratorInterface {
         '-r',
         'include_once "../vendor/autoload.php"; echo json_encode(include("./vendor/composer/autoload_classmap.php"));'
       ])
-        .output.toString()
+        .output.join(EOL)
         .trim()
     )
   }

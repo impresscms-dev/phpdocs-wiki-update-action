@@ -101,6 +101,7 @@ exports.default = GenerateAction;
 "use strict";
 
 const child_process_1 = __webpack_require__(129);
+const os_1 = __webpack_require__(87);
 module.exports = class GitInfo {
     /**
      * Constructor
@@ -112,13 +113,17 @@ module.exports = class GitInfo {
         const branch = child_process_1.spawnSync('git', ['rev-parse', '--abbrev-ref', 'HEAD'], {
             stdio: 'pipe',
             cwd: this.cwd
-        }).output.toString();
+        })
+            .output.join(os_1.EOL)
+            .trim();
         if (branch === 'HEAD') {
             this.isTag = true;
             this.branchOrTagName = child_process_1.spawnSync('git', ['describe', '--tags', '--abbrev=0'], {
                 stdio: 'pipe',
                 cwd: this.cwd
-            }).output.toString();
+            })
+                .output.join(os_1.EOL)
+                .trim();
         }
         else {
             this.branchOrTagName = branch;
@@ -150,7 +155,9 @@ module.exports = class GitInfo {
         return child_process_1.spawnSync('git', ['show', '-s', `--format='${format}'`, 'HEAD'], {
             stdio: 'pipe',
             cwd: this.cwd
-        }).output.toString();
+        })
+            .output.join(os_1.EOL)
+            .trim();
     }
     /**
      * Creates GitInfo for current process
@@ -1062,6 +1069,7 @@ const child_process_1 = __webpack_require__(129);
 const core_1 = __webpack_require__(470);
 const fs_1 = __webpack_require__(747);
 const helpers_1 = __webpack_require__(872);
+const os_1 = __webpack_require__(87);
 class CloneWikiAction {
     /**
      * @inheritDoc
@@ -1121,7 +1129,7 @@ class CloneWikiAction {
         return (child_process_1.spawnSync('git', ['branch', '--list', branch], {
             cwd
         })
-            .output.toString()
+            .output.join(os_1.EOL)
             .trim() === branch);
     }
     /**
@@ -2064,6 +2072,7 @@ try {
     }
 }
 catch (error) {
+    core_1.debug(error);
     core_1.setFailed(error.message);
 }
 
@@ -3365,7 +3374,7 @@ class default_1 {
             '-r',
             'include_once "../vendor/autoload.php"; echo json_encode(include("./vendor/composer/autoload_classmap.php"));'
         ])
-            .output.toString()
+            .output.join(os_1.EOL)
             .trim());
     }
 }
@@ -6255,6 +6264,7 @@ if (typeof fs.realpath.native === 'function') {
 Object.defineProperty(exports, "__esModule", { value: true });
 const core_1 = __webpack_require__(470);
 const child_process_1 = __webpack_require__(129);
+const os_1 = __webpack_require__(87);
 /**
  * Executes command and prints to debug results
  *
@@ -6267,9 +6277,7 @@ function execCommand(cmd, args, cwd) {
         cwd
     });
     if (proc.status === 0) {
-        if (proc.output !== null) {
-            core_1.debug(proc.output.toString());
-        }
+        core_1.debug(proc.output.join(os_1.EOL).trim());
     }
     else {
         throw new Error(`${cmd} ${args.join(' ')} execution failed`);

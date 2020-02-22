@@ -5,6 +5,7 @@ import {existsSync, mkdirSync} from 'fs'
 import {execCommand} from '../helpers'
 import GitInfo from '../GitInfo'
 import GeneratorInterface from '../GeneratorInterface'
+import {EOL} from 'os'
 
 export default class CloneWikiAction implements ActionInterface {
   /**
@@ -80,7 +81,7 @@ export default class CloneWikiAction implements ActionInterface {
       spawnSync('git', ['branch', '--list', branch], {
         cwd
       })
-        .output.toString()
+        .output.join(EOL)
         .trim() === branch
     )
   }

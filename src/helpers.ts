@@ -1,5 +1,6 @@
 import {debug} from '@actions/core'
 import {spawnSync} from 'child_process'
+import {EOL} from 'os'
 
 /**
  * Executes command and prints to debug results
@@ -13,9 +14,7 @@ export function execCommand(cmd: string, args: string[], cwd: string): void {
     cwd
   })
   if (proc.status === 0) {
-    if (proc.output !== null) {
-      debug(proc.output.toString())
-    }
+    debug(proc.output.join(EOL).trim())
   } else {
     throw new Error(`${cmd} ${args.join(' ')} execution failed`)
   }

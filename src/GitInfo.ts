@@ -1,4 +1,5 @@
 import {spawnSync} from 'child_process'
+import {EOL} from 'os'
 
 export = class GitInfo {
   /**
@@ -37,7 +38,9 @@ export = class GitInfo {
     const branch = spawnSync('git', ['rev-parse', '--abbrev-ref', 'HEAD'], {
       stdio: 'pipe',
       cwd: this.cwd
-    }).output.toString()
+    })
+      .output.join(EOL)
+      .trim()
     if (branch === 'HEAD') {
       this.isTag = true
       this.branchOrTagName = spawnSync(
@@ -47,7 +50,9 @@ export = class GitInfo {
           stdio: 'pipe',
           cwd: this.cwd
         }
-      ).output.toString()
+      )
+        .output.join(EOL)
+        .trim()
     } else {
       this.branchOrTagName = branch
       this.isTag = false
@@ -81,7 +86,9 @@ export = class GitInfo {
     return spawnSync('git', ['show', '-s', `--format='${format}'`, 'HEAD'], {
       stdio: 'pipe',
       cwd: this.cwd
-    }).output.toString()
+    })
+      .output.join(EOL)
+      .trim()
   }
 
   /**
