@@ -4,7 +4,7 @@ import GeneratorInterface from '../GeneratorInterface'
 import GitInfo from '../GitInfo'
 import {execCommand} from '../helpers'
 
-export default class implements ActionInterface {
+export default class ConfigureCommitAuthorAction implements ActionInterface {
   /**
    * @inheritDoc
    */

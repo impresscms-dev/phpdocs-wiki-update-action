@@ -1,12 +1,12 @@
 import ActionInterface from '../ActionInterface'
 import {spawnSync} from 'child_process'
-import {getInput, info} from '@actions/core'
+import {getInput} from '@actions/core'
 import {existsSync, mkdirSync} from 'fs'
 import {execCommand} from '../helpers'
 import GitInfo from '../GitInfo'
 import GeneratorInterface from '../GeneratorInterface'
 
-export default class implements ActionInterface {
+export default class CloneWikiAction implements ActionInterface {
   /**
    * @inheritDoc
    */
@@ -25,7 +25,6 @@ export default class implements ActionInterface {
    * @inheritDoc
    */
   exec(generator: GeneratorInterface, gitInfo: GitInfo): void {
-    info('Cloning old wiki...')
     const oldDocsDir = this.getOldDocsPath()
     if (existsSync(oldDocsDir)) {
       throw new Error(oldDocsDir.concat(" already exists but shouldn't"))

@@ -3,7 +3,7 @@ import {debug, getInput} from '@actions/core'
 import {readFileSync, writeFileSync} from 'fs'
 import readDirSync = require('recursive-readdir-sync');
 
-export default class implements ActionInterface {
+export default class PrefixAction implements ActionInterface {
   /**
    * @inheritDoc
    */

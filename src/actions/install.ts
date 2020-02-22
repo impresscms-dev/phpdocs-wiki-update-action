@@ -2,7 +2,7 @@ import ActionInterface from '../ActionInterface'
 import GeneratorInterface from '../GeneratorInterface'
 import {execCommand} from '../helpers'
 
-export default class implements ActionInterface {
+export default class InstallAction implements ActionInterface {
   /**
    * @inheritDoc
    */

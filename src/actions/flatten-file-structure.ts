@@ -4,7 +4,7 @@ import {readFileSync, renameSync, writeFileSync} from 'fs'
 import {basename, dirname, extname} from 'path'
 import readDirSync = require('recursive-readdir-sync');
 
-export default class implements ActionInterface {
+export default class FlattenFileStructureAction implements ActionInterface {
   /**
    * @inheritDoc
    */

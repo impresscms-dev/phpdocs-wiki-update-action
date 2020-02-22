@@ -2,7 +2,7 @@ import ActionInterface from '../ActionInterface'
 import GeneratorInterface from '../GeneratorInterface'
 import GitInfo from '../GitInfo'
 
-export default class implements ActionInterface {
+export default class GenerateAction implements ActionInterface {
   /**
    * @inheritDoc
    */
