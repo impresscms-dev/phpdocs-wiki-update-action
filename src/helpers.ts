@@ -4,7 +4,7 @@ import GeneratorInterface from './GeneratorInterface'
 import ActionInterface from './ActionInterface'
 import path from 'path'
 import {readFileSync} from 'fs'
-import GitInfo from "./GitInfo";
+import GitInfo from './GitInfo'
 
 /**
  * Validates generator data
@@ -70,7 +70,7 @@ let jsonContent: any = null
 /**
  * Reads package JSON file
  */
-export function readPackageJSON() {
+export function readPackageJSON(): { actions: string[] } {
   if (jsonContent === null) {
     const filename = path.resolve(__dirname, '..', 'package.json')
     const contentText = readFileSync(filename).toString()
@@ -90,7 +90,7 @@ export function getActionsNames(): string[] {
  * Get all actions instances
  */
 export async function getAllActionsInstances(): Promise<ActionInterface[]> {
-  let actions = []
+  const actions = []
   for (const name of getActionsNames()) {
     actions.push(await loadAction(name))
   }
@@ -102,11 +102,11 @@ export async function getAllActionsInstances(): Promise<ActionInterface[]> {
  *
  * @param string generatorName Generator name
  */
-export async function execGenerator(generatorName: string) {
+export async function execGenerator(generatorName: string): Promise<void> {
   const generator = await makeGeneratorInstance(generatorName)
   validateGenerator(generator)
   const gitInfo = GitInfo.createInstance()
-  const actions = await getAllActionsInstances();
+  const actions = await getAllActionsInstances()
   for (const action of actions) {
     if (!action.shouldRun(generator, gitInfo)) {
       continue

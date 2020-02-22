@@ -39,7 +39,6 @@ function execCommand(cmd, args, cwd) {
     }).output.toString());
 }
 exports.execCommand = execCommand;
-
 /**
  * Makes generator instance
  */
@@ -56,7 +55,6 @@ function getSelectedEngineName() {
     return core_1.getInput('engine');
 }
 exports.getSelectedEngineName = getSelectedEngineName;
-
 /**
  * Loads action
  *
@@ -90,20 +88,17 @@ function getActionsNames() {
     return readPackageJSON().actions;
 }
 exports.getActionsNames = getActionsNames;
-
 /**
  * Get all actions instances
  */
 async function getAllActionsInstances() {
-  let actions = [];
+  const actions = [];
   for (const name of getActionsNames()) {
     actions.push(await loadAction(name));
   }
   return actions;
 }
-
 exports.getAllActionsInstances = getAllActionsInstances;
-
 /**
  * Executes generator
  *
@@ -125,5 +120,4 @@ async function execGenerator(generatorName) {
     action.exec(generator, gitInfo);
   }
 }
-
 exports.execGenerator = execGenerator;
