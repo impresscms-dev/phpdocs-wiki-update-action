@@ -805,14 +805,7 @@ class InstallAction {
         if (packages.length === 0) {
             return;
         }
-        helpers_1.execCommand('composer', [
-            'require',
-            '--dev',
-            '--no-progress',
-            '--no-suggest',
-            '--no-interaction',
-            '--ansi'
-        ].concat(packages), process.cwd());
+        helpers_1.composer(['require'].concat(packages));
     }
 }
 exports.default = InstallAction;
@@ -3343,24 +3336,13 @@ class default_1 {
      * @param string tempDocsPath Temporally docs folder where new documentation should be generated
      */
     generateConfig(cwd, rootNamespace, include, tempDocsPath) {
-        helpers_1.execCommand('composer', [
-            'install',
-            '--classmap-authoritative',
-            '--no-progress',
-            '--no-suggest',
-            '--no-interaction',
-            '--ansi'
-        ], cwd);
+        helpers_1.composer(['install', '--classmap-authoritative'], cwd);
         const classes = this.readComposerConfig()
             .filter(key => key !== null)
             .filter(key => picomatch.isMatch(key, include));
-        const config = {
-            rootNamespace,
-            destDirectory: tempDocsPath,
-            format: 'github',
-            classes
-        };
-        const generated = '<?php'.concat(os_1.EOL, 'return json_decode(', JSON.stringify(JSON.stringify(config)), ', false);');
+        const generated = '<?php'.concat(os_1.EOL, 'return [', os_1.EOL, '    "rootNamespace" => ', JSON.stringify(rootNamespace), ',', os_1.EOL, '    "destDirectory" => ', JSON.stringify(tempDocsPath), ',', os_1.EOL, '    "format" => "github",', os_1.EOL, '    "classes" => [', os_1.EOL, '                      ', classes
+            .map(k => JSON.stringify(k))
+            .join(','.concat(os_1.EOL, '                      ')), '],', os_1.EOL, '];');
         core_1.debug('Generated config:');
         core_1.debug(generated);
         fs_1.writeFileSync(cwd.concat('/.phpdoc-md'), generated);
@@ -6286,14 +6268,40 @@ function execCommandAndReturn(cmd, args, cwd) {
     const proc = child_process_1.spawnSync(cmd, args, {
         cwd
     });
-    const out = (_a = proc.output) === null || _a === void 0 ? void 0 : _a.join(os_1.EOL).trim();
-    core_1.debug(out);
+    const out = (_a = proc.output) === null || _a === void 0 ? void 0 : _a.join('\n').trim().replace(/\n/g, os_1.EOL);
+    for (const outputLine of out.split(os_1.EOL)) {
+        core_1.debug(outputLine.trim());
+    }
     if (proc.status === 0) {
         return out;
     }
     throw new Error(`Execution failed`);
 }
 exports.execCommandAndReturn = execCommandAndReturn;
+/**
+ * Executes composer command and prints to debug results
+ *
+ * @param Array<string> args Command arguments
+ * @param string|null cwd Where to execute
+ */
+function composer(args, cwd = null) {
+    if (cwd === null) {
+        cwd = process.cwd();
+    }
+    let cmd = 'composer';
+    if (process.platform.toString() === 'win32' ||
+        process.platform.toString() === 'win64') {
+        cmd = 'composer.bat';
+    }
+    execCommandAndReturn(cmd, args.concat([
+        '--dev',
+        '--no-progress',
+        '--no-suggest',
+        '--no-interaction',
+        '--ansi'
+    ]), cwd);
+}
+exports.composer = composer;
 
 
 /***/ }),

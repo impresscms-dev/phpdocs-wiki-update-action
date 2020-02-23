@@ -1,6 +1,6 @@
 import GeneratorInterface from '../GeneratorInterface'
 import {debug, getInput} from '@actions/core'
-import {execCommand, execCommandAndReturn} from '../helpers'
+import {composer, execCommand, execCommandAndReturn} from '../helpers'
 import {renameSync, writeFileSync} from 'fs'
 import {EOL} from 'os'
 import GeneratorActionStepDefinition from '../GeneratorActionStepDefinition'
@@ -77,32 +77,33 @@ export default class implements GeneratorInterface {
     include: string[],
     tempDocsPath: string
   ): void {
-    execCommand(
-      'composer',
-      [
-        'install',
-        '--classmap-authoritative',
-        '--no-progress',
-        '--no-suggest',
-        '--no-interaction',
-        '--ansi'
-      ],
-      cwd
-    )
+    composer(['install', '--classmap-authoritative'], cwd)
     const classes = this.readComposerConfig()
       .filter(key => key !== null)
       .filter(key => picomatch.isMatch(key, include))
-    const config = {
-      rootNamespace,
-      destDirectory: tempDocsPath,
-      format: 'github',
-      classes
-    }
     const generated = '<?php'.concat(
       EOL,
-      'return json_decode(',
-      JSON.stringify(JSON.stringify(config)),
-      ', false);'
+      'return [',
+      EOL,
+      '    "rootNamespace" => ',
+      JSON.stringify(rootNamespace),
+      ',',
+      EOL,
+      '    "destDirectory" => ',
+      JSON.stringify(tempDocsPath),
+      ',',
+      EOL,
+      '    "format" => "github",',
+      EOL,
+      '    "classes" => [',
+      EOL,
+      '                      ',
+      classes
+        .map(k => JSON.stringify(k))
+        .join(','.concat(EOL, '                      ')),
+      '],',
+      EOL,
+      '];'
     )
     debug('Generated config:')
     debug(generated)

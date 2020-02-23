@@ -1,6 +1,6 @@
 import ActionInterface from '../ActionInterface'
 import GeneratorInterface from '../GeneratorInterface'
-import {execCommand} from '../helpers'
+import {composer} from '../helpers'
 
 export default class InstallAction implements ActionInterface {
   /**
@@ -25,17 +25,6 @@ export default class InstallAction implements ActionInterface {
     if (packages.length === 0) {
       return
     }
-    execCommand(
-      'composer',
-      [
-        'require',
-        '--dev',
-        '--no-progress',
-        '--no-suggest',
-        '--no-interaction',
-        '--ansi'
-      ].concat(packages),
-      process.cwd()
-    )
+    composer(['require'].concat(packages))
   }
 }
