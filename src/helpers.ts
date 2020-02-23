@@ -29,9 +29,9 @@ export function execCommandAndReturn(
   const proc = spawnSync(cmd, args, {
     cwd
   })
+  const out = proc.output?.join(EOL).trim()
+  debug(out)
   if (proc.status === 0) {
-    const out = proc.output.join(EOL).trim()
-    debug(out)
     return out
   }
   throw new Error(`Execution failed`)

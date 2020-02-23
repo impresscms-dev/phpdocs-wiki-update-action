@@ -6278,13 +6278,14 @@ exports.execCommand = execCommand;
  * @param string cwd Where to execute
  */
 function execCommandAndReturn(cmd, args, cwd) {
+    var _a;
     core_1.debug(` Executing ${cmd} ${args.join(' ')} in ${cwd}...`);
     const proc = child_process_1.spawnSync(cmd, args, {
         cwd
     });
+    const out = (_a = proc.output) === null || _a === void 0 ? void 0 : _a.join(os_1.EOL).trim();
+    core_1.debug(out);
     if (proc.status === 0) {
-        const out = proc.output.join(os_1.EOL).trim();
-        core_1.debug(out);
         return out;
     }
     throw new Error(`Execution failed`);
