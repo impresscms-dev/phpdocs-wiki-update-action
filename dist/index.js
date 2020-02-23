@@ -3360,7 +3360,10 @@ class default_1 {
             format: 'github',
             classes
         };
-        fs_1.writeFileSync(cwd.concat('/.phpdoc-md'), '<?php'.concat(os_1.EOL, 'return json_decode(', JSON.stringify(JSON.stringify(config)), ', false);'));
+        const generated = '<?php'.concat(os_1.EOL, 'return json_decode(', JSON.stringify(JSON.stringify(config)), ', false);');
+        core_1.debug('Generated config:');
+        core_1.debug(generated);
+        fs_1.writeFileSync(cwd.concat('/.phpdoc-md'), generated);
     }
     /**
      * Reads autoload classes from composer

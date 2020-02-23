@@ -1,5 +1,5 @@
 import GeneratorInterface from '../GeneratorInterface'
-import {getInput} from '@actions/core'
+import {debug, getInput} from '@actions/core'
 import {execCommand, execCommandAndReturn} from '../helpers'
 import {renameSync, writeFileSync} from 'fs'
 import {EOL} from 'os'
@@ -98,15 +98,15 @@ export default class implements GeneratorInterface {
       format: 'github',
       classes
     }
-    writeFileSync(
-      cwd.concat('/.phpdoc-md'),
-      '<?php'.concat(
-        EOL,
-        'return json_decode(',
-        JSON.stringify(JSON.stringify(config)),
-        ', false);'
-      )
+    const generated = '<?php'.concat(
+      EOL,
+      'return json_decode(',
+      JSON.stringify(JSON.stringify(config)),
+      ', false);'
     )
+    debug('Generated config:')
+    debug(generated)
+    writeFileSync(cwd.concat('/.phpdoc-md'), generated)
   }
 
   /**
