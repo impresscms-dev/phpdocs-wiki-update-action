@@ -805,7 +805,7 @@ class InstallAction {
         if (packages.length === 0) {
             return;
         }
-        helpers_1.composer(['require'].concat(packages));
+        helpers_1.composer(['require', '--dev', '--no-progress', '--no-suggest'].concat(packages));
     }
 }
 exports.default = InstallAction;
@@ -3339,14 +3339,18 @@ class default_1 {
      */
     getBeforeActions() {
         return [
-            new GeneratorActionStepDefinition_1.default(this, 'Generating generator config...', this.generateConfig, process.cwd(), core_1.getInput('class_root_namespace'), core_1.getInput('include').split(os_1.EOL), core_1.getInput('temp_docs_folder'))
+            new GeneratorActionStepDefinition_1.default(this, 'Generating generator config...', this.generateConfig, process.cwd(), core_1.getInput('class_root_namespace'), core_1.getInput('include')
+                .replace(/\n/g, os_1.EOL)
+                .split(os_1.EOL)
+                .map(x => x.trim())
+                .filter(x => x.length > 0), core_1.getInput('temp_docs_folder'))
         ];
     }
     /**
      * @inheritDoc
      */
     generate() {
-        helpers_1.execCommand('./vendor/bin/phpdoc-md', [], process.cwd());
+        helpers_1.composer(['exec', 'phpdoc-md', '-v']);
     }
     /**
      * Generates PHPDocMD config
@@ -3357,16 +3361,17 @@ class default_1 {
      * @param string tempDocsPath Temporally docs folder where new documentation should be generated
      */
     generateConfig(cwd, rootNamespace, include, tempDocsPath) {
-        helpers_1.composer(['install', '--classmap-authoritative'], cwd);
+        helpers_1.composer(['install', '--classmap-authoritative', '--no-progress', '--no-suggest'], cwd);
+        const changedIncludeRules = include.map(key => key.replace(/\\/g, '/'));
         const classes = this.readComposerConfig()
             .filter(key => key !== null)
-            .filter(key => picomatch.isMatch(key, include));
+            .map(key => key.replace(/\\/g, '/'))
+            .filter(key => picomatch.isMatch(key, changedIncludeRules))
+            .map(key => key.replace(/\//g, '\\'));
         if (classes.length === 0) {
-            throw new Error('Now classes matches include rules');
+            throw new Error('No classes matches include rules');
         }
-        const generated = '<?php'.concat(os_1.EOL, 'return [', os_1.EOL, '    "rootNamespace" => ', JSON.stringify(rootNamespace), ',', os_1.EOL, '    "destDirectory" => ', JSON.stringify(tempDocsPath), ',', os_1.EOL, '    "format" => "github",', os_1.EOL, '    "classes" => [', os_1.EOL, '                      ', classes
-            .map(k => JSON.stringify(k))
-            .join(','.concat(os_1.EOL, '                      ')), '],', os_1.EOL, '];');
+        const generated = '<?php'.concat(os_1.EOL, 'return (object)[', os_1.EOL, '    "rootNamespace" => ', JSON.stringify(rootNamespace), ',', os_1.EOL, '    "destDirectory" => ', JSON.stringify(tempDocsPath), ',', os_1.EOL, '    "format" => "github",', os_1.EOL, '    "classes" => [', os_1.EOL, '        ', classes.map(k => JSON.stringify(k)).join(','.concat(os_1.EOL, '        ')), os_1.EOL, '    ],', os_1.EOL, '];');
         core_1.debug('Generated config:');
         core_1.debug(generated);
         fs_1.writeFileSync(cwd.concat('/.phpdoc-md'), generated);
@@ -6296,9 +6301,7 @@ exports.execCommand = execCommand;
 function execCommandAndReturn(cmd, args, cwd) {
     var _a;
     core_1.debug(` Executing ${cmd} ${args.join(' ')} in ${cwd}...`);
-    const proc = child_process_1.spawnSync(cmd, args, {
-        cwd
-    });
+    const proc = child_process_1.spawnSync(cmd, args, { cwd });
     const out = (_a = proc.output) === null || _a === void 0 ? void 0 : _a.join('\n').trim().replace(/\n/g, os_1.EOL);
     for (const outputLine of out.split(os_1.EOL)) {
         core_1.debug(outputLine.trim());
@@ -6324,13 +6327,7 @@ function composer(args, cwd = null) {
         process.platform.toString() === 'win64') {
         cmd = 'composer.bat';
     }
-    execCommandAndReturn(cmd, args.concat([
-        '--dev',
-        '--no-progress',
-        '--no-suggest',
-        '--no-interaction',
-        '--ansi'
-    ]), cwd);
+    execCommandAndReturn(cmd, args.concat(['--no-interaction', '--ansi']), cwd);
 }
 exports.composer = composer;
 

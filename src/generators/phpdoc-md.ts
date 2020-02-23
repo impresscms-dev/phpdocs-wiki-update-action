@@ -1,6 +1,6 @@
 import GeneratorInterface from '../GeneratorInterface'
 import {debug, getInput} from '@actions/core'
-import {composer, execCommand, execCommandAndReturn} from '../helpers'
+import {composer, execCommandAndReturn} from '../helpers'
 import {renameSync, writeFileSync} from 'fs'
 import {EOL} from 'os'
 import GeneratorActionStepDefinition from '../GeneratorActionStepDefinition'
@@ -50,7 +50,11 @@ export default class implements GeneratorInterface {
         this.generateConfig,
         process.cwd(),
         getInput('class_root_namespace'),
-        getInput('include').split(EOL),
+        getInput('include')
+          .replace(/\n/g, EOL)
+          .split(EOL)
+          .map(x => x.trim())
+          .filter(x => x.length > 0),
         getInput('temp_docs_folder')
       )
     ]
@@ -60,7 +64,7 @@ export default class implements GeneratorInterface {
    * @inheritDoc
    */
   generate(): void {
-    execCommand('./vendor/bin/phpdoc-md', [], process.cwd())
+    composer(['exec', 'phpdoc-md', '-v'])
   }
 
   /**
@@ -77,16 +81,22 @@ export default class implements GeneratorInterface {
     include: string[],
     tempDocsPath: string
   ): void {
-    composer(['install', '--classmap-authoritative'], cwd)
+    composer(
+      ['install', '--classmap-authoritative', '--no-progress', '--no-suggest'],
+      cwd
+    )
+    const changedIncludeRules = include.map(key => key.replace(/\\/g, '/'))
     const classes = this.readComposerConfig()
       .filter(key => key !== null)
-      .filter(key => picomatch.isMatch(key, include))
+      .map(key => key.replace(/\\/g, '/'))
+      .filter(key => picomatch.isMatch(key, changedIncludeRules))
+      .map(key => key.replace(/\//g, '\\'))
     if (classes.length === 0) {
-      throw new Error('Now classes matches include rules')
+      throw new Error('No classes matches include rules')
     }
     const generated = '<?php'.concat(
       EOL,
-      'return [',
+      'return (object)[',
       EOL,
       '    "rootNamespace" => ',
       JSON.stringify(rootNamespace),
@@ -100,11 +110,10 @@ export default class implements GeneratorInterface {
       EOL,
       '    "classes" => [',
       EOL,
-      '                      ',
-      classes
-        .map(k => JSON.stringify(k))
-        .join(','.concat(EOL, '                      ')),
-      '],',
+      '        ',
+      classes.map(k => JSON.stringify(k)).join(','.concat(EOL, '        ')),
+      EOL,
+      '    ],',
       EOL,
       '];'
     )

@@ -26,9 +26,7 @@ export function execCommandAndReturn(
   cwd: string
 ): string {
   debug(` Executing ${cmd} ${args.join(' ')} in ${cwd}...`)
-  const proc = spawnSync(cmd, args, {
-    cwd
-  })
+  const proc = spawnSync(cmd, args, {cwd})
   const out = proc.output
     ?.join('\n')
     .trim()
@@ -59,15 +57,5 @@ export function composer(args: string[], cwd: string | null = null): void {
   ) {
     cmd = 'composer.bat'
   }
-  execCommandAndReturn(
-    cmd,
-    args.concat([
-      '--dev',
-      '--no-progress',
-      '--no-suggest',
-      '--no-interaction',
-      '--ansi'
-    ]),
-    cwd
-  )
+  execCommandAndReturn(cmd, args.concat(['--no-interaction', '--ansi']), cwd)
 }

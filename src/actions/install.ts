@@ -25,6 +25,8 @@ export default class InstallAction implements ActionInterface {
     if (packages.length === 0) {
       return
     }
-    composer(['require'].concat(packages))
+    composer(
+      ['require', '--dev', '--no-progress', '--no-suggest'].concat(packages)
+    )
   }
 }
