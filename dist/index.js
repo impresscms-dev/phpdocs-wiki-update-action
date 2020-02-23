@@ -1082,17 +1082,7 @@ class CloneWikiAction {
             `https://${this.getUpdateUser()}:${this.getUpdateToken()}@github.com/${gitInfo.getCurrentRepositoryName()}.wiki.git`
         ], oldDocsDir);
         helpers_1.execCommand('git', ['config', '--local', 'gc.auto', '0'], oldDocsDir);
-        helpers_1.execCommand('git', [
-            '-c',
-            'protocol.version=2',
-            'fetch',
-            '--no-tags',
-            '--prune',
-            '--progress',
-            '--no-recurse-submodules',
-            '--depth=1',
-            'origin'
-        ], oldDocsDir);
+        this.gitFetch(oldDocsDir);
         if (this.branchExist(gitInfo.branchOrTagName, oldDocsDir)) {
             helpers_1.execCommand('git', ['checkout', gitInfo.branchOrTagName], oldDocsDir);
         }
@@ -1100,6 +1090,37 @@ class CloneWikiAction {
             helpers_1.execCommand('git', ['checkout', '-b', gitInfo.branchOrTagName], oldDocsDir);
         }
         helpers_1.execCommand('git', ['reset', '--hard'], oldDocsDir);
+    }
+    /**
+     * Executes git fetch command
+     *
+     * @param string oldDocsDir Old docs dir
+     */
+    gitFetch(oldDocsDir) {
+        try {
+            helpers_1.execCommand('git', [
+                '-c',
+                'protocol.version=2',
+                'fetch',
+                '--no-tags',
+                '--prune',
+                '--progress',
+                '--no-recurse-submodules',
+                '--depth=1',
+                'origin'
+            ], oldDocsDir);
+        }
+        catch (e) {
+            helpers_1.execCommand('git', [
+                'fetch',
+                '--no-tags',
+                '--prune',
+                '--progress',
+                '--no-recurse-submodules',
+                '--depth=1',
+                'origin'
+            ], oldDocsDir);
+        }
     }
     /**
      * Checks if branch already exist on dir

@@ -41,21 +41,7 @@ export default class CloneWikiAction implements ActionInterface {
       oldDocsDir
     )
     execCommand('git', ['config', '--local', 'gc.auto', '0'], oldDocsDir)
-    execCommand(
-      'git',
-      [
-        '-c',
-        'protocol.version=2',
-        'fetch',
-        '--no-tags',
-        '--prune',
-        '--progress',
-        '--no-recurse-submodules',
-        '--depth=1',
-        'origin'
-      ],
-      oldDocsDir
-    )
+    this.gitFetch(oldDocsDir)
     if (this.branchExist(gitInfo.branchOrTagName, oldDocsDir)) {
       execCommand('git', ['checkout', gitInfo.branchOrTagName], oldDocsDir)
     } else {
@@ -66,6 +52,45 @@ export default class CloneWikiAction implements ActionInterface {
       )
     }
     execCommand('git', ['reset', '--hard'], oldDocsDir)
+  }
+
+  /**
+   * Executes git fetch command
+   *
+   * @param string oldDocsDir Old docs dir
+   */
+  protected gitFetch(oldDocsDir: string): void {
+    try {
+      execCommand(
+        'git',
+        [
+          '-c',
+          'protocol.version=2',
+          'fetch',
+          '--no-tags',
+          '--prune',
+          '--progress',
+          '--no-recurse-submodules',
+          '--depth=1',
+          'origin'
+        ],
+        oldDocsDir
+      )
+    } catch (e) {
+      execCommand(
+        'git',
+        [
+          'fetch',
+          '--no-tags',
+          '--prune',
+          '--progress',
+          '--no-recurse-submodules',
+          '--depth=1',
+          'origin'
+        ],
+        oldDocsDir
+      )
+    }
   }
 
   /**
