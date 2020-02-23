@@ -3376,6 +3376,13 @@ class default_1 {
      */
     readComposerConfig() {
         return JSON.parse(helpers_1.execCommandAndReturn('php', [
+            '-n',
+            '-d',
+            'display_errors=0',
+            '-d',
+            'display_startup_errors=Off',
+            '-d',
+            'error_reporting="E_ALL & ~E_NOTICE & ~E_WARNING"',
             '-r',
             'include_once "./vendor/autoload.php"; echo json_encode(array_keys(include("./vendor/composer/autoload_classmap.php")));'
         ], process.cwd()));
