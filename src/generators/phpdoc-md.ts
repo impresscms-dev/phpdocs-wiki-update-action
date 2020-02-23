@@ -89,7 +89,7 @@ export default class implements GeneratorInterface {
       ],
       cwd
     )
-    const classes = Object.keys(this.readComposerConfig())
+    const classes = this.readComposerConfig()
       .filter(key => key !== null)
       .filter(key => picomatch.isMatch(key, include))
     const config = {
@@ -112,13 +112,13 @@ export default class implements GeneratorInterface {
   /**
    * Reads autoload classes from composer
    */
-  protected readComposerConfig(): {[x: string]: string} {
+  protected readComposerConfig(): string[] {
     return JSON.parse(
       execCommandAndReturn(
         'php',
         [
           '-r',
-          'include_once "../vendor/autoload.php"; echo json_encode(include("./vendor/composer/autoload_classmap.php"));'
+          'include_once "./vendor/autoload.php"; echo json_encode(array_keys(include("./vendor/composer/autoload_classmap.php")));'
         ],
         process.cwd()
       )
