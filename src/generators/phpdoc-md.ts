@@ -81,6 +81,9 @@ export default class implements GeneratorInterface {
     const classes = this.readComposerConfig()
       .filter(key => key !== null)
       .filter(key => picomatch.isMatch(key, include))
+    if (classes.length === 0) {
+      throw new Error('Now classes matches include rules')
+    }
     const generated = '<?php'.concat(
       EOL,
       'return [',

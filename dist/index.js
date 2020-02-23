@@ -3340,6 +3340,9 @@ class default_1 {
         const classes = this.readComposerConfig()
             .filter(key => key !== null)
             .filter(key => picomatch.isMatch(key, include));
+        if (classes.length === 0) {
+            throw new Error('Now classes matches include rules');
+        }
         const generated = '<?php'.concat(os_1.EOL, 'return [', os_1.EOL, '    "rootNamespace" => ', JSON.stringify(rootNamespace), ',', os_1.EOL, '    "destDirectory" => ', JSON.stringify(tempDocsPath), ',', os_1.EOL, '    "format" => "github",', os_1.EOL, '    "classes" => [', os_1.EOL, '                      ', classes
             .map(k => JSON.stringify(k))
             .join(','.concat(os_1.EOL, '                      ')), '],', os_1.EOL, '];');
