@@ -805,7 +805,14 @@ class InstallAction {
         if (packages.length === 0) {
             return;
         }
-        helpers_1.execCommand('composer', ['require', '--dev'].concat(packages), process.cwd());
+        helpers_1.execCommand('composer', [
+            'require',
+            '--dev',
+            '--no-progress',
+            '--no-suggest',
+            '--no-interaction',
+            '--ansi'
+        ].concat(packages), process.cwd());
     }
 }
 exports.default = InstallAction;
@@ -3336,7 +3343,14 @@ class default_1 {
      * @param string tempDocsPath Temporally docs folder where new documentation should be generated
      */
     generateConfig(cwd, rootNamespace, include, tempDocsPath) {
-        helpers_1.execCommand('composer', ['install', '-a'], cwd);
+        helpers_1.execCommand('composer', [
+            'install',
+            '--classmap-authoritative',
+            '--no-progress',
+            '--no-suggest',
+            '--no-interaction',
+            '--ansi'
+        ], cwd);
         const classes = Object.keys(this.readComposerConfig())
             .filter(key => key !== null)
             .filter(key => picomatch.isMatch(key, include));
