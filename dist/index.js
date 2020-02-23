@@ -1854,7 +1854,7 @@ class GeneratorActionStepDefinition {
      */
     exec(gitInfo) {
         core_1.info(this.description);
-        const args = [core_1.getInput, gitInfo].concat(this.args);
+        const args = this.args.concat([gitInfo]);
         this.execCallback.apply(this.generator, args);
     }
 }

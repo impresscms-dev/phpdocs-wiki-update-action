@@ -1,4 +1,4 @@
-import {getInput, info} from '@actions/core'
+import {info} from '@actions/core'
 import GitInfo from './GitInfo'
 import GeneratorInterface from './GeneratorInterface'
 
@@ -64,7 +64,7 @@ export default class GeneratorActionStepDefinition {
    */
   exec(gitInfo: GitInfo): void {
     info(this.description)
-    const args = [getInput, gitInfo].concat(this.args)
+    const args = this.args.concat([gitInfo])
     this.execCallback.apply(this.generator, args)
   }
 }
