@@ -27,7 +27,14 @@ export default class InstallAction implements ActionInterface {
     }
     execCommand(
       'composer',
-      ['require', '--dev'].concat(packages),
+      [
+        'require',
+        '--dev',
+        '--no-progress',
+        '--no-suggest',
+        '--no-interaction',
+        '--ansi'
+      ].concat(packages),
       process.cwd()
     )
   }

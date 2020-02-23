@@ -77,7 +77,18 @@ export default class implements GeneratorInterface {
     include: string[],
     tempDocsPath: string
   ): void {
-    execCommand('composer', ['install', '-a'], cwd)
+    execCommand(
+      'composer',
+      [
+        'install',
+        '--classmap-authoritative',
+        '--no-progress',
+        '--no-suggest',
+        '--no-interaction',
+        '--ansi'
+      ],
+      cwd
+    )
     const classes = Object.keys(this.readComposerConfig())
       .filter(key => key !== null)
       .filter(key => picomatch.isMatch(key, include))
