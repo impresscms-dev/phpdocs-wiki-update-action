@@ -1,4 +1,4 @@
-import {debug, getInput, info, setFailed} from '@actions/core'
+import {error, getInput, info, setFailed} from '@actions/core'
 import actions from './data/actions'
 import generators from './data/generators'
 import GitInfo from './GitInfo'
@@ -26,7 +26,9 @@ try {
     }
     action.exec(generator, gitInfo)
   }
-} catch (error) {
-  debug(error)
-  setFailed(error.message)
+} catch (err) {
+  for (const line of err.stack.split('\n')) {
+    error(line)
+  }
+  setFailed(err.message)
 }

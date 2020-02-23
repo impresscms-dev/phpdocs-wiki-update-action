@@ -2050,9 +2050,11 @@ try {
         action.exec(generator, gitInfo);
     }
 }
-catch (error) {
-    core_1.debug(error);
-    core_1.setFailed(error.message);
+catch (err) {
+    for (const line of err.stack.split('\n')) {
+        core_1.error(line);
+    }
+    core_1.setFailed(err.message);
 }
 
 
