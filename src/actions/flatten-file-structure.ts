@@ -31,6 +31,8 @@ export default class FlattenFileStructureAction implements ActionInterface {
       if (oldFilename !== newFilename) {
         this.renameFile(newDocs, oldFilename, newFilename)
       }
+    }
+    for (const newFilename in filenames) {
       this.fixesToNewStyleLinks(
         newDocs.concat('/', newFilename),
         flippedFilenames
@@ -51,8 +53,14 @@ export default class FlattenFileStructureAction implements ActionInterface {
     }
 
     for (const fileInfo of this.filterFileInfoByShortPath(files, true)) {
-      const oldFilePath = fileInfo.shortPath.concat('/', fileInfo.filename)
-      if (typeof newStructData[fileInfo.filename] != 'undefined') {
+      let oldFilePath = fileInfo.shortPath.concat('/', fileInfo.filename)
+      if (process.platform === 'win32') {
+        oldFilePath = oldFilePath.replace(/\\/g, '/')
+      }
+      if (oldFilePath.substr(0, 1) === '/') {
+        oldFilePath = oldFilePath.substr(1)
+      }
+      if (typeof newStructData[fileInfo.filename] == 'undefined') {
         newStructData[fileInfo.filename] = oldFilePath
       } else {
         newStructData[this.generateAltFilename(fileInfo)] = oldFilePath
@@ -73,18 +81,46 @@ export default class FlattenFileStructureAction implements ActionInterface {
   ): void {
     debug(` Fixing ${filename}...`)
     const content = readFileSync(filename).toString()
+    const allPossibleFilenames: {[x: string]: string} = {}
+    for (const oldFilename in filenames) {
+      const currentFilename = filenames[oldFilename]
+      allPossibleFilenames[oldFilename] = currentFilename
+      const linFilename = oldFilename.replace(/\\/g, '/')
+      allPossibleFilenames[linFilename] = currentFilename
+      if (extname(oldFilename) === '.md') {
+        allPossibleFilenames[
+          oldFilename.substr(0, oldFilename.length - 3)
+        ] = currentFilename
+      }
+      if (extname(linFilename) === '.md') {
+        allPossibleFilenames[
+          linFilename.substr(0, linFilename.length - 3)
+        ] = currentFilename
+      }
+      const winFilename = oldFilename.replace(/\//g, '\\')
+      allPossibleFilenames[winFilename] = currentFilename
+      if (extname(winFilename) === '.md') {
+        allPossibleFilenames[
+          winFilename.substr(0, winFilename.length - 3)
+        ] = currentFilename
+      }
+    }
     const newContent = content.replace(
       /\[([^\]]+)]\(([^\)]+)\)/gm,
-      (fullMsg: string, link: string, name: string) =>
-        '['.concat(
-          filenames[link]
-            .split('.')
-            .slice(0, -1)
-            .join('.'),
-          '](',
-          name,
-          ')'
-        )
+      (fullMsg: string, name: string, link: string) => {
+        if (typeof allPossibleFilenames[link] !== 'undefined') {
+          return '['.concat(
+            name,
+            '](',
+            allPossibleFilenames[link]
+              .split('.')
+              .slice(0, -1)
+              .join('.'),
+            ')'
+          )
+        }
+        return fullMsg
+      }
     )
     if (newContent !== content) {
       debug('  Changed.')
@@ -176,13 +212,10 @@ export default class FlattenFileStructureAction implements ActionInterface {
       .slice(0, -1)
       .join('.')
     const ext = extname(fileInfo.filename)
-    return '"'.concat(
-      filenameWithoutExt,
-      ' (',
-      fileInfo.shortPath.replace('/', '\\'),
-      ')',
-      ext,
-      '"'
-    )
+    let namespaceName = fileInfo.shortPath.replace('/', '\\')
+    if (namespaceName.substr(0, 1) === '\\') {
+      namespaceName = namespaceName.substr(1)
+    }
+    return '"'.concat(filenameWithoutExt, ' (', namespaceName, ')', ext, '"')
   }
 }

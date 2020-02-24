@@ -34,7 +34,6 @@
     "@zeit/ncc": "^0.21.1",
     "child_process": "^1.0.2",
     "flow-bin": "^0.118.0",
-    "fs-extra": "^8.1.0",
     "picomatch": "^2.2.1",
     "recursive-readdir-sync": "^1.0.6"
   },
