@@ -136,7 +136,7 @@ export default class implements GeneratorInterface {
           '-d',
           'display_startup_errors=Off',
           '-d',
-          'error_reporting="E_ALL & ~E_NOTICE & ~E_WARNING"',
+          'error_reporting=0',
           '-r',
           'try { include_once "./vendor/autoload.php"; echo json_encode(array_keys(include("./vendor/composer/autoload_classmap.php"))); } catch (\\Exception $ex) { var_dump($ex); exit(1); }'
         ],

@@ -4,6 +4,7 @@ import {existsSync, mkdirSync} from 'fs'
 import {execCommand, execCommandAndReturn} from '../helpers'
 import GitInfo from '../GitInfo'
 import GeneratorInterface from '../GeneratorInterface'
+import {basename, dirname} from "path";
 
 export default class CloneWikiAction implements ActionInterface {
   /**
@@ -29,81 +30,17 @@ export default class CloneWikiAction implements ActionInterface {
       throw new Error(oldDocsDir.concat(" already exists but shouldn't"))
     }
     mkdirSync(oldDocsDir)
-    execCommand('git', ['init'], oldDocsDir)
     execCommand(
       'git',
       [
-        'remote',
-        'add',
-        'origin',
-        `https://${this.getUpdateUser()}:${this.getUpdateToken()}@github.com/${gitInfo.getCurrentRepositoryName()}.wiki.git`
+        'clone',
+        `https://${this.getUpdateUser()}:${this.getUpdateToken()}@github.com/${gitInfo.getCurrentRepositoryName()}.wiki.git`,
+        basename(oldDocsDir)
       ],
-      oldDocsDir
+      dirname(oldDocsDir)
     )
     execCommand('git', ['config', '--local', 'gc.auto', '0'], oldDocsDir)
-    this.gitFetch(oldDocsDir)
-    if (this.branchExist(gitInfo.branchOrTagName, oldDocsDir)) {
-      execCommand('git', ['checkout', gitInfo.branchOrTagName], oldDocsDir)
-    } else {
-      execCommand(
-        'git',
-        ['checkout', '-b', gitInfo.branchOrTagName],
-        oldDocsDir
-      )
-    }
-    execCommand('git', ['reset', '--hard'], oldDocsDir)
-  }
-
-  /**
-   * Executes git fetch command
-   *
-   * @param string oldDocsDir Old docs dir
-   */
-  protected gitFetch(oldDocsDir: string): void {
-    try {
-      execCommand(
-        'git',
-        [
-          '-c',
-          'protocol.version=2',
-          'fetch',
-          '--no-tags',
-          '--prune',
-          '--progress',
-          '--no-recurse-submodules',
-          '--depth=1',
-          'origin'
-        ],
-        oldDocsDir
-      )
-    } catch (e) {
-      execCommand(
-        'git',
-        [
-          'fetch',
-          '--no-tags',
-          '--prune',
-          '--progress',
-          '--no-recurse-submodules',
-          '--depth=1',
-          'origin'
-        ],
-        oldDocsDir
-      )
-    }
-  }
-
-  /**
-   * Checks if branch already exist on dir
-   *
-   * @param string branch Branch to check
-   * @param string cwd Dir where to check
-   */
-  protected branchExist(branch: string, cwd: string): boolean {
-    return (
-      execCommandAndReturn('git', ['branch', '--list', branch], cwd).trim() ===
-      branch
-    )
+    execCommand('git', ['checkout', '-B', gitInfo.branchOrTagName, '--track'], oldDocsDir)
   }
 
   /**

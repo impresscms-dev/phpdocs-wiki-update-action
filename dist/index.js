@@ -217,7 +217,13 @@ class PushUpdateAction {
      */
     exec(generator, info) {
         const cwd = core_1.getInput('temp_docs_folder');
-        helpers_1.execCommand('git', ['push', '-u', 'origin', info.branchOrTagName], cwd);
+        try {
+            helpers_1.execCommand('git', ['push', '-u', 'origin', info.branchOrTagName], cwd);
+        }
+        catch (e) {
+            helpers_1.execCommand('git', ['pull'], cwd);
+            helpers_1.execCommand('git', ['push', '.', info.branchOrTagName], cwd);
+        }
     }
 }
 exports.default = PushUpdateAction;
@@ -461,6 +467,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const core_1 = __webpack_require__(470);
 const fs_1 = __webpack_require__(747);
 const helpers_1 = __webpack_require__(872);
+const path_1 = __webpack_require__(622);
 class CloneWikiAction {
     /**
      * @inheritDoc
@@ -483,63 +490,13 @@ class CloneWikiAction {
             throw new Error(oldDocsDir.concat(" already exists but shouldn't"));
         }
         fs_1.mkdirSync(oldDocsDir);
-        helpers_1.execCommand('git', ['init'], oldDocsDir);
         helpers_1.execCommand('git', [
-            'remote',
-            'add',
-            'origin',
-            `https://${this.getUpdateUser()}:${this.getUpdateToken()}@github.com/${gitInfo.getCurrentRepositoryName()}.wiki.git`
-        ], oldDocsDir);
+            'clone',
+            `https://${this.getUpdateUser()}:${this.getUpdateToken()}@github.com/${gitInfo.getCurrentRepositoryName()}.wiki.git`,
+            path_1.basename(oldDocsDir)
+        ], path_1.dirname(oldDocsDir));
         helpers_1.execCommand('git', ['config', '--local', 'gc.auto', '0'], oldDocsDir);
-        this.gitFetch(oldDocsDir);
-        if (this.branchExist(gitInfo.branchOrTagName, oldDocsDir)) {
-            helpers_1.execCommand('git', ['checkout', gitInfo.branchOrTagName], oldDocsDir);
-        }
-        else {
-            helpers_1.execCommand('git', ['checkout', '-b', gitInfo.branchOrTagName], oldDocsDir);
-        }
-        helpers_1.execCommand('git', ['reset', '--hard'], oldDocsDir);
-    }
-    /**
-     * Executes git fetch command
-     *
-     * @param string oldDocsDir Old docs dir
-     */
-    gitFetch(oldDocsDir) {
-        try {
-            helpers_1.execCommand('git', [
-                '-c',
-                'protocol.version=2',
-                'fetch',
-                '--no-tags',
-                '--prune',
-                '--progress',
-                '--no-recurse-submodules',
-                '--depth=1',
-                'origin'
-            ], oldDocsDir);
-        }
-        catch (e) {
-            helpers_1.execCommand('git', [
-                'fetch',
-                '--no-tags',
-                '--prune',
-                '--progress',
-                '--no-recurse-submodules',
-                '--depth=1',
-                'origin'
-            ], oldDocsDir);
-        }
-    }
-    /**
-     * Checks if branch already exist on dir
-     *
-     * @param string branch Branch to check
-     * @param string cwd Dir where to check
-     */
-    branchExist(branch, cwd) {
-        return (helpers_1.execCommandAndReturn('git', ['branch', '--list', branch], cwd).trim() ===
-            branch);
+        helpers_1.execCommand('git', ['checkout', '-B', gitInfo.branchOrTagName, '--track'], oldDocsDir);
     }
     /**
      * Gets GitHub token that will be used for update action
@@ -1784,7 +1741,7 @@ class default_1 {
             '-d',
             'display_startup_errors=Off',
             '-d',
-            'error_reporting="E_ALL & ~E_NOTICE & ~E_WARNING"',
+            'error_reporting=0',
             '-r',
             'try { include_once "./vendor/autoload.php"; echo json_encode(array_keys(include("./vendor/composer/autoload_classmap.php"))); } catch (\\Exception $ex) { var_dump($ex); exit(1); }'
         ], process.cwd()));

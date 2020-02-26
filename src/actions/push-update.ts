@@ -24,6 +24,11 @@ export default class PushUpdateAction implements ActionInterface {
    */
   exec(generator: GeneratorInterface, info: GitInfo): void {
     const cwd = getInput('temp_docs_folder')
-    execCommand('git', ['push', '-u', 'origin', info.branchOrTagName], cwd)
+    try {
+      execCommand('git', ['push', '-u', 'origin', info.branchOrTagName], cwd)
+    } catch (e) {
+      execCommand('git', ['pull'], cwd)
+      execCommand('git', ['push', '.', info.branchOrTagName], cwd)
+    }
   }
 }
