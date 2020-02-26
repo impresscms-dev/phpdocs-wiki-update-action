@@ -1,6 +1,6 @@
 import GeneratorInterface from '../GeneratorInterface'
 import {debug, getInput} from '@actions/core'
-import {composer, execCommandAndReturn} from '../helpers'
+import {composer, execCommand, execCommandAndReturn} from '../helpers'
 import {renameSync, writeFileSync} from 'fs'
 import {EOL} from 'os'
 import GeneratorActionStepDefinition from '../GeneratorActionStepDefinition'
@@ -126,6 +126,7 @@ export default class implements GeneratorInterface {
    * Reads autoload classes from composer
    */
   protected readComposerConfig(): string[] {
+    execCommand('php', ['--version'], process.cwd())
     return JSON.parse(
       execCommandAndReturn(
         'php',
@@ -138,7 +139,7 @@ export default class implements GeneratorInterface {
           '-d',
           'error_reporting=0',
           '-r',
-          'try { include_once "./vendor/autoload.php"; echo json_encode(array_keys(include("./vendor/composer/autoload_classmap.php"))); } catch (\\Exception $ex) { var_dump($ex); exit(1); }'
+          'try { include_once "./vendor/autoload.php"; echo json_encode(array_keys(include("./vendor/composer/autoload_classmap.php"))); } catch (\\Exception $ex) { var_dump($ex); exit(2); }'
         ],
         process.cwd()
       )

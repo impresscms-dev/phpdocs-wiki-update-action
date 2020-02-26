@@ -1734,6 +1734,7 @@ class default_1 {
      * Reads autoload classes from composer
      */
     readComposerConfig() {
+        helpers_1.execCommand('php', ['--version'], process.cwd());
         return JSON.parse(helpers_1.execCommandAndReturn('php', [
             '-n',
             '-d',
@@ -1743,7 +1744,7 @@ class default_1 {
             '-d',
             'error_reporting=0',
             '-r',
-            'try { include_once "./vendor/autoload.php"; echo json_encode(array_keys(include("./vendor/composer/autoload_classmap.php"))); } catch (\\Exception $ex) { var_dump($ex); exit(1); }'
+            'try { include_once "./vendor/autoload.php"; echo json_encode(array_keys(include("./vendor/composer/autoload_classmap.php"))); } catch (\\Exception $ex) { var_dump($ex); exit(2); }'
         ], process.cwd()));
     }
 }

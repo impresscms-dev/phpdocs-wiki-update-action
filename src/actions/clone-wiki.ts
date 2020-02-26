@@ -1,10 +1,10 @@
 import ActionInterface from '../ActionInterface'
 import {getInput} from '@actions/core'
 import {existsSync, mkdirSync} from 'fs'
-import {execCommand, execCommandAndReturn} from '../helpers'
+import {execCommand} from '../helpers'
 import GitInfo from '../GitInfo'
 import GeneratorInterface from '../GeneratorInterface'
-import {basename, dirname} from "path";
+import {basename, dirname} from 'path'
 
 export default class CloneWikiAction implements ActionInterface {
   /**
@@ -40,7 +40,11 @@ export default class CloneWikiAction implements ActionInterface {
       dirname(oldDocsDir)
     )
     execCommand('git', ['config', '--local', 'gc.auto', '0'], oldDocsDir)
-    execCommand('git', ['checkout', '-B', gitInfo.branchOrTagName, '--track'], oldDocsDir)
+    execCommand(
+      'git',
+      ['checkout', '-B', gitInfo.branchOrTagName, '--track'],
+      oldDocsDir
+    )
   }
 
   /**
