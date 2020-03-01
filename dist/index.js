@@ -2287,20 +2287,38 @@ class default_1 {
      * @param string cachePath Cache path
      */
     generateXML(dstPath, cachePath) {
-        helpers_1.composer([
-            'global',
-            'exec',
-            'phpdoc',
-            '-v',
-            '--',
-            '--cache-folder',
-            cachePath,
-            '-d',
-            process.cwd().replace(/\\/g, '/'),
-            '-t',
-            dstPath,
-            '--template=xml'
-        ]);
+        try {
+            helpers_1.composer([
+                'global',
+                'exec',
+                'phpdoc',
+                '-v',
+                '--',
+                '--cache-folder',
+                cachePath,
+                '-d',
+                process.cwd().replace(/\\/g, '/'),
+                '-t',
+                dstPath,
+                '--template=xml'
+            ]);
+        }
+        catch (e) {
+            helpers_1.composer([
+                'global',
+                'exec',
+                'phpdoc.php',
+                '-v',
+                '--',
+                '--cache-folder',
+                cachePath,
+                '-d',
+                process.cwd().replace(/\\/g, '/'),
+                '-t',
+                dstPath,
+                '--template=xml'
+            ]);
+        }
     }
     /**
      * Removes data folder

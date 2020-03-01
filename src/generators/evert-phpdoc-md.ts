@@ -100,20 +100,37 @@ export default class implements GeneratorInterface {
    * @param string cachePath Cache path
    */
   private generateXML(dstPath: string, cachePath: string): void {
-    composer([
-      'global',
-      'exec',
-      'phpdoc',
-      '-v',
-      '--',
-      '--cache-folder',
-      cachePath,
-      '-d',
-      process.cwd().replace(/\\/g, '/'),
-      '-t',
-      dstPath,
-      '--template=xml'
-    ])
+    try {
+      composer([
+        'global',
+        'exec',
+        'phpdoc',
+        '-v',
+        '--',
+        '--cache-folder',
+        cachePath,
+        '-d',
+        process.cwd().replace(/\\/g, '/'),
+        '-t',
+        dstPath,
+        '--template=xml'
+      ])
+    } catch (e) {
+      composer([
+        'global',
+        'exec',
+        'phpdoc.php',
+        '-v',
+        '--',
+        '--cache-folder',
+        cachePath,
+        '-d',
+        process.cwd().replace(/\\/g, '/'),
+        '-t',
+        dstPath,
+        '--template=xml'
+      ])
+    }
   }
 
   /**
