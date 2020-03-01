@@ -1743,16 +1743,20 @@ class default_1 {
      * Reads autoload classes from composer
      */
     readComposerConfig() {
-        helpers_1.execCommand('php', ['--version'], process.cwd());
-        helpers_1.execCommand('cat', ['./vendor/composer/autoload_classmap.php'], process.cwd());
+        /*execCommand('php', ['--version'], process.cwd())
+        execCommand(
+          'cat',
+          ['./vendor/composer/autoload_classmap.php'],
+          process.cwd()
+        )*/
         return JSON.parse(helpers_1.execCommandAndReturn('php', [
-            '-n',
+            /*  '-n',
             '-d',
             'display_errors=0',
             '-d',
             'display_startup_errors=Off',
             '-d',
-            'error_reporting=0',
+            'error_reporting=0',*/
             '-r',
             'require "./vendor/autoload.php"; echo json_encode(array_keys(require("./vendor/composer/autoload_classmap.php")));'
         ], process.cwd()));

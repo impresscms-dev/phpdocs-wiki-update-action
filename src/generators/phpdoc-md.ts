@@ -1,6 +1,6 @@
 import GeneratorInterface from '../GeneratorInterface'
 import {debug, getInput} from '@actions/core'
-import {composer, execCommand, execCommandAndReturn} from '../helpers'
+import {composer /*, execCommand*/, execCommandAndReturn} from '../helpers'
 import {renameSync, writeFileSync} from 'fs'
 import {EOL} from 'os'
 import GeneratorActionStepDefinition from '../GeneratorActionStepDefinition'
@@ -145,7 +145,7 @@ export default class implements GeneratorInterface {
       execCommandAndReturn(
         'php',
         [
-        /*  '-n',
+          /*  '-n',
           '-d',
           'display_errors=0',
           '-d',
