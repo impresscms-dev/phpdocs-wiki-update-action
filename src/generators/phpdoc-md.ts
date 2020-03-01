@@ -93,13 +93,36 @@ export default class implements GeneratorInterface {
       ],
       cwd
     )
-    composer(['dump', '--classmap-authoritative', '-o', '--no-scripts'], cwd)
-    const changedIncludeRules = include.map(key => key.replace(/\\/g, '/'))
+    /*  composer(['dump', '--classmap-authoritative', '-o', '--no-scripts'], cwd)*/
+    let changedIncludeRules = include.map(key => key.replace(/\\/g, '/'))
+    const badChangedIncludeRules = changedIncludeRules
+      .filter(rule => rule.startsWith('!'))
+      .map(rule => rule.substring(1))
+    changedIncludeRules = changedIncludeRules.filter(
+      rule => !badChangedIncludeRules.includes(rule.substring(1))
+    )
     const classes = this.readComposerConfig()
       .filter(key => key !== null)
       .map(key => key.replace(/\\/g, '/'))
       .filter(key => picomatch.isMatch(key, changedIncludeRules))
+      .filter(key => !picomatch.isMatch(key, badChangedIncludeRules))
       .map(key => key.replace(/\//g, '\\'))
+    debug('Include rules:')
+    if (changedIncludeRules.length > 0) {
+      for (const rule of changedIncludeRules) {
+        debug('  [*] '.concat(rule).replace(/\//g, '\\'))
+      }
+    } else {
+      debug('  (none)')
+    }
+    debug('Do not include rules:')
+    if (badChangedIncludeRules.length > 0) {
+      for (const rule of badChangedIncludeRules) {
+        debug('  [*] '.concat(rule).replace(/\//g, '\\'))
+      }
+    } else {
+      debug('  (none)')
+    }
     if (classes.length === 0) {
       throw new Error('No classes matches include rules')
     }
@@ -127,7 +150,9 @@ export default class implements GeneratorInterface {
       '];'
     )
     debug('Generated config:')
-    debug(generated)
+    for (const line of generated.split('\n')) {
+      debug(line.replace(/~+$/g, '').replace(/\r/g, ''))
+    }
     writeFileSync(cwd.concat('/.phpdoc-md'), generated)
   }
 
@@ -145,13 +170,10 @@ export default class implements GeneratorInterface {
       execCommandAndReturn(
         'php',
         [
-          /*  '-n',
           '-d',
           'display_errors=0',
           '-d',
-          'display_startup_errors=Off',
-          '-d',
-          'error_reporting=0',*/
+          'error_reporting=0',
           '-r',
           'require "./vendor/autoload.php"; echo json_encode(array_keys(require("./vendor/composer/autoload_classmap.php")));'
         ],

@@ -14,6 +14,8 @@ import CheckStatusAction from '../Actions/check-status'
 import CommitAction from '../Actions/commit'
 import PushUpdateAction from '../Actions/push-update'
 import ActionInterface from '../ActionInterface'
+import UninstallAction from '../actions/uninstall'
+import RemoveNotRequiredFilesAction from '../actions/remove-not-required-files'
 
 const actions: ActionInterface[] = [
   new InstallAction(),
@@ -27,7 +29,9 @@ const actions: ActionInterface[] = [
   new ConfigureCommitAuthorAction(),
   new CheckStatusAction(),
   new CommitAction(),
-  new PushUpdateAction()
+  new PushUpdateAction(),
+  new UninstallAction(),
+  new RemoveNotRequiredFilesAction()
 ]
 
 export default actions

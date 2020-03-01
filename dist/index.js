@@ -245,6 +245,7 @@ module.exports = require("child_process");
 
 Object.defineProperty(exports, "__esModule", { value: true });
 const helpers_1 = __webpack_require__(872);
+const fs_1 = __webpack_require__(747);
 class InstallAction {
     /**
      * @inheritDoc
@@ -263,9 +264,8 @@ class InstallAction {
      */
     exec(generator) {
         const packages = generator.getComposerRequirements();
-        if (packages.length === 0) {
-            return;
-        }
+        fs_1.copyFileSync('composer.lock', '.composer.lock.bkp');
+        fs_1.copyFileSync('composer.json', '.composer.json.bkp');
         helpers_1.composer(['require', '--dev', '--no-progress', '--no-suggest'].concat(packages));
     }
 }
@@ -805,6 +805,8 @@ const configure_commit_author_1 = __importDefault(__webpack_require__(476));
 const check_status_1 = __importDefault(__webpack_require__(484));
 const commit_1 = __importDefault(__webpack_require__(534));
 const push_update_1 = __importDefault(__webpack_require__(122));
+const uninstall_1 = __importDefault(__webpack_require__(481));
+const remove_not_required_files_1 = __importDefault(__webpack_require__(771));
 const actions = [
     new install_1.default(),
     new clone_wiki_1.default(),
@@ -817,7 +819,9 @@ const actions = [
     new configure_commit_author_1.default(),
     new check_status_1.default(),
     new commit_1.default(),
-    new push_update_1.default()
+    new push_update_1.default(),
+    new uninstall_1.default(),
+    new remove_not_required_files_1.default()
 ];
 exports.default = actions;
 
@@ -1617,6 +1621,43 @@ exports.default = ConfigureCommitAuthorAction;
 
 /***/ }),
 
+/***/ 481:
+/***/ (function(__unusedmodule, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+const helpers_1 = __webpack_require__(872);
+const fs_1 = __webpack_require__(747);
+class UninstallAction {
+    /**
+     * @inheritDoc
+     */
+    getDescription() {
+        return 'Uninstalling required composer packages...';
+    }
+    /**
+     * @inheritDoc
+     */
+    shouldRun(generator) {
+        return generator.getComposerRequirements().length > 0;
+    }
+    /**
+     * @inheritDoc
+     */
+    exec() {
+        fs_1.unlinkSync('composer.lock');
+        fs_1.unlinkSync('composer.json');
+        fs_1.renameSync('.composer.lock.bkp', 'composer.lock');
+        fs_1.renameSync('.composer.json.bkp', 'composer.json');
+        helpers_1.composer(['install', '--no-progress', '--no-suggest']);
+    }
+}
+exports.default = UninstallAction;
+
+
+/***/ }),
+
 /***/ 484:
 /***/ (function(__unusedmodule, exports, __webpack_require__) {
 
@@ -1724,19 +1765,44 @@ class default_1 {
             '--no-cache',
             '--no-scripts'
         ], cwd);
-        helpers_1.composer(['dump', '--classmap-authoritative', '-o', '--no-scripts'], cwd);
-        const changedIncludeRules = include.map(key => key.replace(/\\/g, '/'));
+        /*  composer(['dump', '--classmap-authoritative', '-o', '--no-scripts'], cwd)*/
+        let changedIncludeRules = include.map(key => key.replace(/\\/g, '/'));
+        const badChangedIncludeRules = changedIncludeRules
+            .filter(rule => rule.startsWith('!'))
+            .map(rule => rule.substring(1));
+        changedIncludeRules = changedIncludeRules.filter(rule => !badChangedIncludeRules.includes(rule.substring(1)));
         const classes = this.readComposerConfig()
             .filter(key => key !== null)
             .map(key => key.replace(/\\/g, '/'))
             .filter(key => picomatch.isMatch(key, changedIncludeRules))
+            .filter(key => !picomatch.isMatch(key, badChangedIncludeRules))
             .map(key => key.replace(/\//g, '\\'));
+        core_1.debug('Include rules:');
+        if (changedIncludeRules.length > 0) {
+            for (const rule of changedIncludeRules) {
+                core_1.debug('  [*] '.concat(rule).replace(/\//g, '\\'));
+            }
+        }
+        else {
+            core_1.debug('  (none)');
+        }
+        core_1.debug('Do not include rules:');
+        if (badChangedIncludeRules.length > 0) {
+            for (const rule of badChangedIncludeRules) {
+                core_1.debug('  [*] '.concat(rule).replace(/\//g, '\\'));
+            }
+        }
+        else {
+            core_1.debug('  (none)');
+        }
         if (classes.length === 0) {
             throw new Error('No classes matches include rules');
         }
         const generated = '<?php'.concat(os_1.EOL, 'return (object)[', os_1.EOL, '    "rootNamespace" => ', JSON.stringify(rootNamespace), ',', os_1.EOL, '    "destDirectory" => ', JSON.stringify(tempDocsPath), ',', os_1.EOL, '    "format" => "github",', os_1.EOL, '    "classes" => [', os_1.EOL, '        ', classes.map(k => JSON.stringify(k)).join(','.concat(os_1.EOL, '        ')), os_1.EOL, '    ],', os_1.EOL, '];');
         core_1.debug('Generated config:');
-        core_1.debug(generated);
+        for (const line of generated.split('\n')) {
+            core_1.debug(line.replace(/~+$/g, '').replace(/\r/g, ''));
+        }
         fs_1.writeFileSync(cwd.concat('/.phpdoc-md'), generated);
     }
     /**
@@ -1750,13 +1816,10 @@ class default_1 {
           process.cwd()
         )*/
         return JSON.parse(helpers_1.execCommandAndReturn('php', [
-            /*  '-n',
             '-d',
             'display_errors=0',
             '-d',
-            'display_startup_errors=Off',
-            '-d',
-            'error_reporting=0',*/
+            'error_reporting=0',
             '-r',
             'require "./vendor/autoload.php"; echo json_encode(array_keys(require("./vendor/composer/autoload_classmap.php")));'
         ], process.cwd()));
@@ -2246,6 +2309,41 @@ exports.default = ExecBeforeGeneratorActionsAction;
 /***/ (function(module) {
 
 module.exports = require("fs");
+
+/***/ }),
+
+/***/ 771:
+/***/ (function(__unusedmodule, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+const core_1 = __webpack_require__(470);
+const helpers_1 = __webpack_require__(872);
+class RemoveNotRequiredFilesAction {
+    /**
+     * @inheritDoc
+     */
+    getDescription() {
+        return 'Removing not required files...';
+    }
+    /**
+     * @inheritDoc
+     */
+    shouldRun() {
+        return true;
+    }
+    /**
+     * @inheritDoc
+     */
+    exec() {
+        const newDocs = core_1.getInput('temp_docs_folder');
+        const oldDocs = newDocs.concat('.old');
+        helpers_1.execCommand('rm', ['-rf', newDocs, oldDocs, '.phpdoc-md'], process.cwd());
+    }
+}
+exports.default = RemoveNotRequiredFilesAction;
+
 
 /***/ }),
 

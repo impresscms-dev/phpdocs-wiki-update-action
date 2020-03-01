@@ -1,6 +1,7 @@
 import ActionInterface from '../ActionInterface'
 import GeneratorInterface from '../GeneratorInterface'
 import {composer} from '../helpers'
+import {copyFileSync} from 'fs'
 
 export default class InstallAction implements ActionInterface {
   /**
@@ -22,9 +23,8 @@ export default class InstallAction implements ActionInterface {
    */
   exec(generator: GeneratorInterface): void {
     const packages = generator.getComposerRequirements()
-    if (packages.length === 0) {
-      return
-    }
+    copyFileSync('composer.lock', '.composer.lock.bkp')
+    copyFileSync('composer.json', '.composer.json.bkp')
     composer(
       ['require', '--dev', '--no-progress', '--no-suggest'].concat(packages)
     )
