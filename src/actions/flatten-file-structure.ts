@@ -212,10 +212,16 @@ export default class FlattenFileStructureAction implements ActionInterface {
       .slice(0, -1)
       .join('.')
     const ext = extname(fileInfo.filename)
-    let namespaceName = fileInfo.shortPath.replace('/', '\\')
-    if (namespaceName.substr(0, 1) === '\\') {
+    let namespaceName = fileInfo.shortPath.replace(/\//g, '⁄')
+    if (namespaceName.substr(0, 1) === '⁄') {
       namespaceName = namespaceName.substr(1)
     }
-    return '"'.concat(filenameWithoutExt, ' (', namespaceName, ')', ext, '"')
+    return filenameWithoutExt.concat(
+      filenameWithoutExt,
+      ' (',
+      namespaceName,
+      ')',
+      ext
+    )
   }
 }
