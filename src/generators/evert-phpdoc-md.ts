@@ -2,7 +2,7 @@ import GeneratorInterface from '../GeneratorInterface'
 import {composer, composerWithReturn, execCommand} from '../helpers'
 import GeneratorActionStepDefinition from '../GeneratorActionStepDefinition'
 import {getInput} from '@actions/core'
-import {mkdirSync} from 'fs'
+import {mkdirSync, renameSync} from 'fs'
 import {join} from 'path'
 
 export default class implements GeneratorInterface {
@@ -46,6 +46,13 @@ export default class implements GeneratorInterface {
         'Deleting Cache data...',
         this.deleteFolder,
         getInput('temp_docs_folder').concat('.cache')
+      ),
+      new GeneratorActionStepDefinition(
+        null,
+        'Renaming ApiIndex.md to Home.md...',
+        renameSync,
+        getInput('temp_docs_folder').concat('/ApiIndex.md'),
+        getInput('temp_docs_folder').concat('/HOME.md')
       )
     ]
   }
@@ -102,12 +109,7 @@ export default class implements GeneratorInterface {
    */
   private generateXML(dstPath: string, cachePath: string): void {
     const path = this.getGlobalComposerPath()
-    let cmd = join(
-      path,
-      'vendor',
-      'bin',
-      'phpdoc'
-    ).replace(/\\/g, '/')
+    let cmd = join(path, 'vendor', 'bin', 'phpdoc').replace(/\\/g, '/')
     if (
       process.platform.toString() === 'win32' ||
       process.platform.toString() === 'win64'

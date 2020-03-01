@@ -40,11 +40,34 @@ export default class CloneWikiAction implements ActionInterface {
       dirname(oldDocsDir)
     )
     execCommand('git', ['config', '--local', 'gc.auto', '0'], oldDocsDir)
-    execCommand(
-      'git',
-      ['checkout', '-B', gitInfo.branchOrTagName, '--track'],
-      oldDocsDir
-    )
+    execCommand('git', ['branch', '-r'], oldDocsDir)
+    if (this.branchExist(gitInfo.branchOrTagName, oldDocsDir)) {
+      execCommand('git', ['checkout', gitInfo.branchOrTagName], oldDocsDir)
+      execCommand('git', ['pull'], oldDocsDir)
+    } else {
+      execCommand(
+        'git',
+        ['checkout', '-b', gitInfo.branchOrTagName],
+        oldDocsDir
+      )
+    }
+  }
+
+  /**
+   * Checks if branch exist
+   *
+   * @param string branch Branch to check
+   * @param string oldDocsDir Where to check
+   *
+   * @return boolean
+   */
+  private branchExist(branch: string, oldDocsDir: string): boolean {
+    try {
+      execCommand('git', ['show-branch', 'origin/'.concat(branch)], oldDocsDir)
+      return true
+    } catch (e) {
+      return false
+    }
   }
 
   /**

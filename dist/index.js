@@ -502,7 +502,31 @@ class CloneWikiAction {
             path_1.basename(oldDocsDir)
         ], path_1.dirname(oldDocsDir));
         helpers_1.execCommand('git', ['config', '--local', 'gc.auto', '0'], oldDocsDir);
-        helpers_1.execCommand('git', ['checkout', '-B', gitInfo.branchOrTagName, '--track'], oldDocsDir);
+        helpers_1.execCommand('git', ['branch', '-r'], oldDocsDir);
+        if (this.branchExist(gitInfo.branchOrTagName, oldDocsDir)) {
+            helpers_1.execCommand('git', ['checkout', gitInfo.branchOrTagName], oldDocsDir);
+            helpers_1.execCommand('git', ['pull'], oldDocsDir);
+        }
+        else {
+            helpers_1.execCommand('git', ['checkout', '-b', gitInfo.branchOrTagName], oldDocsDir);
+        }
+    }
+    /**
+     * Checks if branch exist
+     *
+     * @param string branch Branch to check
+     * @param string oldDocsDir Where to check
+     *
+     * @return boolean
+     */
+    branchExist(branch, oldDocsDir) {
+        try {
+            helpers_1.execCommand('git', ['show-branch', 'origin/'.concat(branch)], oldDocsDir);
+            return true;
+        }
+        catch (e) {
+            return false;
+        }
     }
     /**
      * Gets GitHub token that will be used for update action
@@ -2255,7 +2279,8 @@ class default_1 {
     getAfterActions() {
         return [
             new GeneratorActionStepDefinition_1.default(null, 'Deleting XML data...', this.deleteFolder, core_1.getInput('temp_docs_folder').concat('.xml')),
-            new GeneratorActionStepDefinition_1.default(null, 'Deleting Cache data...', this.deleteFolder, core_1.getInput('temp_docs_folder').concat('.cache'))
+            new GeneratorActionStepDefinition_1.default(null, 'Deleting Cache data...', this.deleteFolder, core_1.getInput('temp_docs_folder').concat('.cache')),
+            new GeneratorActionStepDefinition_1.default(null, 'Renaming ApiIndex.md to Home.md...', fs_1.renameSync, core_1.getInput('temp_docs_folder').concat('/ApiIndex.md'), core_1.getInput('temp_docs_folder').concat('/HOME.md'))
         ];
     }
     /**
