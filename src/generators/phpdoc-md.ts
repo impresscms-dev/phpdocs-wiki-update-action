@@ -136,6 +136,11 @@ export default class implements GeneratorInterface {
    */
   protected readComposerConfig(): string[] {
     execCommand('php', ['--version'], process.cwd())
+    execCommand(
+      'cat',
+      ['./vendor/composer/autoload_classmap.php'],
+      process.cwd()
+    )
     return JSON.parse(
       execCommandAndReturn(
         'php',
