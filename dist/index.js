@@ -3456,6 +3456,7 @@ module.exports = __webpack_require__(366);
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
+const os_1 = __webpack_require__(87);
 const core_1 = __webpack_require__(470);
 const fs_1 = __webpack_require__(747);
 const readDirSync = __webpack_require__(120);
@@ -3487,7 +3488,14 @@ class PrefixAction {
      * Gets prefix that should be used for each file
      */
     getPrefixLines() {
-        return core_1.getInput('prefix_lines');
+        let lines = core_1.getInput('prefix_lines');
+        if (typeof lines == 'string' && lines.length > 0) {
+            lines = lines.concat(os_1.EOL);
+        }
+        else {
+            lines = '';
+        }
+        return lines;
     }
 }
 exports.default = PrefixAction;

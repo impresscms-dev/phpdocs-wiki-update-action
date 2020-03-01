@@ -1,3 +1,4 @@
+import {EOL} from 'os'
 import ActionInterface from '../ActionInterface'
 import {debug, getInput} from '@actions/core'
 import {readFileSync, writeFileSync} from 'fs'
@@ -37,6 +38,12 @@ export default class PrefixAction implements ActionInterface {
    * Gets prefix that should be used for each file
    */
   protected getPrefixLines(): string {
-    return getInput('prefix_lines')
+    let lines = getInput('prefix_lines')
+    if (typeof lines == 'string' && lines.length > 0) {
+      lines = lines.concat(EOL)
+    } else {
+      lines = ''
+    }
+    return lines
   }
 }
