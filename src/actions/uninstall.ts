@@ -1,7 +1,7 @@
 import ActionInterface from '../ActionInterface'
 import GeneratorInterface from '../GeneratorInterface'
 import {composer} from '../helpers'
-import {renameSync, unlinkSync} from 'fs'
+import {existsSync, renameSync, unlinkSync} from 'fs'
 
 export default class UninstallAction implements ActionInterface {
   /**
@@ -24,7 +24,9 @@ export default class UninstallAction implements ActionInterface {
   exec(): void {
     unlinkSync('composer.lock')
     unlinkSync('composer.json')
-    renameSync('.composer.lock.bkp', 'composer.lock')
+    if (existsSync('.composer.lock.bkp')) {
+      renameSync('.composer.lock.bkp', 'composer.lock')
+    }
     renameSync('.composer.json.bkp', 'composer.json')
     composer(['install', '--no-progress', '--no-suggest'])
   }

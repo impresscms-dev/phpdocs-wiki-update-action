@@ -264,7 +264,9 @@ class InstallAction {
      */
     exec(generator) {
         const packages = generator.getComposerRequirements();
-        fs_1.copyFileSync('composer.lock', '.composer.lock.bkp');
+        if (fs_1.existsSync('composer.lock')) {
+            fs_1.copyFileSync('composer.lock', '.composer.lock.bkp');
+        }
         fs_1.copyFileSync('composer.json', '.composer.json.bkp');
         helpers_1.composer(['require', '--dev', '--no-progress', '--no-suggest'].concat(packages));
     }
@@ -1648,7 +1650,9 @@ class UninstallAction {
     exec() {
         fs_1.unlinkSync('composer.lock');
         fs_1.unlinkSync('composer.json');
-        fs_1.renameSync('.composer.lock.bkp', 'composer.lock');
+        if (fs_1.existsSync('.composer.lock.bkp')) {
+            fs_1.renameSync('.composer.lock.bkp', 'composer.lock');
+        }
         fs_1.renameSync('.composer.json.bkp', 'composer.json');
         helpers_1.composer(['install', '--no-progress', '--no-suggest']);
     }
