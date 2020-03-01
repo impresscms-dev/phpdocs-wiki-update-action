@@ -47,6 +47,21 @@ export function execCommandAndReturn(
  * @param string|null cwd Where to execute
  */
 export function composer(args: string[], cwd: string | null = null): void {
+  composerWithReturn(args, cwd)
+}
+
+/**
+ * Executes composer command and prints to debug results and returns result as string
+ *
+ * @param Array<string> args Command arguments
+ * @param string|null cwd Where to execute
+ *
+ * @return string
+ */
+export function composerWithReturn(
+  args: string[],
+  cwd: string | null = null
+): string {
   if (cwd === null) {
     cwd = process.cwd()
   }
@@ -57,5 +72,9 @@ export function composer(args: string[], cwd: string | null = null): void {
   ) {
     cmd = 'composer.bat'
   }
-  execCommandAndReturn(cmd, args.concat(['--no-interaction', '--ansi']), cwd)
+  return execCommandAndReturn(
+    cmd,
+    args.concat(['--no-interaction', '--ansi']),
+    cwd
+  )
 }

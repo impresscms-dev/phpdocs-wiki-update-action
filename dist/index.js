@@ -2226,6 +2226,7 @@ const helpers_1 = __webpack_require__(872);
 const GeneratorActionStepDefinition_1 = __importDefault(__webpack_require__(279));
 const core_1 = __webpack_require__(470);
 const fs_1 = __webpack_require__(747);
+const path_1 = __webpack_require__(622);
 class default_1 {
     /**
      * @inheritDoc
@@ -2287,38 +2288,30 @@ class default_1 {
      * @param string cachePath Cache path
      */
     generateXML(dstPath, cachePath) {
-        try {
-            helpers_1.composer([
-                'global',
-                'exec',
-                'phpdoc',
-                '-v',
-                '--',
-                '--cache-folder',
-                cachePath,
-                '-d',
-                process.cwd().replace(/\\/g, '/'),
-                '-t',
-                dstPath,
-                '--template=xml'
-            ]);
+        const path = this.getGlobalComposerPath();
+        let cmd = path_1.join(path, 'vendor', 'bin', 'phpdoc').replace(/\\/g, '/');
+        if (process.platform.toString() === 'win32' ||
+            process.platform.toString() === 'win64') {
+            cmd = cmd.concat('.bat');
         }
-        catch (e) {
-            helpers_1.composer([
-                'global',
-                'exec',
-                'phpdoc.php',
-                '-v',
-                '--',
-                '--cache-folder',
-                cachePath,
-                '-d',
-                process.cwd().replace(/\\/g, '/'),
-                '-t',
-                dstPath,
-                '--template=xml'
-            ]);
-        }
+        helpers_1.execCommand(cmd, [
+            '--cache-folder',
+            cachePath,
+            '-d',
+            process.cwd().replace(/\\/g, '/'),
+            '-t',
+            dstPath,
+            '--template=xml',
+            '-v',
+            '--ansi',
+            '--no-interaction'
+        ], process.cwd());
+    }
+    /**
+     * Gets global composer path
+     */
+    getGlobalComposerPath() {
+        return helpers_1.composerWithReturn(['config', '-g', 'home']).trim();
     }
     /**
      * Removes data folder
@@ -3765,6 +3758,18 @@ exports.execCommandAndReturn = execCommandAndReturn;
  * @param string|null cwd Where to execute
  */
 function composer(args, cwd = null) {
+    composerWithReturn(args, cwd);
+}
+exports.composer = composer;
+/**
+ * Executes composer command and prints to debug results and returns result as string
+ *
+ * @param Array<string> args Command arguments
+ * @param string|null cwd Where to execute
+ *
+ * @return string
+ */
+function composerWithReturn(args, cwd = null) {
     if (cwd === null) {
         cwd = process.cwd();
     }
@@ -3773,9 +3778,9 @@ function composer(args, cwd = null) {
         process.platform.toString() === 'win64') {
         cmd = 'composer.bat';
     }
-    execCommandAndReturn(cmd, args.concat(['--no-interaction', '--ansi']), cwd);
+    return execCommandAndReturn(cmd, args.concat(['--no-interaction', '--ansi']), cwd);
 }
-exports.composer = composer;
+exports.composerWithReturn = composerWithReturn;
 
 
 /***/ }),

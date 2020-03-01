@@ -1,8 +1,9 @@
 import GeneratorInterface from '../GeneratorInterface'
-import {composer, execCommand} from '../helpers'
+import {composer, composerWithReturn, execCommand} from '../helpers'
 import GeneratorActionStepDefinition from '../GeneratorActionStepDefinition'
 import {getInput} from '@actions/core'
 import {mkdirSync} from 'fs'
+import {join} from 'path'
 
 export default class implements GeneratorInterface {
   /**
@@ -100,37 +101,42 @@ export default class implements GeneratorInterface {
    * @param string cachePath Cache path
    */
   private generateXML(dstPath: string, cachePath: string): void {
-    try {
-      composer([
-        'global',
-        'exec',
-        'phpdoc',
-        '-v',
-        '--',
-        '--cache-folder',
-        cachePath,
-        '-d',
-        process.cwd().replace(/\\/g, '/'),
-        '-t',
-        dstPath,
-        '--template=xml'
-      ])
-    } catch (e) {
-      composer([
-        'global',
-        'exec',
-        'phpdoc.php',
-        '-v',
-        '--',
-        '--cache-folder',
-        cachePath,
-        '-d',
-        process.cwd().replace(/\\/g, '/'),
-        '-t',
-        dstPath,
-        '--template=xml'
-      ])
+    const path = this.getGlobalComposerPath()
+    let cmd = join(
+      path,
+      'vendor',
+      'bin',
+      'phpdoc'
+    ).replace(/\\/g, '/')
+    if (
+      process.platform.toString() === 'win32' ||
+      process.platform.toString() === 'win64'
+    ) {
+      cmd = cmd.concat('.bat')
     }
+    execCommand(
+      cmd,
+      [
+        '--cache-folder',
+        cachePath,
+        '-d',
+        process.cwd().replace(/\\/g, '/'),
+        '-t',
+        dstPath,
+        '--template=xml',
+        '-v',
+        '--ansi',
+        '--no-interaction'
+      ],
+      process.cwd()
+    )
+  }
+
+  /**
+   * Gets global composer path
+   */
+  private getGlobalComposerPath(): string {
+    return composerWithReturn(['config', '-g', 'home']).trim()
   }
 
   /**
