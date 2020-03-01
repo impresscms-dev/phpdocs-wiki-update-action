@@ -82,7 +82,26 @@ export default class implements GeneratorInterface {
     tempDocsPath: string
   ): void {
     composer(
-      ['install', '--classmap-authoritative', '--no-progress', '--no-suggest'],
+      [
+        'install',
+        '--classmap-authoritative',
+        '--no-progress',
+        '--no-suggest',
+        '-o',
+        '--no-cache',
+        '--no-scripts'
+      ],
+      cwd
+    )
+    composer(
+      [
+        'dump',
+        '--classmap-authoritative',
+        '--no-progress',
+        '--no-suggest',
+        '-o',
+        '--no-scripts'
+      ],
       cwd
     )
     const changedIncludeRules = include.map(key => key.replace(/\\/g, '/'))
@@ -139,7 +158,7 @@ export default class implements GeneratorInterface {
           '-d',
           'error_reporting=0',
           '-r',
-          'var_dump("q"); require "./vendor/autoload.php"; var_dump("x"); echo json_encode(array_keys(include("./vendor/composer/autoload_classmap.php")));'
+          'require "./vendor/autoload.php"; echo json_encode(array_keys(require("./vendor/composer/autoload_classmap.php")));'
         ],
         process.cwd()
       )

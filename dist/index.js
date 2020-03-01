@@ -1715,7 +1715,23 @@ class default_1 {
      * @param string tempDocsPath Temporally docs folder where new documentation should be generated
      */
     generateConfig(cwd, rootNamespace, include, tempDocsPath) {
-        helpers_1.composer(['install', '--classmap-authoritative', '--no-progress', '--no-suggest'], cwd);
+        helpers_1.composer([
+            'install',
+            '--classmap-authoritative',
+            '--no-progress',
+            '--no-suggest',
+            '-o',
+            '--no-cache',
+            '--no-scripts'
+        ], cwd);
+        helpers_1.composer([
+            'dump',
+            '--classmap-authoritative',
+            '--no-progress',
+            '--no-suggest',
+            '-o',
+            '--no-scripts'
+        ], cwd);
         const changedIncludeRules = include.map(key => key.replace(/\\/g, '/'));
         const classes = this.readComposerConfig()
             .filter(key => key !== null)
@@ -1744,7 +1760,7 @@ class default_1 {
             '-d',
             'error_reporting=0',
             '-r',
-            'var_dump("q"); require "./vendor/autoload.php"; var_dump("x"); echo json_encode(array_keys(include("./vendor/composer/autoload_classmap.php")));'
+            'require "./vendor/autoload.php"; echo json_encode(array_keys(require("./vendor/composer/autoload_classmap.php")));'
         ], process.cwd()));
     }
 }
