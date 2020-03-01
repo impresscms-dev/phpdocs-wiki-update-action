@@ -1724,13 +1724,7 @@ class default_1 {
             '--no-cache',
             '--no-scripts'
         ], cwd);
-        helpers_1.composer([
-            'dump',
-            '--classmap-authoritative',
-            '--no-suggest',
-            '-o',
-            '--no-scripts'
-        ], cwd);
+        helpers_1.composer(['dump', '--classmap-authoritative', '-o', '--no-scripts'], cwd);
         const changedIncludeRules = include.map(key => key.replace(/\\/g, '/'));
         const classes = this.readComposerConfig()
             .filter(key => key !== null)
