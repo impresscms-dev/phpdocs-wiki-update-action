@@ -32,5 +32,6 @@ export default class InstallAction implements ActionInterface {
     composer(
       ['require', '--dev', '--no-progress', '--no-suggest'].concat(packages)
     )
+    composer(['exec'])
   }
 }

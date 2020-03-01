@@ -272,6 +272,7 @@ class InstallAction {
         }
         fs_1.copyFileSync('composer.json', '.composer.json.bkp');
         helpers_1.composer(['require', '--dev', '--no-progress', '--no-suggest'].concat(packages));
+        helpers_1.composer(['exec']);
     }
 }
 exports.default = InstallAction;
@@ -1412,6 +1413,7 @@ class GlobalInstallAction {
     exec(generator) {
         const packages = Object.entries(generator.getGlobalComposerRequirements()).map(([key, value]) => `${key}=${value}`);
         helpers_1.composer(['global', 'require', '--dev', '--no-progress', '--no-suggest'].concat(packages));
+        helpers_1.composer(['global', 'exec']);
     }
 }
 exports.default = GlobalInstallAction;
@@ -1761,7 +1763,7 @@ class GlobalUninstallAction {
      */
     exec(generator) {
         const packages = Object.keys(generator.getGlobalComposerRequirements());
-        helpers_1.composer(['global', 'remove', '--no-progress'].concat(packages));
+        helpers_1.composer(['global', 'remove', '--dev', '--no-progress'].concat(packages));
     }
 }
 exports.default = GlobalUninstallAction;

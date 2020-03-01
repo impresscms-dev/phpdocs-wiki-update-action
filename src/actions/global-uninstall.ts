@@ -22,6 +22,6 @@ export default class GlobalUninstallAction implements ActionInterface {
    */
   exec(generator: GeneratorInterface): void {
     const packages = Object.keys(generator.getGlobalComposerRequirements())
-    composer(['global', 'remove', '--no-progress'].concat(packages))
+    composer(['global', 'remove', '--dev', '--no-progress'].concat(packages))
   }
 }

@@ -29,5 +29,6 @@ export default class GlobalInstallAction implements ActionInterface {
         packages
       )
     )
+    composer(['global', 'exec'])
   }
 }
