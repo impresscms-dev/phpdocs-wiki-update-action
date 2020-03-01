@@ -1744,7 +1744,7 @@ class default_1 {
             '-d',
             'error_reporting=0',
             '-r',
-            'try { require "./vendor/autoload.php"; echo json_encode(array_keys(include("./vendor/composer/autoload_classmap.php"))); } catch (\\Exception $ex) { var_dump($ex); exit(2); }'
+            'var_dump("q"); require "./vendor/autoload.php"; var_dump("x"); echo json_encode(array_keys(include("./vendor/composer/autoload_classmap.php")));'
         ], process.cwd()));
     }
 }
