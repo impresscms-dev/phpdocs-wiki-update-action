@@ -135,23 +135,23 @@ export default class implements GeneratorInterface {
    * Reads autoload classes from composer
    */
   protected readComposerConfig(): string[] {
-    execCommand('php', ['--version'], process.cwd())
+    /*execCommand('php', ['--version'], process.cwd())
     execCommand(
       'cat',
       ['./vendor/composer/autoload_classmap.php'],
       process.cwd()
-    )
+    )*/
     return JSON.parse(
       execCommandAndReturn(
         'php',
         [
-          '-n',
+        /*  '-n',
           '-d',
           'display_errors=0',
           '-d',
           'display_startup_errors=Off',
           '-d',
-          'error_reporting=0',
+          'error_reporting=0',*/
           '-r',
           'require "./vendor/autoload.php"; echo json_encode(array_keys(require("./vendor/composer/autoload_classmap.php")));'
         ],
