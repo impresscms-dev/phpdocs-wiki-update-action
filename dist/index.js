@@ -1727,7 +1727,6 @@ class default_1 {
         helpers_1.composer([
             'dump',
             '--classmap-authoritative',
-            '--no-progress',
             '--no-suggest',
             '-o',
             '--no-scripts'

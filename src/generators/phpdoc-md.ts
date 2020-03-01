@@ -97,7 +97,6 @@ export default class implements GeneratorInterface {
       [
         'dump',
         '--classmap-authoritative',
-        '--no-progress',
         '--no-suggest',
         '-o',
         '--no-scripts'
