@@ -17,7 +17,7 @@ inputs:
   engine:
     description: What documentation generator should be used
     required: false
-    default: phpdoc-md
+    default: clean/phpdoc-md
   class_root_namespace:
     description: Root class namespace that should be used for documentation
     required: false

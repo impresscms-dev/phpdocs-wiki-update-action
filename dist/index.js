@@ -55,9 +55,12 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const phpdoc_md_1 = __importDefault(__webpack_require__(509));
+const clean_phpdoc_md_1 = __importDefault(__webpack_require__(714));
+const evert_phpdoc_md_1 = __importDefault(__webpack_require__(679));
 const generators = {
-    'phpdoc-md': new phpdoc_md_1.default()
+    'clean/phpdoc-md': new clean_phpdoc_md_1.default(),
+    'phpdoc-md': new clean_phpdoc_md_1.default(),
+    'evert/phpdoc-md': new evert_phpdoc_md_1.default()
 };
 exports.default = generators;
 
@@ -257,13 +260,13 @@ class InstallAction {
      * @inheritDoc
      */
     shouldRun(generator) {
-        return generator.getComposerRequirements().length > 0;
+        return Object.keys(generator.getComposerRequirements()).length > 0;
     }
     /**
      * @inheritDoc
      */
     exec(generator) {
-        const packages = generator.getComposerRequirements();
+        const packages = Object.entries(generator.getComposerRequirements()).map(([key, value]) => `${key}=${value}`);
         if (fs_1.existsSync('composer.lock')) {
             fs_1.copyFileSync('composer.lock', '.composer.lock.bkp');
         }
@@ -809,7 +812,10 @@ const commit_1 = __importDefault(__webpack_require__(534));
 const push_update_1 = __importDefault(__webpack_require__(122));
 const uninstall_1 = __importDefault(__webpack_require__(481));
 const remove_not_required_files_1 = __importDefault(__webpack_require__(771));
+const global_install_1 = __importDefault(__webpack_require__(450));
+const global_uninstall_1 = __importDefault(__webpack_require__(533));
 const actions = [
+    new global_install_1.default(),
     new install_1.default(),
     new clone_wiki_1.default(),
     new exec_before_generator_Actions_1.default(),
@@ -823,6 +829,7 @@ const actions = [
     new commit_1.default(),
     new push_update_1.default(),
     new uninstall_1.default(),
+    new global_uninstall_1.default(),
     new remove_not_required_files_1.default()
 ];
 exports.default = actions;
@@ -1379,6 +1386,39 @@ function escapeProperty(s) {
 
 /***/ }),
 
+/***/ 450:
+/***/ (function(__unusedmodule, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+const helpers_1 = __webpack_require__(872);
+class GlobalInstallAction {
+    /**
+     * @inheritDoc
+     */
+    getDescription() {
+        return 'Installing global required composer packages...';
+    }
+    /**
+     * @inheritDoc
+     */
+    shouldRun(generator) {
+        return Object.keys(generator.getGlobalComposerRequirements()).length > 0;
+    }
+    /**
+     * @inheritDoc
+     */
+    exec(generator) {
+        const packages = Object.entries(generator.getGlobalComposerRequirements()).map(([key, value]) => `${key}=${value}`);
+        helpers_1.composer(['global', 'require', '--dev', '--no-progress', '--no-suggest'].concat(packages));
+    }
+}
+exports.default = GlobalInstallAction;
+
+
+/***/ }),
+
 /***/ 470:
 /***/ (function(__unusedmodule, exports, __webpack_require__) {
 
@@ -1642,7 +1682,7 @@ class UninstallAction {
      * @inheritDoc
      */
     shouldRun(generator) {
-        return generator.getComposerRequirements().length > 0;
+        return Object.keys(generator.getComposerRequirements()).length > 0;
     }
     /**
      * @inheritDoc
@@ -1696,140 +1736,35 @@ exports.default = CheckStatusAction;
 
 /***/ }),
 
-/***/ 509:
+/***/ 533:
 /***/ (function(__unusedmodule, exports, __webpack_require__) {
 
 "use strict";
 
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
-const core_1 = __webpack_require__(470);
 const helpers_1 = __webpack_require__(872);
-const fs_1 = __webpack_require__(747);
-const os_1 = __webpack_require__(87);
-const GeneratorActionStepDefinition_1 = __importDefault(__webpack_require__(279));
-const picomatch = __webpack_require__(827);
-class default_1 {
+class GlobalUninstallAction {
     /**
      * @inheritDoc
      */
-    getComposerRequirements() {
-        return ['clean/phpdoc-md'];
+    getDescription() {
+        return 'Uninstalling global required composer packages...';
     }
     /**
      * @inheritDoc
      */
-    checkIfAllInputOptionsDefined() {
-        return (core_1.getInput('class_root_namespace').length > 0 &&
-            core_1.getInput('include').length > 0);
+    shouldRun(generator) {
+        return Object.keys(generator.getGlobalComposerRequirements()).length > 0;
     }
     /**
      * @inheritDoc
      */
-    getAfterActions() {
-        return [
-            new GeneratorActionStepDefinition_1.default(null, 'Renaming README.md to Home.md...', fs_1.renameSync, core_1.getInput('temp_docs_folder').concat('/README.md'), core_1.getInput('temp_docs_folder').concat('/HOME.md'))
-        ];
-    }
-    /**
-     * @inheritDoc
-     */
-    getBeforeActions() {
-        return [
-            new GeneratorActionStepDefinition_1.default(this, 'Generating generator config...', this.generateConfig, process.cwd(), core_1.getInput('class_root_namespace'), core_1.getInput('include')
-                .replace(/\n/g, os_1.EOL)
-                .split(os_1.EOL)
-                .map(x => x.trim())
-                .filter(x => x.length > 0), core_1.getInput('temp_docs_folder'))
-        ];
-    }
-    /**
-     * @inheritDoc
-     */
-    generate() {
-        helpers_1.composer(['exec', 'phpdoc-md', '-v']);
-    }
-    /**
-     * Generates PHPDocMD config
-     *
-     * @param string cwd
-     * @param string rootNamespace Root namespace for documentation
-     * @param string include      List of classes to include
-     * @param string tempDocsPath Temporally docs folder where new documentation should be generated
-     */
-    generateConfig(cwd, rootNamespace, include, tempDocsPath) {
-        helpers_1.composer([
-            'install',
-            '--classmap-authoritative',
-            '--no-progress',
-            '--no-suggest',
-            '-o',
-            '--no-cache',
-            '--no-scripts'
-        ], cwd);
-        /*  composer(['dump', '--classmap-authoritative', '-o', '--no-scripts'], cwd)*/
-        let changedIncludeRules = include.map(key => key.replace(/\\/g, '/'));
-        const badChangedIncludeRules = changedIncludeRules
-            .filter(rule => rule.startsWith('!'))
-            .map(rule => rule.substring(1));
-        changedIncludeRules = changedIncludeRules.filter(rule => !badChangedIncludeRules.includes(rule.substring(1)));
-        const classes = this.readComposerConfig()
-            .filter(key => key !== null)
-            .map(key => key.replace(/\\/g, '/'))
-            .filter(key => picomatch.isMatch(key, changedIncludeRules))
-            .filter(key => !picomatch.isMatch(key, badChangedIncludeRules))
-            .map(key => key.replace(/\//g, '\\'));
-        core_1.debug('Include rules:');
-        if (changedIncludeRules.length > 0) {
-            for (const rule of changedIncludeRules) {
-                core_1.debug('  [*] '.concat(rule).replace(/\//g, '\\'));
-            }
-        }
-        else {
-            core_1.debug('  (none)');
-        }
-        core_1.debug('Do not include rules:');
-        if (badChangedIncludeRules.length > 0) {
-            for (const rule of badChangedIncludeRules) {
-                core_1.debug('  [*] '.concat(rule).replace(/\//g, '\\'));
-            }
-        }
-        else {
-            core_1.debug('  (none)');
-        }
-        if (classes.length === 0) {
-            throw new Error('No classes matches include rules');
-        }
-        const generated = '<?php'.concat(os_1.EOL, 'return (object)[', os_1.EOL, '    "rootNamespace" => ', JSON.stringify(rootNamespace), ',', os_1.EOL, '    "destDirectory" => ', JSON.stringify(tempDocsPath), ',', os_1.EOL, '    "format" => "github",', os_1.EOL, '    "classes" => [', os_1.EOL, '        ', classes.map(k => JSON.stringify(k)).join(','.concat(os_1.EOL, '        ')), os_1.EOL, '    ],', os_1.EOL, '];');
-        core_1.debug('Generated config:');
-        for (const line of generated.split('\n')) {
-            core_1.debug(line.replace(/~+$/g, '').replace(/\r/g, ''));
-        }
-        fs_1.writeFileSync(cwd.concat('/.phpdoc-md'), generated);
-    }
-    /**
-     * Reads autoload classes from composer
-     */
-    readComposerConfig() {
-        /*execCommand('php', ['--version'], process.cwd())
-        execCommand(
-          'cat',
-          ['./vendor/composer/autoload_classmap.php'],
-          process.cwd()
-        )*/
-        return JSON.parse(helpers_1.execCommandAndReturn('php', [
-            '-d',
-            'display_errors=0',
-            '-d',
-            'error_reporting=0',
-            '-r',
-            'require "./vendor/autoload.php"; echo json_encode(array_keys(require("./vendor/composer/autoload_classmap.php")));'
-        ], process.cwd()));
+    exec(generator) {
+        const packages = Object.keys(generator.getGlobalComposerRequirements());
+        helpers_1.composer(['global', 'remove', '--no-progress'].concat(packages));
     }
 }
-exports.default = default_1;
+exports.default = GlobalUninstallAction;
 
 
 /***/ }),
@@ -2276,6 +2211,121 @@ module.exports = require("path");
 
 /***/ }),
 
+/***/ 679:
+/***/ (function(__unusedmodule, exports, __webpack_require__) {
+
+"use strict";
+
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+const helpers_1 = __webpack_require__(872);
+const GeneratorActionStepDefinition_1 = __importDefault(__webpack_require__(279));
+const core_1 = __webpack_require__(470);
+const fs_1 = __webpack_require__(747);
+class default_1 {
+    /**
+     * @inheritDoc
+     */
+    getGlobalComposerRequirements() {
+        return {
+            'phpdocumentor/phpdocumentor': '2.9.*',
+            'symfony/process': '~2.0'
+        };
+    }
+    /**
+     * @inheritDoc
+     */
+    getComposerRequirements() {
+        return { 'evert/phpdoc-md': '~0.2.0' };
+    }
+    /**
+     * @inheritDoc
+     */
+    checkIfAllInputOptionsDefined() {
+        return true;
+    }
+    /**
+     * @inheritDoc
+     */
+    getAfterActions() {
+        return [
+            new GeneratorActionStepDefinition_1.default(null, 'Deleting XML data...', this.deleteFolder, core_1.getInput('temp_docs_folder').concat('.xml')),
+            new GeneratorActionStepDefinition_1.default(null, 'Deleting Cache data...', this.deleteFolder, core_1.getInput('temp_docs_folder').concat('.cache'))
+        ];
+    }
+    /**
+     * @inheritDoc
+     */
+    getBeforeActions() {
+        return [
+            new GeneratorActionStepDefinition_1.default(this, 'Removing dev requirements...', this.removeDevRequirements),
+            new GeneratorActionStepDefinition_1.default(this, 'Generating XML data...', this.generateXML, core_1.getInput('temp_docs_folder').concat('.xml'), core_1.getInput('temp_docs_folder').concat('.cache')),
+            new GeneratorActionStepDefinition_1.default(this, 'Install dev requirements...', this.installDevRequirements),
+            new GeneratorActionStepDefinition_1.default(null, 'Creating docs folder...', fs_1.mkdirSync, core_1.getInput('temp_docs_folder'))
+        ];
+    }
+    /**
+     * @inheritDoc
+     */
+    generate() {
+        helpers_1.composer([
+            'exec',
+            'phpdocmd',
+            core_1.getInput('temp_docs_folder').concat('.xml/structure.xml'),
+            core_1.getInput('temp_docs_folder'),
+            '-v'
+        ]);
+    }
+    /**
+     * Generates XML Data
+     *
+     * @param string dstPath Where to place result?
+     * @param string cachePath Cache path
+     */
+    generateXML(dstPath, cachePath) {
+        helpers_1.composer([
+            'global',
+            'exec',
+            'phpdoc',
+            '-v',
+            '--',
+            '--cache-folder',
+            cachePath,
+            '-d',
+            process.cwd().replace(/\\/g, '/'),
+            '-t',
+            dstPath,
+            '--template=xml'
+        ]);
+    }
+    /**
+     * Removes data folder
+     *
+     * @param string pathToDelete Path to delete
+     */
+    deleteFolder(pathToDelete) {
+        helpers_1.execCommand('rm', ['-rf', pathToDelete], process.cwd());
+    }
+    /**
+     * Remove dev requirements
+     */
+    removeDevRequirements() {
+        helpers_1.composer(['install', '--no-dev']);
+    }
+    /**
+     * Installing dev requirements
+     */
+    installDevRequirements() {
+        helpers_1.composer(['install']);
+    }
+}
+exports.default = default_1;
+
+
+/***/ }),
+
 /***/ 687:
 /***/ (function(__unusedmodule, exports) {
 
@@ -2305,6 +2355,150 @@ class ExecBeforeGeneratorActionsAction {
     }
 }
 exports.default = ExecBeforeGeneratorActionsAction;
+
+
+/***/ }),
+
+/***/ 714:
+/***/ (function(__unusedmodule, exports, __webpack_require__) {
+
+"use strict";
+
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+const core_1 = __webpack_require__(470);
+const helpers_1 = __webpack_require__(872);
+const fs_1 = __webpack_require__(747);
+const os_1 = __webpack_require__(87);
+const GeneratorActionStepDefinition_1 = __importDefault(__webpack_require__(279));
+const picomatch = __webpack_require__(827);
+class default_1 {
+    /**
+     * @inheritDoc
+     */
+    getGlobalComposerRequirements() {
+        return {};
+    }
+    /**
+     * @inheritDoc
+     */
+    getComposerRequirements() {
+        return { 'clean/phpdoc-md': '*' };
+    }
+    /**
+     * @inheritDoc
+     */
+    checkIfAllInputOptionsDefined() {
+        return (core_1.getInput('class_root_namespace').length > 0 &&
+            core_1.getInput('include').length > 0);
+    }
+    /**
+     * @inheritDoc
+     */
+    getAfterActions() {
+        return [
+            new GeneratorActionStepDefinition_1.default(null, 'Renaming README.md to Home.md...', fs_1.renameSync, core_1.getInput('temp_docs_folder').concat('/README.md'), core_1.getInput('temp_docs_folder').concat('/HOME.md'))
+        ];
+    }
+    /**
+     * @inheritDoc
+     */
+    getBeforeActions() {
+        return [
+            new GeneratorActionStepDefinition_1.default(this, 'Generating generator config...', this.generateConfig, process.cwd(), core_1.getInput('class_root_namespace'), core_1.getInput('include')
+                .replace(/\n/g, os_1.EOL)
+                .split(os_1.EOL)
+                .map(x => x.trim())
+                .filter(x => x.length > 0), core_1.getInput('temp_docs_folder'))
+        ];
+    }
+    /**
+     * @inheritDoc
+     */
+    generate() {
+        helpers_1.composer(['exec', 'phpdoc-md', '-v']);
+    }
+    /**
+     * Generates PHPDocMD config
+     *
+     * @param string cwd
+     * @param string rootNamespace Root namespace for documentation
+     * @param string include      List of classes to include
+     * @param string tempDocsPath Temporally docs folder where new documentation should be generated
+     */
+    generateConfig(cwd, rootNamespace, include, tempDocsPath) {
+        helpers_1.composer([
+            'install',
+            '--classmap-authoritative',
+            '--no-progress',
+            '--no-suggest',
+            '-o',
+            '--no-cache',
+            '--no-scripts'
+        ], cwd);
+        /*  composer(['dump', '--classmap-authoritative', '-o', '--no-scripts'], cwd)*/
+        let changedIncludeRules = include.map(key => key.replace(/\\/g, '/'));
+        const badChangedIncludeRules = changedIncludeRules
+            .filter(rule => rule.startsWith('!'))
+            .map(rule => rule.substring(1));
+        changedIncludeRules = changedIncludeRules.filter(rule => !badChangedIncludeRules.includes(rule.substring(1)));
+        const classes = this.readComposerConfig()
+            .filter(key => key !== null)
+            .map(key => key.replace(/\\/g, '/'))
+            .filter(key => picomatch.isMatch(key, changedIncludeRules))
+            .filter(key => !picomatch.isMatch(key, badChangedIncludeRules))
+            .map(key => key.replace(/\//g, '\\'));
+        core_1.debug('Include rules:');
+        if (changedIncludeRules.length > 0) {
+            for (const rule of changedIncludeRules) {
+                core_1.debug('  [*] '.concat(rule).replace(/\//g, '\\'));
+            }
+        }
+        else {
+            core_1.debug('  (none)');
+        }
+        core_1.debug('Do not include rules:');
+        if (badChangedIncludeRules.length > 0) {
+            for (const rule of badChangedIncludeRules) {
+                core_1.debug('  [*] '.concat(rule).replace(/\//g, '\\'));
+            }
+        }
+        else {
+            core_1.debug('  (none)');
+        }
+        if (classes.length === 0) {
+            throw new Error('No classes matches include rules');
+        }
+        const generated = '<?php'.concat(os_1.EOL, 'return (object)[', os_1.EOL, '    "rootNamespace" => ', JSON.stringify(rootNamespace), ',', os_1.EOL, '    "destDirectory" => ', JSON.stringify(tempDocsPath), ',', os_1.EOL, '    "format" => "github",', os_1.EOL, '    "classes" => [', os_1.EOL, '        ', classes.map(k => JSON.stringify(k)).join(','.concat(os_1.EOL, '        ')), os_1.EOL, '    ],', os_1.EOL, '];');
+        core_1.debug('Generated config:');
+        for (const line of generated.split('\n')) {
+            core_1.debug(line.replace(/~+$/g, '').replace(/\r/g, ''));
+        }
+        fs_1.writeFileSync(cwd.concat('/.phpdoc-md'), generated);
+    }
+    /**
+     * Reads autoload classes from composer
+     */
+    readComposerConfig() {
+        /*execCommand('php', ['--version'], process.cwd())
+        execCommand(
+          'cat',
+          ['./vendor/composer/autoload_classmap.php'],
+          process.cwd()
+        )*/
+        return JSON.parse(helpers_1.execCommandAndReturn('php', [
+            '-d',
+            'display_errors=0',
+            '-d',
+            'error_reporting=0',
+            '-r',
+            'require "./vendor/autoload.php"; echo json_encode(array_keys(require("./vendor/composer/autoload_classmap.php")));'
+        ], process.cwd()));
+    }
+}
+exports.default = default_1;
 
 
 /***/ }),

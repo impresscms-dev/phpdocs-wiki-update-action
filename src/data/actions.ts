@@ -16,8 +16,11 @@ import PushUpdateAction from '../Actions/push-update'
 import ActionInterface from '../ActionInterface'
 import UninstallAction from '../actions/uninstall'
 import RemoveNotRequiredFilesAction from '../actions/remove-not-required-files'
+import GlobalInstallAction from '../actions/global-install'
+import GlobalUninstallAction from '../actions/global-uninstall'
 
 const actions: ActionInterface[] = [
+  new GlobalInstallAction(),
   new InstallAction(),
   new CloneWikiAction(),
   new ExecBeforeGeneratorActionsAction(),
@@ -31,6 +34,7 @@ const actions: ActionInterface[] = [
   new CommitAction(),
   new PushUpdateAction(),
   new UninstallAction(),
+  new GlobalUninstallAction(),
   new RemoveNotRequiredFilesAction()
 ]
 

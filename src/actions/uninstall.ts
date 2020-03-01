@@ -15,7 +15,7 @@ export default class UninstallAction implements ActionInterface {
    * @inheritDoc
    */
   shouldRun(generator: GeneratorInterface): boolean {
-    return generator.getComposerRequirements().length > 0
+    return Object.keys(generator.getComposerRequirements()).length > 0
   }
 
   /**

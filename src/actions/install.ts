@@ -15,14 +15,16 @@ export default class InstallAction implements ActionInterface {
    * @inheritDoc
    */
   shouldRun(generator: GeneratorInterface): boolean {
-    return generator.getComposerRequirements().length > 0
+    return Object.keys(generator.getComposerRequirements()).length > 0
   }
 
   /**
    * @inheritDoc
    */
   exec(generator: GeneratorInterface): void {
-    const packages = generator.getComposerRequirements()
+    const packages = Object.entries(generator.getComposerRequirements()).map(
+      ([key, value]) => `${key}=${value}`
+    )
     if (existsSync('composer.lock')) {
       copyFileSync('composer.lock', '.composer.lock.bkp')
     }

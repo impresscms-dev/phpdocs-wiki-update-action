@@ -10,8 +10,15 @@ export default class implements GeneratorInterface {
   /**
    * @inheritDoc
    */
-  getComposerRequirements(): string[] {
-    return ['clean/phpdoc-md']
+  getGlobalComposerRequirements(): {[key: string]: string} {
+    return {}
+  }
+
+  /**
+   * @inheritDoc
+   */
+  getComposerRequirements(): {[key: string]: string} {
+    return {'clean/phpdoc-md': '*'}
   }
 
   /**

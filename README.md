@@ -30,10 +30,11 @@ jobs:
       - name: Checkouting project code...
         uses: actions/checkout@v2
       - name: Updating wiki...
-        uses: imponeer/phpdocs-wiki-update-action
+        uses: impresscms-dev/phpdocs-wiki-update-action
         with:
           wiki_github_update_token: ${{ secrets.WIKI_GITHUB_UPDATE_TOKEN }}
           wiki_github_update_user: ${{ secrets.WIKI_GITHUB_UPDATE_USER }}
+          engine: clean/phpdoc-md
           class_root_namespace: My Project
           include: |
             \\MyProject\\**\\
@@ -48,10 +49,10 @@ This action supports such arguments (used in `with` keyword):
 | wiki_github_update_token | Yes | | *all* | GitHub token to use for updating project wiki |
 | wiki_github_update_user | Yes | | *all* | GitHub username for whom this token belongs |
 | temp_docs_folder | No | .docs | *all* | Temporally folder name for store generated project documentation |
-| engine | No | phpdoc-md | *all* | What documentation generator should be used? At current moment only `phpdoc-md` is supported. |
+| engine | No | phpdoc-md | *all* | What documentation generator should be used? At current moment `clean/phpdoc-md` and `evert/phpdoc-md` are supported. |
 | class_root_namespace | No | | phpdoc-md | Root class namespace that should be used for documentation |
 | include | No | | phpdoc-md | Defines what classes should be included in generated documentation (supports glob style wildcards syntax; each line means one rule) |
-| prefix_lines | No | `##### Notice: Wiki was automatic generated from project sources as project API documentation. Do not edit manually!` | phpdoc-md | Lines that will be used to prefix generated wiki content |
+| prefix_lines | No | `##### Notice: Wiki was automatic generated from project sources as project API documentation. Do not edit manually!` | | Lines that will be used to prefix generated wiki content |
 
 ## How to contribute? 
 
