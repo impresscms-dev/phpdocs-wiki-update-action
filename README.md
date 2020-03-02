@@ -53,7 +53,7 @@ This action supports such arguments (used in `with` keyword):
 | class_root_namespace | No | | clean/phpdoc-md | Root class namespace that should be used for documentation |
 | include | No | | clean/phpdoc-md | Defines what classes should be included in generated documentation (supports glob style wildcards syntax; each line means one rule) |
 | prefix_lines | No | `##### Notice: Wiki was automatic generated from project sources as project API documentation. Do not edit manually!` | *all* | Lines that will be used to prefix generated wiki content |
-| ignore_files | No | | evert/phpdoc-md | Defines files that can be ignored (supports glob rules) |
+| ignore_files | No | | evert/phpdoc-md | Defines files that can be ignored (supports glob rules; each line means one rule) |
 
 ## How to contribute? 
 
