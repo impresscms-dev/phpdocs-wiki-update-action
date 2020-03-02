@@ -25,6 +25,10 @@ inputs:
     description: Defines what classes should be included in generated documentation (supports glob style wildcards syntax; each line means one rule)
     required: false
     default:
+  ignored_files:
+    description: Defines files that can be ignored (supports glob rules)
+    required: false
+    default:
   prefix_lines:
     description: Lines that will be used to prefix generated wiki content
     required: false

@@ -2319,7 +2319,7 @@ class default_1 {
             process.platform.toString() === 'win64') {
             cmd = cmd.concat('.bat');
         }
-        helpers_1.execCommand(cmd, [
+        const args = [
             '--cache-folder',
             cachePath,
             '-d',
@@ -2329,8 +2329,17 @@ class default_1 {
             '--template=xml',
             '-v',
             '--ansi',
-            '--no-interaction'
-        ], process.cwd());
+            '--no-interaction',
+            '--extensions=php'
+        ];
+        const ignoreFiles = core_1.getInput('ignore_files')
+            .split('\n')
+            .map(line => line.trim())
+            .filter(line => line && line.length > 0);
+        if (ignoreFiles.length > 0) {
+            args.push('--ignore='.concat(ignoreFiles.join(',')));
+        }
+        helpers_1.execCommand(cmd, args, process.cwd());
     }
     /**
      * Gets global composer path

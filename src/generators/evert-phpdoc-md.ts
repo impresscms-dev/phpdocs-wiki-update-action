@@ -116,22 +116,27 @@ export default class implements GeneratorInterface {
     ) {
       cmd = cmd.concat('.bat')
     }
-    execCommand(
-      cmd,
-      [
-        '--cache-folder',
-        cachePath,
-        '-d',
-        process.cwd().replace(/\\/g, '/'),
-        '-t',
-        dstPath,
-        '--template=xml',
-        '-v',
-        '--ansi',
-        '--no-interaction'
-      ],
-      process.cwd()
-    )
+    const args = [
+      '--cache-folder',
+      cachePath,
+      '-d',
+      process.cwd().replace(/\\/g, '/'),
+      '-t',
+      dstPath,
+      '--template=xml',
+      '-v',
+      '--ansi',
+      '--no-interaction',
+      '--extensions=php'
+    ]
+    const ignoreFiles = getInput('ignore_files')
+      .split('\n')
+      .map(line => line.trim())
+      .filter(line => line && line.length > 0)
+    if (ignoreFiles.length > 0) {
+      args.push('--ignore='.concat(ignoreFiles.join(',')))
+    }
+    execCommand(cmd, args, process.cwd())
   }
 
   /**
