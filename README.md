@@ -16,12 +16,12 @@ name: Automatic update project documentation
 
 on:
   push:
-    branches:
-      - master
-    tags:
-      - 'v*'
-    paths:
-      - '**.php'
+#    branches:
+#      - master
+#    tags:
+#      - 'v*'
+#    paths:
+#      - '**.php'
 
 jobs:
   update_wiki:
