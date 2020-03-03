@@ -1,7 +1,7 @@
 [![License](https://img.shields.io/github/license/imponeer/phpdocs-wiki-update-action.svg)](LICENSE)
 [![GitHub release](https://img.shields.io/github/release/imponeer/phpdocs-wiki-update-action.svg)](https://github.com/imponeer/phpdocs-wiki-update-action/releases)
 
-# Update wiki with PHP project documentation
+# Update wiki with PHP project documentation action
 
 Updates GitHub project wiki with automatic generated project documentation.
 
@@ -44,16 +44,38 @@ jobs:
 
 This action supports such arguments (used in `with` keyword):
 
-| Argument | Required | Default value | Used for engine | Description |
-|----------|----------|---------------|--------|-------------|
-| wiki_github_update_token | Yes | | *all* | GitHub token to use for updating project wiki |
-| wiki_github_update_user | Yes | | *all* | GitHub username for whom this token belongs |
-| temp_docs_folder | No | .docs | *all* | Temporally folder name for store generated project documentation |
-| engine | No | clean/phpdoc-md | *all* | What documentation generator should be used? At current moment [clean/phpdoc-md](https://github.com/clean/phpdoc-md) and [evert/phpdoc-md](https://github.com/evert/phpdoc-md) are supported. |
-| class_root_namespace | No | | clean/phpdoc-md | Root class namespace that should be used for documentation |
-| include | No | | clean/phpdoc-md | Defines what classes should be included in generated documentation (supports glob style wildcards syntax; each line means one rule) |
-| prefix_lines | No | `##### Notice: Wiki was automatic generated from project sources as project API documentation. Do not edit manually!` | *all* | Lines that will be used to prefix generated wiki content |
-| ignore_files | No | | evert/phpdoc-md | Defines files that can be ignored (supports glob rules; each line means one rule) |
+| Argument | Required | Default value | Description |
+|----------|----------|---------------|-------------|
+| wiki_github_update_token | Yes | | GitHub token to use for updating project wiki |
+| wiki_github_update_user | Yes | | GitHub username for whom this token belongs |
+| temp_docs_folder | No | .docs | Temporally folder name for store generated project documentation |
+| engine | No | clean/phpdoc-md | What documentation generator should be used? See engines section about possible values |
+| prefix_lines | No | `##### Notice: Wiki was automatic generated from project sources as project API documentation. Do not edit manually!` | Lines that will be used to prefix generated wiki content |
+
+Some engines supports or requires extra parameters. See selected engine section about more info.
+
+## Engines
+
+Update wiki with PHP project documentation action supports multiple engines for generating content. Usually names for engines are same as composer packages that they are using.
+
+### `clean/phpdoc-md` [🔗](https://github.com/clean/phpdoc-md)
+
+This engine is default for the action. It needs to specify classes that should be included in generated wiki code, but it works much faster than `evert/phpdoc-md`. Sadly, not for every project right now is possible to use this one.
+
+This engine supports such extra arguments:
+| Argument | Required | Default value | Description |
+|----------|----------|---------------|-------------|
+| class_root_namespace | No | | Root class namespace that should be used for documentation |
+| include | No | | Defines what classes should be included in generated documentation (supports glob style wildcards syntax; each line means one rule) |
+
+### `evert/phpdoc-md` [🔗](https://github.com/evert/phpdoc-md)
+
+This engine first generates an XML data tree with the help of PHPDocumentator and then it is converted to MarkDown format, which is then uploaded to a project wiki. That's why is much slower than `clean/phpdoc-md` but generates much better results.
+
+This engine supports such extra arguments:
+| Argument | Required | Default value | Description |
+|----------|----------|---------------|-------------|
+| ignore_files | No | | Defines files that can be ignored (supports glob rules; each line means one rule) |
 
 ## How to contribute? 
 
