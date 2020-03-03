@@ -49,10 +49,10 @@ This action supports such arguments (used in `with` keyword):
 | wiki_github_update_token | Yes | | GitHub token to use for updating project wiki |
 | wiki_github_update_user | Yes | | GitHub username for whom this token belongs |
 | temp_docs_folder | No | .docs | Temporally folder name for store generated project documentation |
-| engine | No | clean/phpdoc-md | What documentation generator should be used? See engines section about possible values |
+| engine | No | clean/phpdoc-md | What documentation generator should be used? See [engines section](#engines) about possible values |
 | prefix_lines | No | `##### Notice: Wiki was automatic generated from project sources as project API documentation. Do not edit manually!` | Lines that will be used to prefix generated wiki content |
 
-Some engines supports or requires extra parameters. See selected engine section about more info.
+Some engines supports or requires extra parameters. See [engines section](#engines) about more info.
 
 ## Engines
 
