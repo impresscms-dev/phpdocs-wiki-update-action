@@ -36,5 +36,5 @@ inputs:
       ##### Notice: Wiki was automatic generated from project sources as project API documentation. Do not edit manually!
 
 runs:
-  using: 'node12'
+  using: 'node10'
   main: 'dist/index.js'
