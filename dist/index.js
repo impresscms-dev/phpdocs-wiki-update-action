@@ -3722,7 +3722,11 @@ class PrefixAction {
         const prefix = this.getPrefixLines();
         for (const file of readDirSync(newDocs)) {
             core_1.debug(' '.concat(file.toString()));
-            fs_1.writeFileSync(file.toString(), prefix.concat(fs_1.readFileSync(file.toString()).toString()));
+            const content = fs_1.readFileSync(file.toString(), 'r');
+            fs_1.writeFileSync(file.toString(), prefix.concat(content
+                .split(/\n/g)
+                .map(line => line.trimRight())
+                .join(os_1.EOL)));
         }
     }
     /**

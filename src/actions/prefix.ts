@@ -27,9 +27,15 @@ export default class PrefixAction implements ActionInterface {
     const prefix = this.getPrefixLines()
     for (const file of readDirSync(newDocs)) {
       debug(' '.concat(file.toString()))
+      const content = readFileSync(file.toString(), 'r')
       writeFileSync(
         file.toString(),
-        prefix.concat(readFileSync(file.toString()).toString())
+        prefix.concat(
+          content
+            .split(/\n/g)
+            .map(line => line.trimRight())
+            .join(EOL)
+        )
       )
     }
   }
