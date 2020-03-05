@@ -3700,6 +3700,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const os_1 = __webpack_require__(87);
 const core_1 = __webpack_require__(470);
 const fs_1 = __webpack_require__(747);
+const helpers_1 = __webpack_require__(872);
 const readDirSync = __webpack_require__(120);
 class PrefixAction {
     /**
@@ -3728,10 +3729,10 @@ class PrefixAction {
                 .map(line => line.trimRight())
                 .join(os_1.EOL));
             core_1.debug('Old content:');
-            core_1.debug(content);
+            helpers_1.execCommand('cat', [file.toString()], process.cwd());
             core_1.debug('New content:');
-            core_1.debug(newContent);
             fs_1.writeFileSync(file.toString(), newContent);
+            helpers_1.execCommand('cat', [file.toString()], process.cwd());
             throw new Error('Test');
         }
     }
