@@ -2,7 +2,6 @@ import {EOL} from 'os'
 import ActionInterface from '../ActionInterface'
 import {debug, getInput} from '@actions/core'
 import {readFileSync, writeFileSync} from 'fs'
-import {execCommand} from '../helpers'
 import readDirSync = require('recursive-readdir-sync')
 
 export default class PrefixAction implements ActionInterface {
@@ -35,11 +34,7 @@ export default class PrefixAction implements ActionInterface {
           .map(line => line.trimRight())
           .join(EOL)
       )
-      debug('Old content:')
-      execCommand('cat', [file.toString()], process.cwd())
-      debug('New content:')
       writeFileSync(file.toString(), newContent)
-      execCommand('cat', [file.toString()], process.cwd())
       throw new Error('Test')
     }
   }

@@ -289,6 +289,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const core_1 = __webpack_require__(470);
 const fs_1 = __webpack_require__(747);
 const path_1 = __webpack_require__(622);
+const helpers_1 = __webpack_require__(872);
 const readDirSync = __webpack_require__(120);
 class FlattenFileStructureAction {
     /**
@@ -356,7 +357,9 @@ class FlattenFileStructureAction {
      */
     fixesToNewStyleLinks(filename, filenames) {
         core_1.debug(` Fixing ${filename}...`);
-        const content = fs_1.readFileSync(filename).toString();
+        core_1.debug('Old content:');
+        helpers_1.execCommand('cat', [filename], process.cwd());
+        const content = fs_1.readFileSync(filename, 'utf8');
         const allPossibleFilenames = {};
         for (const oldFilename in filenames) {
             const currentFilename = filenames[oldFilename];
@@ -387,6 +390,8 @@ class FlattenFileStructureAction {
         if (newContent !== content) {
             core_1.debug('  Changed.');
             fs_1.writeFileSync(filename, newContent);
+            core_1.debug('New content:');
+            helpers_1.execCommand('cat', [filename], process.cwd());
         }
     }
     /**
@@ -3700,7 +3705,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const os_1 = __webpack_require__(87);
 const core_1 = __webpack_require__(470);
 const fs_1 = __webpack_require__(747);
-const helpers_1 = __webpack_require__(872);
 const readDirSync = __webpack_require__(120);
 class PrefixAction {
     /**
@@ -3728,11 +3732,7 @@ class PrefixAction {
                 .split(/\n/g)
                 .map(line => line.trimRight())
                 .join(os_1.EOL));
-            core_1.debug('Old content:');
-            helpers_1.execCommand('cat', [file.toString()], process.cwd());
-            core_1.debug('New content:');
             fs_1.writeFileSync(file.toString(), newContent);
-            helpers_1.execCommand('cat', [file.toString()], process.cwd());
             throw new Error('Test');
         }
     }

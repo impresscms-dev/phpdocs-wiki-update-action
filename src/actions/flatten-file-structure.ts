@@ -2,6 +2,7 @@ import ActionInterface from '../ActionInterface'
 import {debug, getInput} from '@actions/core'
 import {readFileSync, renameSync, writeFileSync} from 'fs'
 import {basename, dirname, extname} from 'path'
+import {execCommand} from '../helpers'
 import readDirSync = require('recursive-readdir-sync')
 
 export default class FlattenFileStructureAction implements ActionInterface {
@@ -80,7 +81,9 @@ export default class FlattenFileStructureAction implements ActionInterface {
     filenames: {[x: string]: string}
   ): void {
     debug(` Fixing ${filename}...`)
-    const content = readFileSync(filename).toString()
+    debug('Old content:')
+    execCommand('cat', [filename], process.cwd())
+    const content = readFileSync(filename, 'utf8')
     const allPossibleFilenames: {[x: string]: string} = {}
     for (const oldFilename in filenames) {
       const currentFilename = filenames[oldFilename]
@@ -125,6 +128,8 @@ export default class FlattenFileStructureAction implements ActionInterface {
     if (newContent !== content) {
       debug('  Changed.')
       writeFileSync(filename, newContent)
+      debug('New content:')
+      execCommand('cat', [filename], process.cwd())
     }
   }
 
