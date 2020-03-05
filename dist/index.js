@@ -3723,10 +3723,16 @@ class PrefixAction {
         for (const file of readDirSync(newDocs)) {
             core_1.debug(' '.concat(file.toString()));
             const content = fs_1.readFileSync(file.toString(), 'utf8');
-            fs_1.writeFileSync(file.toString(), prefix.concat(content
+            const newContent = prefix.concat(content
                 .split(/\n/g)
                 .map(line => line.trimRight())
-                .join(os_1.EOL)));
+                .join(os_1.EOL));
+            core_1.debug('Old content:');
+            core_1.debug(content);
+            core_1.debug('New content:');
+            core_1.debug(newContent);
+            fs_1.writeFileSync(file.toString(), newContent);
+            throw new Error('Test');
         }
     }
     /**
