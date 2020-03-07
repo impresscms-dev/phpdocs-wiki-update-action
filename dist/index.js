@@ -258,6 +258,24 @@ class ExecutionHandler {
         }
         throw new Error(`Execution failed`);
     }
+    /**
+     * Is running on Windows?
+     *
+     * @return boolean
+     */
+    isRunningOnWindows() {
+        return (process.platform.toString() === 'win32' ||
+            process.platform.toString() === 'win64');
+    }
+    /**
+     * Sufixes file extension if running on windows
+     *
+     * @param string filename Filename for witch add extension
+     * @param string winExt Extension to add
+     */
+    suffixExtIfRunningOnWindows(filename, winExt = 'bat') {
+        return this.isRunningOnWindows() ? filename.concat('.', winExt) : filename;
+    }
 }
 exports.default = new ExecutionHandler();
 
@@ -440,7 +458,7 @@ class FlattenFileStructureAction {
         }
         for (const fileInfo of this.filterFileInfoByShortPath(files, true)) {
             let oldFilePath = fileInfo.shortPath.concat('/', fileInfo.filename);
-            if (process.platform === 'win32') {
+            if (Execution_1.default.isRunningOnWindows()) {
                 oldFilePath = oldFilePath.replace(/\\/g, '/');
             }
             if (oldFilePath.substr(0, 1) === '/') {
@@ -2665,9 +2683,9 @@ class default_1 {
      */
     getBeforeActions() {
         return [
-            new GeneratorActionStepDefinition_1.default(this, 'Removing dev requirements...', this.removeDevRequirements),
+            new GeneratorActionStepDefinition_1.default(this, 'Removing dev requirements...', Composer_1.default.removeDevRequirements),
             new GeneratorActionStepDefinition_1.default(this, 'Generating XML data...', this.generateXML, TempPaths_1.default.get('xml'), TempPaths_1.default.get('cache')),
-            new GeneratorActionStepDefinition_1.default(this, 'Install dev requirements...', this.installDevRequirements)
+            new GeneratorActionStepDefinition_1.default(this, 'Install dev requirements...', Composer_1.default.installDevRequirements)
         ];
     }
     /**
@@ -2691,11 +2709,7 @@ class default_1 {
      */
     generateXML(dstPath, cachePath) {
         const path = Composer_1.default.getGlobalPath();
-        let cmd = path_1.join(path, 'vendor', 'bin', 'phpdoc').replace(/\\/g, '/');
-        if (process.platform.toString() === 'win32' ||
-            process.platform.toString() === 'win64') {
-            cmd = cmd.concat('.bat');
-        }
+        const cmd = Execution_1.default.replaceWinPathCharToUnix(Execution_1.default.suffixExtIfRunningOnWindows(path_1.join(path, 'vendor', 'bin', 'phpdoc')));
         const args = [
             '--cache-folder',
             Execution_1.default.replaceWinPathCharToUnix(cachePath),
@@ -2714,18 +2728,6 @@ class default_1 {
             .filter(line => line && line.length > 0)
             .map(line => '--ignore='.concat(line)));
         Execution_1.default.run(cmd, args, process.cwd(), { APP_ENV: 'dev' });
-    }
-    /**
-     * Remove dev requirements
-     */
-    removeDevRequirements() {
-        Composer_1.default.run(['install', '--no-dev']);
-    }
-    /**
-     * Installing dev requirements
-     */
-    installDevRequirements() {
-        Composer_1.default.run(['install']);
     }
 }
 exports.default = default_1;
@@ -4264,12 +4266,7 @@ class ComposerHandler {
          * Global Composer path
          */
         this.globalPath = null;
-        let cmd = 'composer';
-        if (process.platform.toString() === 'win32' ||
-            process.platform.toString() === 'win64') {
-            cmd = 'composer.bat';
-        }
-        this.execName = cmd;
+        this.execName = Execution_1.default.suffixExtIfRunningOnWindows('composer');
     }
     /**
      * Gets global composer path
@@ -4304,6 +4301,18 @@ class ComposerHandler {
      */
     run(args, cwd = null) {
         this.getResults(args, cwd);
+    }
+    /**
+     * Remove dev requirements
+     */
+    removeDevRequirements() {
+        this.run(['install', '--no-dev']);
+    }
+    /**
+     * Installing dev requirements
+     */
+    installDevRequirements() {
+        this.run(['install']);
     }
 }
 exports.default = new ComposerHandler();

@@ -56,7 +56,7 @@ export default class FlattenFileStructureAction implements ActionInterface {
 
     for (const fileInfo of this.filterFileInfoByShortPath(files, true)) {
       let oldFilePath = fileInfo.shortPath.concat('/', fileInfo.filename)
-      if (process.platform === 'win32') {
+      if (Execution.isRunningOnWindows()) {
         oldFilePath = oldFilePath.replace(/\\/g, '/')
       }
       if (oldFilePath.substr(0, 1) === '/') {

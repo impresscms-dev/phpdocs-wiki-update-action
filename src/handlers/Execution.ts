@@ -65,6 +65,31 @@ class ExecutionHandler {
     }
     throw new Error(`Execution failed`)
   }
+
+  /**
+   * Is running on Windows?
+   *
+   * @return boolean
+   */
+  isRunningOnWindows(): boolean {
+    return (
+      process.platform.toString() === 'win32' ||
+      process.platform.toString() === 'win64'
+    )
+  }
+
+  /**
+   * Sufixes file extension if running on windows
+   *
+   * @param string filename Filename for witch add extension
+   * @param string winExt Extension to add
+   */
+  suffixExtIfRunningOnWindows(
+    filename: string,
+    winExt: string = 'bat'
+  ): string {
+    return this.isRunningOnWindows() ? filename.concat('.', winExt) : filename
+  }
 }
 
 export default new ExecutionHandler()

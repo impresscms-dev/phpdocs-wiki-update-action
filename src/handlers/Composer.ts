@@ -18,14 +18,7 @@ class ComposerHandler {
    * Constructor
    */
   constructor() {
-    let cmd = 'composer'
-    if (
-      process.platform.toString() === 'win32' ||
-      process.platform.toString() === 'win64'
-    ) {
-      cmd = 'composer.bat'
-    }
-    this.execName = cmd
+    this.execName = Execution.suffixExtIfRunningOnWindows('composer')
   }
 
   /**
@@ -67,6 +60,20 @@ class ComposerHandler {
    */
   run(args: string[], cwd: string | null = null): void {
     this.getResults(args, cwd)
+  }
+
+  /**
+   * Remove dev requirements
+   */
+  removeDevRequirements(): void {
+    this.run(['install', '--no-dev'])
+  }
+
+  /**
+   * Installing dev requirements
+   */
+  installDevRequirements(): void {
+    this.run(['install'])
   }
 }
 

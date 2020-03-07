@@ -80,7 +80,7 @@ export default class implements GeneratorInterface {
       new GeneratorActionStepDefinition(
         this,
         'Removing dev requirements...',
-        this.removeDevRequirements
+        Composer.removeDevRequirements
       ),
       new GeneratorActionStepDefinition(
         this,
@@ -92,7 +92,7 @@ export default class implements GeneratorInterface {
       new GeneratorActionStepDefinition(
         this,
         'Install dev requirements...',
-        this.installDevRequirements
+        Composer.installDevRequirements
       )
     ]
   }
@@ -121,13 +121,11 @@ export default class implements GeneratorInterface {
    */
   private generateXML(dstPath: string, cachePath: string): void {
     const path = Composer.getGlobalPath()
-    let cmd = join(path, 'vendor', 'bin', 'phpdoc').replace(/\\/g, '/')
-    if (
-      process.platform.toString() === 'win32' ||
-      process.platform.toString() === 'win64'
-    ) {
-      cmd = cmd.concat('.bat')
-    }
+    const cmd = Execution.replaceWinPathCharToUnix(
+      Execution.suffixExtIfRunningOnWindows(
+        join(path, 'vendor', 'bin', 'phpdoc')
+      )
+    )
     const args = [
       '--cache-folder',
       Execution.replaceWinPathCharToUnix(cachePath),
@@ -148,19 +146,5 @@ export default class implements GeneratorInterface {
         .map(line => '--ignore='.concat(line))
     )
     Execution.run(cmd, args, process.cwd(), {APP_ENV: 'dev'})
-  }
-
-  /**
-   * Remove dev requirements
-   */
-  private removeDevRequirements(): void {
-    Composer.run(['install', '--no-dev'])
-  }
-
-  /**
-   * Installing dev requirements
-   */
-  private installDevRequirements(): void {
-    Composer.run(['install'])
   }
 }
