@@ -1,11 +1,11 @@
 import GeneratorInterface from '../GeneratorInterface'
 import {debug, getInput} from '@actions/core'
-import {composer} from '../helpers'
 import {renameSync, writeFileSync} from 'fs'
 import {EOL} from 'os'
 import GeneratorActionStepDefinition from '../GeneratorActionStepDefinition'
 import TempPaths from '../handlers/TempPaths'
 import Execution from '../handlers/Execution'
+import Composer from '../handlers/Composer'
 
 import picomatch = require('picomatch')
 
@@ -95,7 +95,7 @@ export default class implements GeneratorInterface {
    * @inheritDoc
    */
   generate(): void {
-    composer(['exec', 'phpdoc-md', '-v'])
+    Composer.run(['exec', 'phpdoc-md', '-v'])
   }
 
   /**
@@ -112,7 +112,7 @@ export default class implements GeneratorInterface {
     include: string[],
     tempDocsPath: string
   ): void {
-    composer(
+    Composer.run(
       [
         'install',
         '--classmap-authoritative',
@@ -124,7 +124,6 @@ export default class implements GeneratorInterface {
       ],
       cwd
     )
-    /*  composer(['dump', '--classmap-authoritative', '-o', '--no-scripts'], cwd)*/
     let changedIncludeRules = include.map(key => key.replace(/\\/g, '/'))
     const badChangedIncludeRules = changedIncludeRules
       .filter(rule => rule.startsWith('!'))

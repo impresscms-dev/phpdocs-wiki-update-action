@@ -1,6 +1,6 @@
 import ActionInterface from '../ActionInterface'
 import GeneratorInterface from '../GeneratorInterface'
-import {composer} from '../helpers'
+import Composer from '../handlers/Composer'
 
 export default class InstallAction implements ActionInterface {
   /**
@@ -24,9 +24,9 @@ export default class InstallAction implements ActionInterface {
     const packages = Object.entries(generator.getComposerRequirements()).map(
       ([key, value]) => `${key}=${value}`
     )
-    composer(
+    Composer.run(
       ['require', '--dev', '--no-progress', '--no-suggest'].concat(packages)
     )
-    composer(['exec'])
+    Composer.run(['exec'])
   }
 }

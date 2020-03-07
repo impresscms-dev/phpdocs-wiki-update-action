@@ -1,11 +1,11 @@
 import GeneratorInterface from '../GeneratorInterface'
-import {composer, getGlobalComposerPath} from '../helpers'
 import GeneratorActionStepDefinition from '../GeneratorActionStepDefinition'
 import {getInput} from '@actions/core'
 import {renameSync} from 'fs'
 import {join} from 'path'
 import TempPaths from '../handlers/TempPaths'
 import Execution from '../handlers/Execution'
+import Composer from '../handlers/Composer'
 
 export default class implements GeneratorInterface {
   /**
@@ -101,7 +101,7 @@ export default class implements GeneratorInterface {
    * @inheritDoc
    */
   generate(): void {
-    composer([
+    Composer.run([
       'global',
       'exec',
       'phpdocmd',
@@ -120,7 +120,7 @@ export default class implements GeneratorInterface {
    * @param string cachePath Cache path
    */
   private generateXML(dstPath: string, cachePath: string): void {
-    const path = getGlobalComposerPath()
+    const path = Composer.getGlobalPath()
     let cmd = join(path, 'vendor', 'bin', 'phpdoc').replace(/\\/g, '/')
     if (
       process.platform.toString() === 'win32' ||
@@ -154,13 +154,13 @@ export default class implements GeneratorInterface {
    * Remove dev requirements
    */
   private removeDevRequirements(): void {
-    composer(['install', '--no-dev'])
+    Composer.run(['install', '--no-dev'])
   }
 
   /**
    * Installing dev requirements
    */
   private installDevRequirements(): void {
-    composer(['install'])
+    Composer.run(['install'])
   }
 }

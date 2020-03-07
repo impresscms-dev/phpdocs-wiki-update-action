@@ -1,9 +1,9 @@
 import ActionInterface from '../ActionInterface'
 import GeneratorInterface from '../GeneratorInterface'
 import {existsSync, renameSync, unlinkSync} from 'fs'
-import {getGlobalComposerPath} from '../helpers'
 import {join} from 'path'
 import TempPaths from '../handlers/TempPaths'
+import Composer from '../handlers/Composer'
 
 export default class RestoreComposerFiles implements ActionInterface {
   /**
@@ -27,7 +27,7 @@ export default class RestoreComposerFiles implements ActionInterface {
    * @inheritDoc
    */
   exec(): void {
-    const globalPath = getGlobalComposerPath()
+    const globalPath = Composer.getGlobalPath()
     this.restoreFile('composer.lock', 'composer-local-backup', process.cwd())
     this.restoreFile('composer.json', 'composer-local-backup', process.cwd())
     this.restoreFile('composer.lock', 'composer-global-backup', globalPath)

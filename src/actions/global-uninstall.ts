@@ -1,6 +1,6 @@
 import ActionInterface from '../ActionInterface'
 import GeneratorInterface from '../GeneratorInterface'
-import {composer} from '../helpers'
+import Composer from '../handlers/Composer'
 
 export default class GlobalUninstallAction implements ActionInterface {
   /**
@@ -21,6 +21,6 @@ export default class GlobalUninstallAction implements ActionInterface {
    * @inheritDoc
    */
   exec(): void {
-    composer(['global', 'install', '--dev', '--no-progress'])
+    Composer.run(['global', 'install', '--dev', '--no-progress'])
   }
 }

@@ -1,6 +1,6 @@
 import ActionInterface from '../ActionInterface'
 import GeneratorInterface from '../GeneratorInterface'
-import {composer} from '../helpers'
+import Composer from '../handlers/Composer'
 
 export default class GlobalSetConfigAction implements ActionInterface {
   /**
@@ -24,8 +24,8 @@ export default class GlobalSetConfigAction implements ActionInterface {
     for (const [key, value] of Object.entries(
       generator.getGlobalComposerConfig()
     )) {
-      composer(['global', 'config', key, value])
+      Composer.run(['global', 'config', key, value])
     }
-    composer(['global', 'config', '-l'])
+    Composer.run(['global', 'config', '-l'])
   }
 }

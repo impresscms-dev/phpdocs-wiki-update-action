@@ -1,6 +1,6 @@
 import ActionInterface from '../ActionInterface'
 import GeneratorInterface from '../GeneratorInterface'
-import {composer} from '../helpers'
+import Composer from '../handlers/Composer'
 
 export default class GlobalInstallAction implements ActionInterface {
   /**
@@ -24,11 +24,11 @@ export default class GlobalInstallAction implements ActionInterface {
     const packages = Object.entries(
       generator.getGlobalComposerRequirements()
     ).map(([key, value]) => `${key}=${value}`)
-    composer(
+    Composer.run(
       ['global', 'require', '--dev', '--no-progress', '--no-suggest'].concat(
         packages
       )
     )
-    composer(['global', 'exec'])
+    Composer.run(['global', 'exec'])
   }
 }

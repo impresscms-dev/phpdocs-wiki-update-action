@@ -48,8 +48,11 @@ module.exports =
 
 "use strict";
 
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
-const helpers_1 = __webpack_require__(872);
+const Composer_1 = __importDefault(__webpack_require__(963));
 class SetConfigAction {
     /**
      * @inheritDoc
@@ -68,9 +71,9 @@ class SetConfigAction {
      */
     exec(generator) {
         for (const [key, value] of Object.entries(generator.getComposerConfig())) {
-            helpers_1.composer(['config', key, value]);
+            Composer_1.default.run(['config', key, value]);
         }
-        helpers_1.composer(['config', '-l']);
+        Composer_1.default.run(['config', '-l']);
     }
 }
 exports.default = SetConfigAction;
@@ -150,9 +153,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const fs_1 = __webpack_require__(747);
-const helpers_1 = __webpack_require__(872);
 const path_1 = __webpack_require__(622);
 const TempPaths_1 = __importDefault(__webpack_require__(511));
+const Composer_1 = __importDefault(__webpack_require__(963));
 class BackupComposerFilesAction {
     /**
      * @inheritDoc
@@ -171,7 +174,7 @@ class BackupComposerFilesAction {
      * @inheritDoc
      */
     exec() {
-        const globalPath = helpers_1.getGlobalComposerPath();
+        const globalPath = Composer_1.default.getGlobalPath();
         this.backupFile('composer.lock', 'composer-local-backup');
         this.backupFile(path_1.join(globalPath, 'composer.lock'), 'composer-global-backup');
         this.backupFile('composer.json', 'composer-local-backup');
@@ -347,8 +350,11 @@ module.exports = require("child_process");
 
 "use strict";
 
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
-const helpers_1 = __webpack_require__(872);
+const Composer_1 = __importDefault(__webpack_require__(963));
 class InstallAction {
     /**
      * @inheritDoc
@@ -367,8 +373,8 @@ class InstallAction {
      */
     exec(generator) {
         const packages = Object.entries(generator.getComposerRequirements()).map(([key, value]) => `${key}=${value}`);
-        helpers_1.composer(['require', '--dev', '--no-progress', '--no-suggest'].concat(packages));
-        helpers_1.composer(['exec']);
+        Composer_1.default.run(['require', '--dev', '--no-progress', '--no-suggest'].concat(packages));
+        Composer_1.default.run(['exec']);
     }
 }
 exports.default = InstallAction;
@@ -854,8 +860,11 @@ module.exports = {
 
 "use strict";
 
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
-const helpers_1 = __webpack_require__(872);
+const Composer_1 = __importDefault(__webpack_require__(963));
 class GlobalSetConfigAction {
     /**
      * @inheritDoc
@@ -874,9 +883,9 @@ class GlobalSetConfigAction {
      */
     exec(generator) {
         for (const [key, value] of Object.entries(generator.getGlobalComposerConfig())) {
-            helpers_1.composer(['global', 'config', key, value]);
+            Composer_1.default.run(['global', 'config', key, value]);
         }
-        helpers_1.composer(['global', 'config', '-l']);
+        Composer_1.default.run(['global', 'config', '-l']);
     }
 }
 exports.default = GlobalSetConfigAction;
@@ -1631,8 +1640,11 @@ function escapeProperty(s) {
 
 "use strict";
 
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
-const helpers_1 = __webpack_require__(872);
+const Composer_1 = __importDefault(__webpack_require__(963));
 class GlobalInstallAction {
     /**
      * @inheritDoc
@@ -1651,8 +1663,8 @@ class GlobalInstallAction {
      */
     exec(generator) {
         const packages = Object.entries(generator.getGlobalComposerRequirements()).map(([key, value]) => `${key}=${value}`);
-        helpers_1.composer(['global', 'require', '--dev', '--no-progress', '--no-suggest'].concat(packages));
-        helpers_1.composer(['global', 'exec']);
+        Composer_1.default.run(['global', 'require', '--dev', '--no-progress', '--no-suggest'].concat(packages));
+        Composer_1.default.run(['global', 'exec']);
     }
 }
 exports.default = GlobalInstallAction;
@@ -1913,8 +1925,11 @@ exports.default = ConfigureCommitAuthorAction;
 
 "use strict";
 
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
-const helpers_1 = __webpack_require__(872);
+const Composer_1 = __importDefault(__webpack_require__(963));
 class UninstallAction {
     /**
      * @inheritDoc
@@ -1932,7 +1947,7 @@ class UninstallAction {
      * @inheritDoc
      */
     exec() {
-        helpers_1.composer(['install', '--no-progress', '--no-suggest']);
+        Composer_1.default.run(['install', '--no-progress', '--no-suggest']);
     }
 }
 exports.default = UninstallAction;
@@ -2100,8 +2115,11 @@ exports.default = new TempPathsHandler();
 
 "use strict";
 
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
-const helpers_1 = __webpack_require__(872);
+const Composer_1 = __importDefault(__webpack_require__(963));
 class GlobalUninstallAction {
     /**
      * @inheritDoc
@@ -2119,7 +2137,7 @@ class GlobalUninstallAction {
      * @inheritDoc
      */
     exec() {
-        helpers_1.composer(['global', 'install', '--dev', '--no-progress']);
+        Composer_1.default.run(['global', 'install', '--dev', '--no-progress']);
     }
 }
 exports.default = GlobalUninstallAction;
@@ -2583,13 +2601,13 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const helpers_1 = __webpack_require__(872);
 const GeneratorActionStepDefinition_1 = __importDefault(__webpack_require__(279));
 const core_1 = __webpack_require__(470);
 const fs_1 = __webpack_require__(747);
 const path_1 = __webpack_require__(622);
 const TempPaths_1 = __importDefault(__webpack_require__(511));
 const Execution_1 = __importDefault(__webpack_require__(117));
+const Composer_1 = __importDefault(__webpack_require__(963));
 class default_1 {
     /**
      * @inheritDoc
@@ -2656,7 +2674,7 @@ class default_1 {
      * @inheritDoc
      */
     generate() {
-        helpers_1.composer([
+        Composer_1.default.run([
             'global',
             'exec',
             'phpdocmd',
@@ -2672,7 +2690,7 @@ class default_1 {
      * @param string cachePath Cache path
      */
     generateXML(dstPath, cachePath) {
-        const path = helpers_1.getGlobalComposerPath();
+        const path = Composer_1.default.getGlobalPath();
         let cmd = path_1.join(path, 'vendor', 'bin', 'phpdoc').replace(/\\/g, '/');
         if (process.platform.toString() === 'win32' ||
             process.platform.toString() === 'win64') {
@@ -2701,13 +2719,13 @@ class default_1 {
      * Remove dev requirements
      */
     removeDevRequirements() {
-        helpers_1.composer(['install', '--no-dev']);
+        Composer_1.default.run(['install', '--no-dev']);
     }
     /**
      * Installing dev requirements
      */
     installDevRequirements() {
-        helpers_1.composer(['install']);
+        Composer_1.default.run(['install']);
     }
 }
 exports.default = default_1;
@@ -2758,12 +2776,12 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const core_1 = __webpack_require__(470);
-const helpers_1 = __webpack_require__(872);
 const fs_1 = __webpack_require__(747);
 const os_1 = __webpack_require__(87);
 const GeneratorActionStepDefinition_1 = __importDefault(__webpack_require__(279));
 const TempPaths_1 = __importDefault(__webpack_require__(511));
 const Execution_1 = __importDefault(__webpack_require__(117));
+const Composer_1 = __importDefault(__webpack_require__(963));
 const picomatch = __webpack_require__(827);
 class default_1 {
     /**
@@ -2827,7 +2845,7 @@ class default_1 {
      * @inheritDoc
      */
     generate() {
-        helpers_1.composer(['exec', 'phpdoc-md', '-v']);
+        Composer_1.default.run(['exec', 'phpdoc-md', '-v']);
     }
     /**
      * Generates PHPDocMD config
@@ -2838,7 +2856,7 @@ class default_1 {
      * @param string tempDocsPath Temporally docs folder where new documentation should be generated
      */
     generateConfig(cwd, rootNamespace, include, tempDocsPath) {
-        helpers_1.composer([
+        Composer_1.default.run([
             'install',
             '--classmap-authoritative',
             '--no-progress',
@@ -2847,7 +2865,6 @@ class default_1 {
             '--no-cache',
             '--no-scripts'
         ], cwd);
-        /*  composer(['dump', '--classmap-authoritative', '-o', '--no-scripts'], cwd)*/
         let changedIncludeRules = include.map(key => key.replace(/\\/g, '/'));
         const badChangedIncludeRules = changedIncludeRules
             .filter(rule => rule.startsWith('!'))
@@ -4163,72 +4180,6 @@ exports.default = InitTempPathsAction;
 
 /***/ }),
 
-/***/ 872:
-/***/ (function(__unusedmodule, exports, __webpack_require__) {
-
-"use strict";
-
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-const Execution_1 = __importDefault(__webpack_require__(117));
-/**
- * Data that is cached
- */
-const cachedData = {
-    composerGlobalPath: null
-};
-/**
- * Executes composer command and prints to debug results
- *
- * @param Array<string> args Command arguments
- * @param string|null cwd Where to execute
- */
-function composer(args, cwd = null) {
-    composerWithReturn(args, cwd);
-}
-exports.composer = composer;
-/**
- * Executes composer command and prints to debug results and returns result as string
- *
- * @param Array<string> args Command arguments
- * @param string|null cwd Where to execute
- *
- * @return string
- */
-function composerWithReturn(args, cwd = null) {
-    if (cwd === null) {
-        cwd = process.cwd();
-    }
-    let cmd = 'composer';
-    if (process.platform.toString() === 'win32' ||
-        process.platform.toString() === 'win64') {
-        cmd = 'composer.bat';
-    }
-    return Execution_1.default.getResults(cmd, args.concat(['--no-interaction', '--ansi']), cwd);
-}
-exports.composerWithReturn = composerWithReturn;
-/**
- * Gets global composer path
- *
- * @return string
- */
-function getGlobalComposerPath() {
-    if (cachedData.composerGlobalPath === null) {
-        cachedData.composerGlobalPath = composerWithReturn([
-            'config',
-            '-g',
-            'home'
-        ]).trim();
-    }
-    return cachedData.composerGlobalPath;
-}
-exports.getGlobalComposerPath = getGlobalComposerPath;
-
-
-/***/ }),
-
 /***/ 920:
 /***/ (function(__unusedmodule, exports, __webpack_require__) {
 
@@ -4239,9 +4190,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const fs_1 = __webpack_require__(747);
-const helpers_1 = __webpack_require__(872);
 const path_1 = __webpack_require__(622);
 const TempPaths_1 = __importDefault(__webpack_require__(511));
+const Composer_1 = __importDefault(__webpack_require__(963));
 class RestoreComposerFiles {
     /**
      * @inheritDoc
@@ -4260,7 +4211,7 @@ class RestoreComposerFiles {
      * @inheritDoc
      */
     exec() {
-        const globalPath = helpers_1.getGlobalComposerPath();
+        const globalPath = Composer_1.default.getGlobalPath();
         this.restoreFile('composer.lock', 'composer-local-backup', process.cwd());
         this.restoreFile('composer.json', 'composer-local-backup', process.cwd());
         this.restoreFile('composer.lock', 'composer-global-backup', globalPath);
@@ -4287,6 +4238,75 @@ class RestoreComposerFiles {
     }
 }
 exports.default = RestoreComposerFiles;
+
+
+/***/ }),
+
+/***/ 963:
+/***/ (function(__unusedmodule, exports, __webpack_require__) {
+
+"use strict";
+
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+const Execution_1 = __importDefault(__webpack_require__(117));
+/**
+ * Helper for composer actions
+ */
+class ComposerHandler {
+    /**
+     * Constructor
+     */
+    constructor() {
+        /**
+         * Global Composer path
+         */
+        this.globalPath = null;
+        let cmd = 'composer';
+        if (process.platform.toString() === 'win32' ||
+            process.platform.toString() === 'win64') {
+            cmd = 'composer.bat';
+        }
+        this.execName = cmd;
+    }
+    /**
+     * Gets global composer path
+     *
+     * @return string
+     */
+    getGlobalPath() {
+        if (this.globalPath === null) {
+            this.globalPath = this.getResults(['config', '-g', 'home']).trim();
+        }
+        return this.globalPath === null ? '' : this.globalPath;
+    }
+    /**
+     * Executes composer command and prints to debug results and returns result as string
+     *
+     * @param Array<string> args Command arguments
+     * @param string|null cwd Where to execute
+     *
+     * @return string
+     */
+    getResults(args, cwd = null) {
+        if (cwd === null) {
+            cwd = process.cwd();
+        }
+        return Execution_1.default.getResults(this.execName, args.concat(['--no-interaction', '--ansi']), cwd);
+    }
+    /**
+     * Executes composer command and prints to debug results
+     *
+     * @param Array<string> args Command arguments
+     * @param string|null cwd Where to execute
+     */
+    run(args, cwd = null) {
+        this.getResults(args, cwd);
+    }
+}
+exports.default = new ComposerHandler();
 
 
 /***/ }),
