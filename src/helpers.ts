@@ -3,6 +3,13 @@ import {spawnSync} from 'child_process'
 import {EOL} from 'os'
 
 /**
+ * Data that is cached
+ */
+const cachedData: {composerGlobalPath: null | string} = {
+  composerGlobalPath: null
+}
+
+/**
  * Executes command and prints to debug results
  *
  * @param string cmd  Command to be executed
@@ -77,4 +84,20 @@ export function composerWithReturn(
     args.concat(['--no-interaction', '--ansi']),
     cwd
   )
+}
+
+/**
+ * Gets global composer path
+ *
+ * @return string
+ */
+export function getGlobalComposerPath(): string {
+  if (cachedData.composerGlobalPath === null) {
+    cachedData.composerGlobalPath = composerWithReturn([
+      'config',
+      '-g',
+      'home'
+    ]).trim()
+  }
+  return cachedData.composerGlobalPath
 }

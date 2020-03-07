@@ -10,6 +10,20 @@ export default class implements GeneratorInterface {
   /**
    * @inheritDoc
    */
+  getComposerConfig(): {[key: string]: string} {
+    return {}
+  }
+
+  /**
+   * @inheritDoc
+   */
+  getGlobalComposerConfig(): {[key: string]: string} {
+    return {}
+  }
+
+  /**
+   * @inheritDoc
+   */
   getGlobalComposerRequirements(): {[key: string]: string} {
     return {}
   }

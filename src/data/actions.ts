@@ -18,9 +18,16 @@ import UninstallAction from '../actions/uninstall'
 import RemoveNotRequiredFilesAction from '../actions/remove-not-required-files'
 import GlobalInstallAction from '../actions/global-install'
 import GlobalUninstallAction from '../actions/global-uninstall'
+import GlobalSetConfigAction from '../actions/global-set-config'
+import SetConfigAction from '../actions/set-config'
+import BackupComposerFiles from '../actions/backup-composer-files'
+import RestoreComposerFiles from '../actions/restore-composer-files'
 
 const actions: ActionInterface[] = [
+  new BackupComposerFiles(),
+  new GlobalSetConfigAction(),
   new GlobalInstallAction(),
+  new SetConfigAction(),
   new InstallAction(),
   new CloneWikiAction(),
   new ExecBeforeGeneratorActionsAction(),
@@ -33,6 +40,7 @@ const actions: ActionInterface[] = [
   new CheckStatusAction(),
   new CommitAction(),
   new PushUpdateAction(),
+  new RestoreComposerFiles(),
   new UninstallAction(),
   new GlobalUninstallAction(),
   new RemoveNotRequiredFilesAction()

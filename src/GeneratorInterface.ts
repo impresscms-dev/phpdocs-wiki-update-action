@@ -39,4 +39,18 @@ export default interface GeneratorInterface {
    * @return boolean
    */
   checkIfAllInputOptionsDefined(): boolean
+
+  /**
+   * Gets composer config that needed to be applied for this package locally
+   *
+   * @return object
+   */
+  getComposerConfig(): {[key: string]: string}
+
+  /**
+   * Gets composer config that needed to be applied for this package globally
+   *
+   * @return object
+   */
+  getGlobalComposerConfig(): {[key: string]: string}
 }

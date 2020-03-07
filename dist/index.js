@@ -43,6 +43,41 @@ module.exports =
 /************************************************************************/
 /******/ ({
 
+/***/ 1:
+/***/ (function(__unusedmodule, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+const helpers_1 = __webpack_require__(872);
+class SetConfigAction {
+    /**
+     * @inheritDoc
+     */
+    getDescription() {
+        return 'Doing local configuration...';
+    }
+    /**
+     * @inheritDoc
+     */
+    shouldRun(generator) {
+        return Object.keys(generator.getComposerConfig()).length > 0;
+    }
+    /**
+     * @inheritDoc
+     */
+    exec(generator) {
+        for (const [key, value] of Object.entries(generator.getComposerConfig())) {
+            helpers_1.composer(['config', key, value]);
+        }
+        helpers_1.composer(['config', '-l']);
+    }
+}
+exports.default = SetConfigAction;
+
+
+/***/ }),
+
 /***/ 14:
 /***/ (function(__unusedmodule, exports, __webpack_require__) {
 
@@ -248,7 +283,6 @@ module.exports = require("child_process");
 
 Object.defineProperty(exports, "__esModule", { value: true });
 const helpers_1 = __webpack_require__(872);
-const fs_1 = __webpack_require__(747);
 class InstallAction {
     /**
      * @inheritDoc
@@ -267,10 +301,6 @@ class InstallAction {
      */
     exec(generator) {
         const packages = Object.entries(generator.getComposerRequirements()).map(([key, value]) => `${key}=${value}`);
-        if (fs_1.existsSync('composer.lock')) {
-            fs_1.copyFileSync('composer.lock', '.composer.lock.bkp');
-        }
-        fs_1.copyFileSync('composer.json', '.composer.json.bkp');
         helpers_1.composer(['require', '--dev', '--no-progress', '--no-suggest'].concat(packages));
         helpers_1.composer(['exec']);
     }
@@ -744,6 +774,41 @@ module.exports = {
 
 /***/ }),
 
+/***/ 245:
+/***/ (function(__unusedmodule, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+const helpers_1 = __webpack_require__(872);
+class GlobalSetConfigAction {
+    /**
+     * @inheritDoc
+     */
+    getDescription() {
+        return 'Doing global configuration...';
+    }
+    /**
+     * @inheritDoc
+     */
+    shouldRun(generator) {
+        return Object.keys(generator.getGlobalComposerConfig()).length > 0;
+    }
+    /**
+     * @inheritDoc
+     */
+    exec(generator) {
+        for (const [key, value] of Object.entries(generator.getGlobalComposerConfig())) {
+            helpers_1.composer(['global', 'config', key, value]);
+        }
+        helpers_1.composer(['global', 'config', '-l']);
+    }
+}
+exports.default = GlobalSetConfigAction;
+
+
+/***/ }),
+
 /***/ 265:
 /***/ (function(__unusedmodule, exports, __webpack_require__) {
 
@@ -844,8 +909,15 @@ const uninstall_1 = __importDefault(__webpack_require__(481));
 const remove_not_required_files_1 = __importDefault(__webpack_require__(771));
 const global_install_1 = __importDefault(__webpack_require__(450));
 const global_uninstall_1 = __importDefault(__webpack_require__(533));
+const global_set_config_1 = __importDefault(__webpack_require__(245));
+const set_config_1 = __importDefault(__webpack_require__(1));
+const backup_composer_files_1 = __importDefault(__webpack_require__(493));
+const restore_composer_files_1 = __importDefault(__webpack_require__(920));
 const actions = [
+    new backup_composer_files_1.default(),
+    new global_set_config_1.default(),
     new global_install_1.default(),
+    new set_config_1.default(),
     new install_1.default(),
     new clone_wiki_1.default(),
     new exec_before_generator_Actions_1.default(),
@@ -858,6 +930,7 @@ const actions = [
     new check_status_1.default(),
     new commit_1.default(),
     new push_update_1.default(),
+    new restore_composer_files_1.default(),
     new uninstall_1.default(),
     new global_uninstall_1.default(),
     new remove_not_required_files_1.default()
@@ -1701,7 +1774,6 @@ exports.default = ConfigureCommitAuthorAction;
 
 Object.defineProperty(exports, "__esModule", { value: true });
 const helpers_1 = __webpack_require__(872);
-const fs_1 = __webpack_require__(747);
 class UninstallAction {
     /**
      * @inheritDoc
@@ -1719,12 +1791,6 @@ class UninstallAction {
      * @inheritDoc
      */
     exec() {
-        fs_1.unlinkSync('composer.lock');
-        fs_1.unlinkSync('composer.json');
-        if (fs_1.existsSync('.composer.lock.bkp')) {
-            fs_1.renameSync('.composer.lock.bkp', 'composer.lock');
-        }
-        fs_1.renameSync('.composer.json.bkp', 'composer.json');
         helpers_1.composer(['install', '--no-progress', '--no-suggest']);
     }
 }
@@ -1767,6 +1833,56 @@ exports.default = CheckStatusAction;
 
 /***/ }),
 
+/***/ 493:
+/***/ (function(__unusedmodule, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+const fs_1 = __webpack_require__(747);
+const helpers_1 = __webpack_require__(872);
+const path_1 = __webpack_require__(622);
+class BackupComposerFiles {
+    /**
+     * @inheritDoc
+     */
+    getDescription() {
+        return 'Backuping Composer files...';
+    }
+    /**
+     * @inheritDoc
+     */
+    shouldRun(generator) {
+        return (Object.keys(generator.getGlobalComposerRequirements()).length > 0 ||
+            Object.keys(generator.getComposerRequirements()).length > 0);
+    }
+    /**
+     * @inheritDoc
+     */
+    exec() {
+        const globalPath = helpers_1.getGlobalComposerPath();
+        const files = [
+            'composer.lock',
+            'composer.json',
+            globalPath.concat('/composer.lock'),
+            globalPath.concat('/composer.json'),
+            globalPath.concat('/config.json')
+        ];
+        for (const file of files) {
+            const fileName = path_1.basename(file);
+            const path = path_1.dirname(file);
+            const bkpFilename = path.concat('/.', fileName, '.bkp');
+            if (fs_1.existsSync(file)) {
+                fs_1.copyFileSync(file, bkpFilename);
+            }
+        }
+    }
+}
+exports.default = BackupComposerFiles;
+
+
+/***/ }),
+
 /***/ 533:
 /***/ (function(__unusedmodule, exports, __webpack_require__) {
 
@@ -1790,9 +1906,8 @@ class GlobalUninstallAction {
     /**
      * @inheritDoc
      */
-    exec(generator) {
-        const packages = Object.keys(generator.getGlobalComposerRequirements());
-        helpers_1.composer(['global', 'remove', '--dev', '--no-progress'].concat(packages));
+    exec() {
+        helpers_1.composer(['global', 'install', '--dev', '--no-progress']);
     }
 }
 exports.default = GlobalUninstallAction;
@@ -2260,17 +2375,33 @@ class default_1 {
     /**
      * @inheritDoc
      */
+    getComposerConfig() {
+        return {};
+    }
+    /**
+     * @inheritDoc
+     */
+    getGlobalComposerConfig() {
+        return {
+            'minimum-stability': 'dev',
+            'prefer-stable': 'true'
+        };
+    }
+    /**
+     * @inheritDoc
+     */
     getGlobalComposerRequirements() {
         return {
-            'phpdocumentor/phpdocumentor': '2.9.*',
-            'symfony/process': '~2.0'
+            'phpdocumentor/phpdocumentor': '3.*',
+            //'symfony/process': '~2.0',
+            'evert/phpdoc-md': '~0.2.0'
         };
     }
     /**
      * @inheritDoc
      */
     getComposerRequirements() {
-        return { 'evert/phpdoc-md': '~0.2.0' };
+        return {};
     }
     /**
      * @inheritDoc
@@ -2303,11 +2434,13 @@ class default_1 {
      * @inheritDoc
      */
     generate() {
+        const basePath = path_1.join(process.cwd(), core_1.getInput('temp_docs_folder')).replace(/\\/g, '/');
         helpers_1.composer([
+            'global',
             'exec',
             'phpdocmd',
-            core_1.getInput('temp_docs_folder').concat('.xml/structure.xml'),
-            core_1.getInput('temp_docs_folder'),
+            path_1.join(basePath.concat('.xml'), 'structure.xml').replace(/\\/g, '/'),
+            basePath,
             '-v'
         ]);
     }
@@ -2318,7 +2451,7 @@ class default_1 {
      * @param string cachePath Cache path
      */
     generateXML(dstPath, cachePath) {
-        const path = this.getGlobalComposerPath();
+        const path = helpers_1.getGlobalComposerPath();
         let cmd = path_1.join(path, 'vendor', 'bin', 'phpdoc').replace(/\\/g, '/');
         if (process.platform.toString() === 'win32' ||
             process.platform.toString() === 'win64') {
@@ -2345,12 +2478,6 @@ class default_1 {
             args.push('--ignore='.concat(ignoreFiles.join(',')));
         }
         helpers_1.execCommand(cmd, args, process.cwd());
-    }
-    /**
-     * Gets global composer path
-     */
-    getGlobalComposerPath() {
-        return helpers_1.composerWithReturn(['config', '-g', 'home']).trim();
     }
     /**
      * Removes data folder
@@ -2427,6 +2554,18 @@ const os_1 = __webpack_require__(87);
 const GeneratorActionStepDefinition_1 = __importDefault(__webpack_require__(279));
 const picomatch = __webpack_require__(827);
 class default_1 {
+    /**
+     * @inheritDoc
+     */
+    getComposerConfig() {
+        return {};
+    }
+    /**
+     * @inheritDoc
+     */
+    getGlobalComposerConfig() {
+        return {};
+    }
     /**
      * @inheritDoc
      */
@@ -3765,6 +3904,12 @@ const core_1 = __webpack_require__(470);
 const child_process_1 = __webpack_require__(129);
 const os_1 = __webpack_require__(87);
 /**
+ * Data that is cached
+ */
+const cachedData = {
+    composerGlobalPath: null
+};
+/**
  * Executes command and prints to debug results
  *
  * @param string cmd  Command to be executed
@@ -3826,6 +3971,75 @@ function composerWithReturn(args, cwd = null) {
     return execCommandAndReturn(cmd, args.concat(['--no-interaction', '--ansi']), cwd);
 }
 exports.composerWithReturn = composerWithReturn;
+/**
+ * Gets global composer path
+ *
+ * @return string
+ */
+function getGlobalComposerPath() {
+    if (cachedData.composerGlobalPath === null) {
+        cachedData.composerGlobalPath = composerWithReturn([
+            'config',
+            '-g',
+            'home'
+        ]).trim();
+    }
+    return cachedData.composerGlobalPath;
+}
+exports.getGlobalComposerPath = getGlobalComposerPath;
+
+
+/***/ }),
+
+/***/ 920:
+/***/ (function(__unusedmodule, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+const fs_1 = __webpack_require__(747);
+const helpers_1 = __webpack_require__(872);
+const path_1 = __webpack_require__(622);
+class RestoreComposerFiles {
+    /**
+     * @inheritDoc
+     */
+    getDescription() {
+        return 'Restoring backuped Composer files...';
+    }
+    /**
+     * @inheritDoc
+     */
+    shouldRun(generator) {
+        return (Object.keys(generator.getGlobalComposerRequirements()).length > 0 ||
+            Object.keys(generator.getComposerRequirements()).length > 0);
+    }
+    /**
+     * @inheritDoc
+     */
+    exec() {
+        const globalPath = helpers_1.getGlobalComposerPath();
+        const files = [
+            'composer.lock',
+            'composer.json',
+            globalPath.concat('/composer.lock'),
+            globalPath.concat('/composer.json'),
+            globalPath.concat('/config.json')
+        ];
+        for (const file of files) {
+            if (fs_1.existsSync(file)) {
+                fs_1.unlinkSync(file);
+            }
+            const fileName = path_1.basename(file);
+            const path = path_1.dirname(file);
+            const bkpFilename = path.concat('/.', fileName, '.bkp');
+            if (fs_1.existsSync(bkpFilename)) {
+                fs_1.renameSync(bkpFilename, file);
+            }
+        }
+    }
+}
+exports.default = RestoreComposerFiles;
 
 
 /***/ }),

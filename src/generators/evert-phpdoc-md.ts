@@ -1,5 +1,5 @@
 import GeneratorInterface from '../GeneratorInterface'
-import {composer, composerWithReturn, execCommand} from '../helpers'
+import {composer, execCommand, getGlobalComposerPath} from '../helpers'
 import GeneratorActionStepDefinition from '../GeneratorActionStepDefinition'
 import {getInput} from '@actions/core'
 import {mkdirSync, renameSync} from 'fs'
@@ -9,10 +9,28 @@ export default class implements GeneratorInterface {
   /**
    * @inheritDoc
    */
+  getComposerConfig(): {[key: string]: string} {
+    return {}
+  }
+
+  /**
+   * @inheritDoc
+   */
+  getGlobalComposerConfig(): {[key: string]: string} {
+    return {
+      'minimum-stability': 'dev',
+      'prefer-stable': 'true'
+    }
+  }
+
+  /**
+   * @inheritDoc
+   */
   getGlobalComposerRequirements(): {[key: string]: string} {
     return {
-      'phpdocumentor/phpdocumentor': '2.9.*',
-      'symfony/process': '~2.0'
+      'phpdocumentor/phpdocumentor': '3.*',
+      //'symfony/process': '~2.0',
+      'evert/phpdoc-md': '~0.2.0'
     }
   }
 
@@ -20,7 +38,7 @@ export default class implements GeneratorInterface {
    * @inheritDoc
    */
   getComposerRequirements(): {[key: string]: string} {
-    return {'evert/phpdoc-md': '~0.2.0'}
+    return {}
   }
 
   /**
@@ -92,11 +110,16 @@ export default class implements GeneratorInterface {
    * @inheritDoc
    */
   generate(): void {
+    const basePath = join(process.cwd(), getInput('temp_docs_folder')).replace(
+      /\\/g,
+      '/'
+    )
     composer([
+      'global',
       'exec',
       'phpdocmd',
-      getInput('temp_docs_folder').concat('.xml/structure.xml'),
-      getInput('temp_docs_folder'),
+      join(basePath.concat('.xml'), 'structure.xml').replace(/\\/g, '/'),
+      basePath,
       '-v'
     ])
   }
@@ -108,7 +131,7 @@ export default class implements GeneratorInterface {
    * @param string cachePath Cache path
    */
   private generateXML(dstPath: string, cachePath: string): void {
-    const path = this.getGlobalComposerPath()
+    const path = getGlobalComposerPath()
     let cmd = join(path, 'vendor', 'bin', 'phpdoc').replace(/\\/g, '/')
     if (
       process.platform.toString() === 'win32' ||
@@ -137,13 +160,6 @@ export default class implements GeneratorInterface {
       args.push('--ignore='.concat(ignoreFiles.join(',')))
     }
     execCommand(cmd, args, process.cwd())
-  }
-
-  /**
-   * Gets global composer path
-   */
-  private getGlobalComposerPath(): string {
-    return composerWithReturn(['config', '-g', 'home']).trim()
   }
 
   /**
