@@ -1,10 +1,10 @@
 import ActionInterface from '../ActionInterface'
 import {getInput} from '@actions/core'
 import {existsSync, mkdirSync} from 'fs'
-import {execCommand} from '../helpers'
 import {basename, dirname} from 'path'
 import GitInfo from '../handlers/GitInfo'
 import TempPaths from '../handlers/TempPaths'
+import Execution from '../handlers/Execution'
 
 export default class CloneWikiAction implements ActionInterface {
   /**
@@ -30,7 +30,7 @@ export default class CloneWikiAction implements ActionInterface {
       throw new Error(oldDocsDir.concat(" already exists but shouldn't"))
     }
     mkdirSync(oldDocsDir)
-    execCommand(
+    Execution.run(
       'git',
       [
         'clone',
@@ -39,13 +39,13 @@ export default class CloneWikiAction implements ActionInterface {
       ],
       dirname(oldDocsDir)
     )
-    execCommand('git', ['config', '--local', 'gc.auto', '0'], oldDocsDir)
-    execCommand('git', ['branch', '-r'], oldDocsDir)
+    Execution.run('git', ['config', '--local', 'gc.auto', '0'], oldDocsDir)
+    Execution.run('git', ['branch', '-r'], oldDocsDir)
     if (this.branchExist(GitInfo.branchOrTagName, oldDocsDir)) {
-      execCommand('git', ['checkout', GitInfo.branchOrTagName], oldDocsDir)
-      execCommand('git', ['pull'], oldDocsDir)
+      Execution.run('git', ['checkout', GitInfo.branchOrTagName], oldDocsDir)
+      Execution.run('git', ['pull'], oldDocsDir)
     } else {
-      execCommand(
+      Execution.run(
         'git',
         ['checkout', '-b', GitInfo.branchOrTagName],
         oldDocsDir
@@ -63,7 +63,11 @@ export default class CloneWikiAction implements ActionInterface {
    */
   private branchExist(branch: string, oldDocsDir: string): boolean {
     try {
-      execCommand('git', ['show-branch', 'origin/'.concat(branch)], oldDocsDir)
+      Execution.run(
+        'git',
+        ['show-branch', 'origin/'.concat(branch)],
+        oldDocsDir
+      )
       return true
     } catch (e) {
       return false

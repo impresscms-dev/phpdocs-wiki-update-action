@@ -1,7 +1,7 @@
 import ActionInterface from '../ActionInterface'
-import {execCommand} from '../helpers'
 import GitInfo from '../handlers/GitInfo'
 import TempPaths from '../handlers/TempPaths'
+import Execution from '../handlers/Execution'
 
 export default class PushUpdateAction implements ActionInterface {
   /**
@@ -24,10 +24,14 @@ export default class PushUpdateAction implements ActionInterface {
   exec(): void {
     const cwd = TempPaths.get('new-docs-main')
     try {
-      execCommand('git', ['push', '-u', 'origin', GitInfo.branchOrTagName], cwd)
+      Execution.run(
+        'git',
+        ['push', '-u', 'origin', GitInfo.branchOrTagName],
+        cwd
+      )
     } catch (e) {
-      execCommand('git', ['pull'], cwd)
-      execCommand('git', ['push', '.', GitInfo.branchOrTagName], cwd)
+      Execution.run('git', ['pull'], cwd)
+      Execution.run('git', ['push', '.', GitInfo.branchOrTagName], cwd)
     }
   }
 }

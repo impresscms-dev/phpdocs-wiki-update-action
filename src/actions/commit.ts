@@ -1,8 +1,8 @@
 import ActionInterface from '../ActionInterface'
 import {debug} from '@actions/core'
-import {execCommand} from '../helpers'
 import GitInfo from '../handlers/GitInfo'
 import TempPaths from '../handlers/TempPaths'
+import Execution from '../handlers/Execution'
 
 export default class CommitAction implements ActionInterface {
   /**
@@ -24,10 +24,10 @@ export default class CommitAction implements ActionInterface {
    */
   exec(): void {
     const cwd = TempPaths.get('new-docs-main')
-    execCommand('git', ['add', '-u', ':/'], cwd)
-    execCommand('git', ['add', '.'], cwd)
+    Execution.run('git', ['add', '-u', ':/'], cwd)
+    Execution.run('git', ['add', '.'], cwd)
     try {
-      execCommand(
+      Execution.run(
         'git',
         [
           'commit',

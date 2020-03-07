@@ -1,10 +1,11 @@
 import GeneratorInterface from '../GeneratorInterface'
-import {composer, execCommand, getGlobalComposerPath, replaceWinPathCharToUnix} from '../helpers'
+import {composer, getGlobalComposerPath} from '../helpers'
 import GeneratorActionStepDefinition from '../GeneratorActionStepDefinition'
 import {getInput} from '@actions/core'
 import {renameSync} from 'fs'
 import {join} from 'path'
 import TempPaths from '../handlers/TempPaths'
+import Execution from '../handlers/Execution'
 
 export default class implements GeneratorInterface {
   /**
@@ -100,16 +101,14 @@ export default class implements GeneratorInterface {
    * @inheritDoc
    */
   generate(): void {
-    const basePath = join(
-      process.cwd(),
-      TempPaths.get('new-docs-workdir')
-    ).replace(/\\/g, '/')
     composer([
       'global',
       'exec',
       'phpdocmd',
-      join(TempPaths.get('xml'), 'structure.xml').replace(/\\/g, '/'),
-      basePath,
+      Execution.replaceWinPathCharToUnix(
+        join(TempPaths.get('xml'), 'structure.xml')
+      ),
+      Execution.replaceWinPathCharToUnix(TempPaths.get('new-docs-workdir')),
       '-v'
     ])
   }
@@ -131,15 +130,11 @@ export default class implements GeneratorInterface {
     }
     const args = [
       '--cache-folder',
-      replaceWinPathCharToUnix(
-        cachePath
-      ),
+      Execution.replaceWinPathCharToUnix(cachePath),
       '-d',
-      replaceWinPathCharToUnix(
-        process.cwd()
-      ),
+      Execution.replaceWinPathCharToUnix(process.cwd()),
       '-t',
-      replaceWinPathCharToUnix(dstPath),
+      Execution.replaceWinPathCharToUnix(dstPath),
       '--template=xml',
       '-v',
       '--ansi',
@@ -152,7 +147,7 @@ export default class implements GeneratorInterface {
         .filter(line => line && line.length > 0)
         .map(line => '--ignore='.concat(line))
     )
-    execCommand(cmd, args, process.cwd(), {APP_ENV: 'dev'})
+    Execution.run(cmd, args, process.cwd(), {APP_ENV: 'dev'})
   }
 
   /**

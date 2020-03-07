@@ -1,6 +1,6 @@
 import ActionInterface from '../ActionInterface'
-import {execCommand} from '../helpers'
 import TempPaths from '../handlers/TempPaths'
+import Execution from '../handlers/Execution'
 
 export default class CopyOldGitDataToNewPlaceAction implements ActionInterface {
   /**
@@ -23,7 +23,7 @@ export default class CopyOldGitDataToNewPlaceAction implements ActionInterface {
   exec(): void {
     const newDocs = TempPaths.get('new-docs-main')
     const oldDocs = TempPaths.get('old-docs-main')
-    execCommand(
+    Execution.run(
       'cp',
       ['-r', oldDocs.concat('/.git'), newDocs.concat('/.git')],
       process.cwd()

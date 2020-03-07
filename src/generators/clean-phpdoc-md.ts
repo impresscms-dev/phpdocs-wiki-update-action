@@ -1,10 +1,11 @@
 import GeneratorInterface from '../GeneratorInterface'
 import {debug, getInput} from '@actions/core'
-import {composer, execCommandAndReturn} from '../helpers'
+import {composer} from '../helpers'
 import {renameSync, writeFileSync} from 'fs'
 import {EOL} from 'os'
 import GeneratorActionStepDefinition from '../GeneratorActionStepDefinition'
 import TempPaths from '../handlers/TempPaths'
+import Execution from '../handlers/Execution'
 
 import picomatch = require('picomatch')
 
@@ -190,14 +191,8 @@ export default class implements GeneratorInterface {
    * Reads autoload classes from composer
    */
   protected readComposerConfig(): string[] {
-    /*execCommand('php', ['--version'], process.cwd())
-    execCommand(
-      'cat',
-      ['./vendor/composer/autoload_classmap.php'],
-      process.cwd()
-    )*/
     return JSON.parse(
-      execCommandAndReturn(
+      Execution.getResults(
         'php',
         [
           '-d',

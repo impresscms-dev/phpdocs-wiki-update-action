@@ -1,4 +1,4 @@
-import {execCommandAndReturn} from '../helpers'
+import Execution from './Execution'
 
 class GitInfoHandler {
   /**
@@ -34,14 +34,14 @@ class GitInfoHandler {
     this.lastCommitEmail = this.execGitShowCommand('%ae')
     this.lastCommitAuthor = this.execGitShowCommand('%an')
 
-    const branch = execCommandAndReturn(
+    const branch = Execution.getResults(
       'git',
       ['rev-parse', '--abbrev-ref', 'HEAD'],
       this.cwd
     )
     if (branch === 'HEAD') {
       this.isTag = true
-      this.branchOrTagName = execCommandAndReturn(
+      this.branchOrTagName = Execution.getResults(
         'git',
         ['describe', '--tags', '--abbrev=0'],
         this.cwd
@@ -76,7 +76,7 @@ class GitInfoHandler {
    * @param string format What return as git show command format
    */
   private execGitShowCommand(format: string): string {
-    return execCommandAndReturn(
+    return Execution.getResults(
       'git',
       ['show', '-s', `--format='${format}'`, 'HEAD'],
       this.cwd

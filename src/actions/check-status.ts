@@ -1,6 +1,6 @@
 import ActionInterface from '../ActionInterface'
-import {execCommand} from '../helpers'
 import TempPaths from '../handlers/TempPaths'
+import Execution from '../handlers/Execution'
 
 export default class CheckStatusAction implements ActionInterface {
   /**
@@ -21,6 +21,6 @@ export default class CheckStatusAction implements ActionInterface {
    * @inheritDoc
    */
   exec(): void {
-    execCommand('git', ['status'], TempPaths.get('new-docs-main'))
+    Execution.run('git', ['status'], TempPaths.get('new-docs-main'))
   }
 }

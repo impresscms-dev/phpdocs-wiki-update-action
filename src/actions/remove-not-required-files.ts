@@ -1,6 +1,6 @@
 import ActionInterface from '../ActionInterface'
-import {execCommand, replaceWinPathCharToUnix} from '../helpers'
 import TempPaths from '../handlers/TempPaths'
+import Execution from '../handlers/Execution'
 
 export default class RemoveNotRequiredFilesAction implements ActionInterface {
   /**
@@ -21,10 +21,12 @@ export default class RemoveNotRequiredFilesAction implements ActionInterface {
    * @inheritDoc
    */
   exec(): void {
-    execCommand(
+    Execution.run(
       'rm',
       ['-rf'].concat(
-        TempPaths.getAllPaths().map(path => replaceWinPathCharToUnix(path))
+        TempPaths.getAllPaths().map(path =>
+          Execution.replaceWinPathCharToUnix(path)
+        )
       ),
       process.cwd()
     )

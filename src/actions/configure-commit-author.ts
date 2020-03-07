@@ -1,7 +1,7 @@
 import ActionInterface from '../ActionInterface'
-import {execCommand} from '../helpers'
 import GitInfo from '../handlers/GitInfo'
 import TempPaths from '../handlers/TempPaths'
+import Execution from '../handlers/Execution'
 
 export default class ConfigureCommitAuthorAction implements ActionInterface {
   /**
@@ -23,12 +23,12 @@ export default class ConfigureCommitAuthorAction implements ActionInterface {
    */
   exec(): void {
     const cwd = TempPaths.get('new-docs-main')
-    execCommand(
+    Execution.run(
       'git',
       ['config', '--local', 'user.email', GitInfo.lastCommitEmail],
       cwd
     )
-    execCommand(
+    Execution.run(
       'git',
       ['config', '--local', 'user.name', GitInfo.lastCommitAuthor],
       cwd
