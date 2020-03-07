@@ -1,8 +1,7 @@
 import ActionInterface from '../ActionInterface'
-import {getInput} from '@actions/core'
-import GeneratorInterface from '../GeneratorInterface'
-import GitInfo from '../GitInfo'
 import {execCommand} from '../helpers'
+import GitInfo from '../handlers/GitInfo'
+import TempPaths from '../handlers/TempPaths'
 
 export default class ConfigureCommitAuthorAction implements ActionInterface {
   /**
@@ -22,16 +21,16 @@ export default class ConfigureCommitAuthorAction implements ActionInterface {
   /**
    * @inheritDoc
    */
-  exec(generator: GeneratorInterface, info: GitInfo): void {
-    const cwd = getInput('temp_docs_folder')
+  exec(): void {
+    const cwd = TempPaths.get('new-docs-main')
     execCommand(
       'git',
-      ['config', '--local', 'user.email', info.lastCommitEmail],
+      ['config', '--local', 'user.email', GitInfo.lastCommitEmail],
       cwd
     )
     execCommand(
       'git',
-      ['config', '--local', 'user.name', info.lastCommitAuthor],
+      ['config', '--local', 'user.name', GitInfo.lastCommitAuthor],
       cwd
     )
   }

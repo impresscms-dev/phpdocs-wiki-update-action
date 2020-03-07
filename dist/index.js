@@ -124,70 +124,11 @@ class GenerateAction {
     /**
      * @inheritDoc
      */
-    exec(generator, info) {
-        generator.generate(info);
+    exec(generator) {
+        generator.generate();
     }
 }
 exports.default = GenerateAction;
-
-
-/***/ }),
-
-/***/ 36:
-/***/ (function(module, __unusedexports, __webpack_require__) {
-
-"use strict";
-
-const helpers_1 = __webpack_require__(872);
-module.exports = class GitInfo {
-    /**
-     * Constructor
-     */
-    constructor(cwd) {
-        this.cwd = cwd;
-        this.lastCommitEmail = this.execGitShowCommand('%ae');
-        this.lastCommitAuthor = this.execGitShowCommand('%an');
-        const branch = helpers_1.execCommandAndReturn('git', ['rev-parse', '--abbrev-ref', 'HEAD'], this.cwd);
-        if (branch === 'HEAD') {
-            this.isTag = true;
-            this.branchOrTagName = helpers_1.execCommandAndReturn('git', ['describe', '--tags', '--abbrev=0'], this.cwd);
-        }
-        else {
-            this.branchOrTagName = branch;
-            this.isTag = false;
-        }
-    }
-    /**
-     * Gets current repository name
-     */
-    getCurrentRepositoryName() {
-        return typeof process.env['GITHUB_REPOSITORY'] == 'undefined'
-            ? ''
-            : process.env['GITHUB_REPOSITORY'];
-    }
-    /**
-     * Get last commit SHA hash from last main branch commit
-     */
-    getCurrentLastCommitSHA() {
-        return typeof process.env['GITHUB_SHA'] == 'undefined'
-            ? ''
-            : process.env['GITHUB_SHA'];
-    }
-    /**
-     * Execute git show command and returns output
-     *
-     * @param string format What return as git show command format
-     */
-    execGitShowCommand(format) {
-        return helpers_1.execCommandAndReturn('git', ['show', '-s', `--format='${format}'`, 'HEAD'], this.cwd);
-    }
-    /**
-     * Creates GitInfo for current process
-     */
-    static createInstance() {
-        return new GitInfo(process.cwd());
-    }
-};
 
 
 /***/ }),
@@ -196,6 +137,63 @@ module.exports = class GitInfo {
 /***/ (function(module) {
 
 module.exports = require("os");
+
+/***/ }),
+
+/***/ 115:
+/***/ (function(__unusedmodule, exports, __webpack_require__) {
+
+"use strict";
+
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+const fs_1 = __webpack_require__(747);
+const helpers_1 = __webpack_require__(872);
+const path_1 = __webpack_require__(622);
+const TempPaths_1 = __importDefault(__webpack_require__(511));
+class BackupComposerFilesAction {
+    /**
+     * @inheritDoc
+     */
+    getDescription() {
+        return 'Backuping Composer files...';
+    }
+    /**
+     * @inheritDoc
+     */
+    shouldRun(generator) {
+        return (Object.keys(generator.getGlobalComposerRequirements()).length > 0 ||
+            Object.keys(generator.getComposerRequirements()).length > 0);
+    }
+    /**
+     * @inheritDoc
+     */
+    exec() {
+        const globalPath = helpers_1.getGlobalComposerPath();
+        this.backupFile('composer.lock', 'composer-local-backup');
+        this.backupFile(path_1.join(globalPath, 'composer.lock'), 'composer-global-backup');
+        this.backupFile('composer.json', 'composer-local-backup');
+        this.backupFile(path_1.join(globalPath, 'composer.json'), 'composer-global-backup');
+        this.backupFile(path_1.join(globalPath, 'config.json'), 'composer-global-backup');
+    }
+    /**
+     * Backups file
+     *
+     * @param string file File to backup
+     * @param string dstType Destination temp path type
+     */
+    backupFile(file, dstType) {
+        if (!fs_1.existsSync(file)) {
+            return;
+        }
+        const fileName = path_1.basename(file);
+        fs_1.copyFileSync(file, path_1.join(TempPaths_1.default.get(dstType), fileName));
+    }
+}
+exports.default = BackupComposerFilesAction;
+
 
 /***/ }),
 
@@ -234,9 +232,13 @@ module.exports = recursiveReaddirSync;
 
 "use strict";
 
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
-const core_1 = __webpack_require__(470);
 const helpers_1 = __webpack_require__(872);
+const GitInfo_1 = __importDefault(__webpack_require__(289));
+const TempPaths_1 = __importDefault(__webpack_require__(511));
 class PushUpdateAction {
     /**
      * @inheritDoc
@@ -253,14 +255,14 @@ class PushUpdateAction {
     /**
      * @inheritDoc
      */
-    exec(generator, info) {
-        const cwd = core_1.getInput('temp_docs_folder');
+    exec() {
+        const cwd = TempPaths_1.default.get('new-docs-main');
         try {
-            helpers_1.execCommand('git', ['push', '-u', 'origin', info.branchOrTagName], cwd);
+            helpers_1.execCommand('git', ['push', '-u', 'origin', GitInfo_1.default.branchOrTagName], cwd);
         }
         catch (e) {
             helpers_1.execCommand('git', ['pull'], cwd);
-            helpers_1.execCommand('git', ['push', '.', info.branchOrTagName], cwd);
+            helpers_1.execCommand('git', ['push', '.', GitInfo_1.default.branchOrTagName], cwd);
         }
     }
 }
@@ -315,11 +317,15 @@ exports.default = InstallAction;
 
 "use strict";
 
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 const core_1 = __webpack_require__(470);
 const fs_1 = __webpack_require__(747);
 const path_1 = __webpack_require__(622);
 const helpers_1 = __webpack_require__(872);
+const TempPaths_1 = __importDefault(__webpack_require__(511));
 const readDirSync = __webpack_require__(120);
 class FlattenFileStructureAction {
     /**
@@ -338,7 +344,7 @@ class FlattenFileStructureAction {
      * @inheritDoc
      */
     exec() {
-        const newDocs = core_1.getInput('temp_docs_folder');
+        const newDocs = TempPaths_1.default.get('new-docs-workdir');
         const filenames = this.generateNewStructData(newDocs);
         const flippedFilenames = this.flipKeysWithValues(filenames);
         for (const newFilename in filenames) {
@@ -504,11 +510,16 @@ exports.default = FlattenFileStructureAction;
 
 "use strict";
 
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 const core_1 = __webpack_require__(470);
 const fs_1 = __webpack_require__(747);
 const helpers_1 = __webpack_require__(872);
 const path_1 = __webpack_require__(622);
+const GitInfo_1 = __importDefault(__webpack_require__(289));
+const TempPaths_1 = __importDefault(__webpack_require__(511));
 class CloneWikiAction {
     /**
      * @inheritDoc
@@ -525,7 +536,7 @@ class CloneWikiAction {
     /**
      * @inheritDoc
      */
-    exec(generator, gitInfo) {
+    exec() {
         const oldDocsDir = this.getOldDocsPath();
         if (fs_1.existsSync(oldDocsDir)) {
             throw new Error(oldDocsDir.concat(" already exists but shouldn't"));
@@ -533,17 +544,17 @@ class CloneWikiAction {
         fs_1.mkdirSync(oldDocsDir);
         helpers_1.execCommand('git', [
             'clone',
-            `https://${this.getUpdateUser()}:${this.getUpdateToken()}@github.com/${gitInfo.getCurrentRepositoryName()}.wiki.git`,
+            `https://${this.getUpdateUser()}:${this.getUpdateToken()}@github.com/${GitInfo_1.default.getCurrentRepositoryName()}.wiki.git`,
             path_1.basename(oldDocsDir)
         ], path_1.dirname(oldDocsDir));
         helpers_1.execCommand('git', ['config', '--local', 'gc.auto', '0'], oldDocsDir);
         helpers_1.execCommand('git', ['branch', '-r'], oldDocsDir);
-        if (this.branchExist(gitInfo.branchOrTagName, oldDocsDir)) {
-            helpers_1.execCommand('git', ['checkout', gitInfo.branchOrTagName], oldDocsDir);
+        if (this.branchExist(GitInfo_1.default.branchOrTagName, oldDocsDir)) {
+            helpers_1.execCommand('git', ['checkout', GitInfo_1.default.branchOrTagName], oldDocsDir);
             helpers_1.execCommand('git', ['pull'], oldDocsDir);
         }
         else {
-            helpers_1.execCommand('git', ['checkout', '-b', gitInfo.branchOrTagName], oldDocsDir);
+            helpers_1.execCommand('git', ['checkout', '-b', GitInfo_1.default.branchOrTagName], oldDocsDir);
         }
     }
     /**
@@ -579,7 +590,7 @@ class CloneWikiAction {
      * Get old docs path
      */
     getOldDocsPath() {
-        return core_1.getInput('temp_docs_folder').concat('.old');
+        return TempPaths_1.default.get('old-docs-main');
     }
 }
 exports.default = CloneWikiAction;
@@ -911,10 +922,12 @@ const global_install_1 = __importDefault(__webpack_require__(450));
 const global_uninstall_1 = __importDefault(__webpack_require__(533));
 const global_set_config_1 = __importDefault(__webpack_require__(245));
 const set_config_1 = __importDefault(__webpack_require__(1));
-const backup_composer_files_1 = __importDefault(__webpack_require__(493));
+const backup_composer_files_action_1 = __importDefault(__webpack_require__(115));
 const restore_composer_files_1 = __importDefault(__webpack_require__(920));
+const init_tmp_paths_1 = __importDefault(__webpack_require__(854));
 const actions = [
-    new backup_composer_files_1.default(),
+    new init_tmp_paths_1.default(),
+    new backup_composer_files_action_1.default(),
     new global_set_config_1.default(),
     new global_install_1.default(),
     new set_config_1.default(),
@@ -967,16 +980,68 @@ class GeneratorActionStepDefinition {
     }
     /**
      * Executes action
-     *
-     * @param gitInfo
      */
-    exec(gitInfo) {
+    exec() {
         core_1.info(this.description);
-        const args = this.args.concat([gitInfo]);
-        this.execCallback.apply(this.generator, args);
+        this.execCallback.apply(this.generator, this.args);
     }
 }
 exports.default = GeneratorActionStepDefinition;
+
+
+/***/ }),
+
+/***/ 289:
+/***/ (function(__unusedmodule, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+const helpers_1 = __webpack_require__(872);
+class GitInfoHandler {
+    /**
+     * Constructor
+     */
+    constructor(cwd) {
+        this.cwd = cwd;
+        this.lastCommitEmail = this.execGitShowCommand('%ae');
+        this.lastCommitAuthor = this.execGitShowCommand('%an');
+        const branch = helpers_1.execCommandAndReturn('git', ['rev-parse', '--abbrev-ref', 'HEAD'], this.cwd);
+        if (branch === 'HEAD') {
+            this.isTag = true;
+            this.branchOrTagName = helpers_1.execCommandAndReturn('git', ['describe', '--tags', '--abbrev=0'], this.cwd);
+        }
+        else {
+            this.branchOrTagName = branch;
+            this.isTag = false;
+        }
+    }
+    /**
+     * Gets current repository name
+     */
+    getCurrentRepositoryName() {
+        return typeof process.env['GITHUB_REPOSITORY'] == 'undefined'
+            ? ''
+            : process.env['GITHUB_REPOSITORY'];
+    }
+    /**
+     * Get last commit SHA hash from last main branch commit
+     */
+    getCurrentLastCommitSHA() {
+        return typeof process.env['GITHUB_SHA'] == 'undefined'
+            ? ''
+            : process.env['GITHUB_SHA'];
+    }
+    /**
+     * Execute git show command and returns output
+     *
+     * @param string format What return as git show command format
+     */
+    execGitShowCommand(format) {
+        return helpers_1.execCommandAndReturn('git', ['show', '-s', `--format='${format}'`, 'HEAD'], this.cwd);
+    }
+}
+exports.default = new GitInfoHandler(process.cwd());
 
 
 /***/ }),
@@ -993,7 +1058,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const core_1 = __webpack_require__(470);
 const actions_1 = __importDefault(__webpack_require__(269));
 const generators_1 = __importDefault(__webpack_require__(14));
-const GitInfo_1 = __importDefault(__webpack_require__(36));
 try {
     const generatorName = core_1.getInput('engine');
     if (typeof generators_1.default[generatorName] == 'undefined') {
@@ -1003,16 +1067,15 @@ try {
     if (!generator.checkIfAllInputOptionsDefined()) {
         throw new TypeError('Not all required arguments defined for selected engine');
     }
-    const gitInfo = GitInfo_1.default.createInstance();
     for (const action of actions_1.default) {
-        if (!action.shouldRun(generator, gitInfo)) {
+        if (!action.shouldRun(generator)) {
             continue;
         }
         const desc = action.getDescription();
         if (desc !== null) {
             core_1.info(desc);
         }
-        action.exec(generator, gitInfo);
+        action.exec(generator);
     }
 }
 catch (err) {
@@ -1041,15 +1104,15 @@ class ExecAfterGeneratorActionsAction {
     /**
      * @inheritDoc
      */
-    shouldRun(generator, info) {
-        return generator.getAfterActions(info).length > 0;
+    shouldRun(generator) {
+        return generator.getAfterActions().length > 0;
     }
     /**
      * @inheritDoc
      */
-    exec(generator, info) {
-        for (const definition of generator.getAfterActions(info)) {
-            definition.exec(info);
+    exec(generator) {
+        for (const definition of generator.getAfterActions()) {
+            definition.exec();
         }
     }
 }
@@ -1404,6 +1467,13 @@ module.exports = picomatch;
 
 /***/ }),
 
+/***/ 417:
+/***/ (function(module) {
+
+module.exports = require("crypto");
+
+/***/ }),
+
 /***/ 431:
 /***/ (function(__unusedmodule, exports, __webpack_require__) {
 
@@ -1737,9 +1807,13 @@ exports.getState = getState;
 
 "use strict";
 
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
-const core_1 = __webpack_require__(470);
 const helpers_1 = __webpack_require__(872);
+const GitInfo_1 = __importDefault(__webpack_require__(289));
+const TempPaths_1 = __importDefault(__webpack_require__(511));
 class ConfigureCommitAuthorAction {
     /**
      * @inheritDoc
@@ -1756,10 +1830,10 @@ class ConfigureCommitAuthorAction {
     /**
      * @inheritDoc
      */
-    exec(generator, info) {
-        const cwd = core_1.getInput('temp_docs_folder');
-        helpers_1.execCommand('git', ['config', '--local', 'user.email', info.lastCommitEmail], cwd);
-        helpers_1.execCommand('git', ['config', '--local', 'user.name', info.lastCommitAuthor], cwd);
+    exec() {
+        const cwd = TempPaths_1.default.get('new-docs-main');
+        helpers_1.execCommand('git', ['config', '--local', 'user.email', GitInfo_1.default.lastCommitEmail], cwd);
+        helpers_1.execCommand('git', ['config', '--local', 'user.name', GitInfo_1.default.lastCommitAuthor], cwd);
     }
 }
 exports.default = ConfigureCommitAuthorAction;
@@ -1804,9 +1878,12 @@ exports.default = UninstallAction;
 
 "use strict";
 
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
-const core_1 = __webpack_require__(470);
 const helpers_1 = __webpack_require__(872);
+const TempPaths_1 = __importDefault(__webpack_require__(511));
 class CheckStatusAction {
     /**
      * @inheritDoc
@@ -1824,8 +1901,7 @@ class CheckStatusAction {
      * @inheritDoc
      */
     exec() {
-        const cwd = core_1.getInput('temp_docs_folder');
-        helpers_1.execCommand('git', ['status'], cwd);
+        helpers_1.execCommand('git', ['status'], TempPaths_1.default.get('new-docs-main'));
     }
 }
 exports.default = CheckStatusAction;
@@ -1833,52 +1909,121 @@ exports.default = CheckStatusAction;
 
 /***/ }),
 
-/***/ 493:
+/***/ 511:
 /***/ (function(__unusedmodule, exports, __webpack_require__) {
 
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
+const os_1 = __webpack_require__(87);
+const crypto_1 = __webpack_require__(417);
 const fs_1 = __webpack_require__(747);
-const helpers_1 = __webpack_require__(872);
 const path_1 = __webpack_require__(622);
-class BackupComposerFiles {
-    /**
-     * @inheritDoc
-     */
-    getDescription() {
-        return 'Backuping Composer files...';
+const core_1 = __webpack_require__(470);
+/**
+ * Deals with temp paths
+ */
+class TempPathsHandler {
+    constructor() {
+        /**
+         * Stores paths
+         */
+        this.paths = {};
     }
     /**
-     * @inheritDoc
+     * Checks if such path is already added
+     *
+     * @param string type Path type
+     *
+     * @return boolean
      */
-    shouldRun(generator) {
-        return (Object.keys(generator.getGlobalComposerRequirements()).length > 0 ||
-            Object.keys(generator.getComposerRequirements()).length > 0);
+    isSet(type) {
+        return typeof this.paths[type] !== 'undefined';
     }
     /**
-     * @inheritDoc
+     * Generates new path in array
+     *
+     * @param string type Path short name (aka type)
+     * @param boolean create Do we need automatically to create path?
      */
-    exec() {
-        const globalPath = helpers_1.getGlobalComposerPath();
-        const files = [
-            'composer.lock',
-            'composer.json',
-            globalPath.concat('/composer.lock'),
-            globalPath.concat('/composer.json'),
-            globalPath.concat('/config.json')
-        ];
-        for (const file of files) {
-            const fileName = path_1.basename(file);
-            const path = path_1.dirname(file);
-            const bkpFilename = path.concat('/.', fileName, '.bkp');
-            if (fs_1.existsSync(file)) {
-                fs_1.copyFileSync(file, bkpFilename);
-            }
+    add(type, create = true) {
+        if (this.isSet(type)) {
+            throw new Error(`${type} path is already added`);
+        }
+        this.paths[type] = this.generateUniqueTmpDirPath(type);
+        if (create) {
+            fs_1.mkdirSync(this.paths[type]);
         }
     }
+    /**
+     * Generates unique temp dir path
+     *
+     * @param string type Path type
+     *
+     * @return string
+     */
+    generateUniqueTmpDirPath(type) {
+        let path;
+        const tmpPathBase = os_1.tmpdir();
+        const hash = crypto_1.createHash('sha1');
+        while (fs_1.existsSync((path = path_1.join(tmpPathBase, type.concat('-', hash.update(Date.now().toString()).digest('hex'))))))
+            ;
+        return path;
+    }
+    /**
+     * Gets path by type
+     *
+     * @param string type Path type
+     */
+    get(type) {
+        if (!this.isSet(type)) {
+            throw new Error(`${type} path is not yet added`);
+        }
+        return this.paths[type];
+    }
+    /**
+     * Prints debug info
+     */
+    debug() {
+        core_1.debug(`Registered paths:`);
+        for (const type in this.paths) {
+            core_1.debug(`  ${type} = ${this.paths[type]}`);
+        }
+    }
+    /**
+     * Adds subpath as alias
+     *
+     * @param string type New type
+     * @param string originalType Original type
+     * @param string path Sub path
+     */
+    addSubpathAlias(type, originalType, path) {
+        if (this.isSet(type)) {
+            throw new Error(`${type} path is already added`);
+        }
+        if (!this.isSet(originalType)) {
+            throw new Error(`${originalType} path is not yet added`);
+        }
+        this.paths[type] = path_1.join(this.get(originalType), path);
+    }
+    /**
+     * Get all entries
+     *
+     * @return array
+     */
+    getEntries() {
+        return Object.entries(this.paths);
+    }
+    /**
+     * Gets all registered paths
+     *
+     * @return string[]
+     */
+    getAllPaths() {
+        return Object.values(this.paths);
+    }
 }
-exports.default = BackupComposerFiles;
+exports.default = new TempPathsHandler();
 
 
 /***/ }),
@@ -1920,9 +2065,14 @@ exports.default = GlobalUninstallAction;
 
 "use strict";
 
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 const core_1 = __webpack_require__(470);
 const helpers_1 = __webpack_require__(872);
+const GitInfo_1 = __importDefault(__webpack_require__(289));
+const TempPaths_1 = __importDefault(__webpack_require__(511));
 class CommitAction {
     /**
      * @inheritDoc
@@ -1939,15 +2089,15 @@ class CommitAction {
     /**
      * @inheritDoc
      */
-    exec(generator, info) {
-        const cwd = core_1.getInput('temp_docs_folder');
+    exec() {
+        const cwd = TempPaths_1.default.get('new-docs-main');
         helpers_1.execCommand('git', ['add', '-u', ':/'], cwd);
         helpers_1.execCommand('git', ['add', '.'], cwd);
         try {
             helpers_1.execCommand('git', [
                 'commit',
                 '-m',
-                `Automatically generated for https://github.com/${info.getCurrentRepositoryName()}/commit/${info.getCurrentLastCommitSHA()}`
+                `Automatically generated for https://github.com/${GitInfo_1.default.getCurrentRepositoryName()}/commit/${GitInfo_1.default.getCurrentLastCommitSHA()}`
             ], cwd);
         }
         catch (e) {
@@ -2371,7 +2521,14 @@ const GeneratorActionStepDefinition_1 = __importDefault(__webpack_require__(279)
 const core_1 = __webpack_require__(470);
 const fs_1 = __webpack_require__(747);
 const path_1 = __webpack_require__(622);
+const TempPaths_1 = __importDefault(__webpack_require__(511));
 class default_1 {
+    /**
+     * @inheritDoc
+     */
+    getNeededTemporalPathPlaces() {
+        return ['xml', 'cache'];
+    }
     /**
      * @inheritDoc
      */
@@ -2414,9 +2571,7 @@ class default_1 {
      */
     getAfterActions() {
         return [
-            new GeneratorActionStepDefinition_1.default(null, 'Deleting XML data...', this.deleteFolder, core_1.getInput('temp_docs_folder').concat('.xml')),
-            new GeneratorActionStepDefinition_1.default(null, 'Deleting Cache data...', this.deleteFolder, core_1.getInput('temp_docs_folder').concat('.cache')),
-            new GeneratorActionStepDefinition_1.default(null, 'Renaming ApiIndex.md to Home.md...', fs_1.renameSync, core_1.getInput('temp_docs_folder').concat('/ApiIndex.md'), core_1.getInput('temp_docs_folder').concat('/HOME.md'))
+            new GeneratorActionStepDefinition_1.default(null, 'Renaming ApiIndex.md to Home.md...', fs_1.renameSync, TempPaths_1.default.get('new-docs-workdir').concat('/ApiIndex.md'), TempPaths_1.default.get('new-docs-workdir').concat('/HOME.md'))
         ];
     }
     /**
@@ -2425,21 +2580,20 @@ class default_1 {
     getBeforeActions() {
         return [
             new GeneratorActionStepDefinition_1.default(this, 'Removing dev requirements...', this.removeDevRequirements),
-            new GeneratorActionStepDefinition_1.default(this, 'Generating XML data...', this.generateXML, core_1.getInput('temp_docs_folder').concat('.xml'), core_1.getInput('temp_docs_folder').concat('.cache')),
-            new GeneratorActionStepDefinition_1.default(this, 'Install dev requirements...', this.installDevRequirements),
-            new GeneratorActionStepDefinition_1.default(null, 'Creating docs folder...', fs_1.mkdirSync, core_1.getInput('temp_docs_folder'))
+            new GeneratorActionStepDefinition_1.default(this, 'Generating XML data...', this.generateXML, TempPaths_1.default.get('xml'), TempPaths_1.default.get('cache')),
+            new GeneratorActionStepDefinition_1.default(this, 'Install dev requirements...', this.installDevRequirements)
         ];
     }
     /**
      * @inheritDoc
      */
     generate() {
-        const basePath = path_1.join(process.cwd(), core_1.getInput('temp_docs_folder')).replace(/\\/g, '/');
+        const basePath = path_1.join(process.cwd(), TempPaths_1.default.get('new-docs-workdir')).replace(/\\/g, '/');
         helpers_1.composer([
             'global',
             'exec',
             'phpdocmd',
-            path_1.join(basePath.concat('.xml'), 'structure.xml').replace(/\\/g, '/'),
+            path_1.join(TempPaths_1.default.get('xml'), 'structure.xml').replace(/\\/g, '/'),
             basePath,
             '-v'
         ]);
@@ -2459,33 +2613,22 @@ class default_1 {
         }
         const args = [
             '--cache-folder',
-            cachePath,
+            helpers_1.replaceWinPathCharToUnix(cachePath),
             '-d',
-            process.cwd().replace(/\\/g, '/'),
+            helpers_1.replaceWinPathCharToUnix(process.cwd()),
             '-t',
-            dstPath,
+            helpers_1.replaceWinPathCharToUnix(dstPath),
             '--template=xml',
             '-v',
             '--ansi',
             '--no-interaction',
             '--extensions=php'
-        ];
-        const ignoreFiles = core_1.getInput('ignore_files')
+        ].concat(core_1.getInput('ignore_files')
             .split('\n')
             .map(line => line.trim())
-            .filter(line => line && line.length > 0);
-        if (ignoreFiles.length > 0) {
-            args.push('--ignore='.concat(ignoreFiles.join(',')));
-        }
-        helpers_1.execCommand(cmd, args, process.cwd());
-    }
-    /**
-     * Removes data folder
-     *
-     * @param string pathToDelete Path to delete
-     */
-    deleteFolder(pathToDelete) {
-        helpers_1.execCommand('rm', ['-rf', pathToDelete], process.cwd());
+            .filter(line => line && line.length > 0)
+            .map(line => '--ignore='.concat(line)));
+        helpers_1.execCommand(cmd, args, process.cwd(), { APP_ENV: 'dev' });
     }
     /**
      * Remove dev requirements
@@ -2521,15 +2664,15 @@ class ExecBeforeGeneratorActionsAction {
     /**
      * @inheritDoc
      */
-    shouldRun(generator, info) {
-        return generator.getBeforeActions(info).length > 0;
+    shouldRun(generator) {
+        return generator.getBeforeActions().length > 0;
     }
     /**
      * @inheritDoc
      */
-    exec(generator, info) {
-        for (const definition of generator.getBeforeActions(info)) {
-            definition.exec(info);
+    exec(generator) {
+        for (const definition of generator.getBeforeActions()) {
+            definition.exec();
         }
     }
 }
@@ -2552,8 +2695,15 @@ const helpers_1 = __webpack_require__(872);
 const fs_1 = __webpack_require__(747);
 const os_1 = __webpack_require__(87);
 const GeneratorActionStepDefinition_1 = __importDefault(__webpack_require__(279));
+const TempPaths_1 = __importDefault(__webpack_require__(511));
 const picomatch = __webpack_require__(827);
 class default_1 {
+    /**
+     * @inheritDoc
+     */
+    getNeededTemporalPathPlaces() {
+        return [];
+    }
     /**
      * @inheritDoc
      */
@@ -2590,7 +2740,7 @@ class default_1 {
      */
     getAfterActions() {
         return [
-            new GeneratorActionStepDefinition_1.default(null, 'Renaming README.md to Home.md...', fs_1.renameSync, core_1.getInput('temp_docs_folder').concat('/README.md'), core_1.getInput('temp_docs_folder').concat('/HOME.md'))
+            new GeneratorActionStepDefinition_1.default(null, 'Renaming README.md to Home.md...', fs_1.renameSync, TempPaths_1.default.get('new-docs-workdir').concat('/README.md'), TempPaths_1.default.get('new-docs-workdir').concat('/HOME.md'))
         ];
     }
     /**
@@ -2602,7 +2752,7 @@ class default_1 {
                 .replace(/\n/g, os_1.EOL)
                 .split(os_1.EOL)
                 .map(x => x.trim())
-                .filter(x => x.length > 0), core_1.getInput('temp_docs_folder'))
+                .filter(x => x.length > 0), TempPaths_1.default.get('new-docs-workdir'))
         ];
     }
     /**
@@ -2706,9 +2856,12 @@ module.exports = require("fs");
 
 "use strict";
 
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
-const core_1 = __webpack_require__(470);
 const helpers_1 = __webpack_require__(872);
+const TempPaths_1 = __importDefault(__webpack_require__(511));
 class RemoveNotRequiredFilesAction {
     /**
      * @inheritDoc
@@ -2726,9 +2879,7 @@ class RemoveNotRequiredFilesAction {
      * @inheritDoc
      */
     exec() {
-        const newDocs = core_1.getInput('temp_docs_folder');
-        const oldDocs = newDocs.concat('.old');
-        helpers_1.execCommand('rm', ['-rf', newDocs, oldDocs, '.phpdoc-md'], process.cwd());
+        helpers_1.execCommand('rm', ['-rf'].concat(TempPaths_1.default.getAllPaths().map(path => helpers_1.replaceWinPathCharToUnix(path))), process.cwd());
     }
 }
 exports.default = RemoveNotRequiredFilesAction;
@@ -3840,10 +3991,14 @@ module.exports = __webpack_require__(366);
 
 "use strict";
 
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 const os_1 = __webpack_require__(87);
 const core_1 = __webpack_require__(470);
 const fs_1 = __webpack_require__(747);
+const TempPaths_1 = __importDefault(__webpack_require__(511));
 const readDirSync = __webpack_require__(120);
 class PrefixAction {
     /**
@@ -3862,7 +4017,7 @@ class PrefixAction {
      * @inheritDoc
      */
     exec() {
-        const newDocs = core_1.getInput('temp_docs_folder');
+        const newDocs = TempPaths_1.default.get('new-docs-workdir');
         const prefix = this.getPrefixLines();
         for (const file of readDirSync(newDocs)) {
             core_1.debug(' '.concat(file.toString()));
@@ -3894,6 +4049,58 @@ exports.default = PrefixAction;
 
 /***/ }),
 
+/***/ 854:
+/***/ (function(__unusedmodule, exports, __webpack_require__) {
+
+"use strict";
+
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+const TempPaths_1 = __importDefault(__webpack_require__(511));
+const core_1 = __webpack_require__(470);
+class InitTempPathsAction {
+    /**
+     * @inheritDoc
+     */
+    getDescription() {
+        return 'Configuring temporal paths...';
+    }
+    /**
+     * @inheritDoc
+     */
+    shouldRun() {
+        return true;
+    }
+    /**
+     * @inheritDoc
+     */
+    exec(generator) {
+        const places = generator
+            .getNeededTemporalPathPlaces()
+            .concat([
+            'new-docs-main',
+            'composer-global-backup',
+            'composer-local-backup'
+        ])
+            .filter((value, index, self) => {
+            return self.indexOf(value) === index;
+        });
+        for (const place of places) {
+            TempPaths_1.default.add(place, true);
+        }
+        TempPaths_1.default.add('old-docs-main', false);
+        TempPaths_1.default.addSubpathAlias('old-docs-workdir', 'old-docs-main', core_1.getInput('workdir'));
+        TempPaths_1.default.addSubpathAlias('new-docs-workdir', 'new-docs-main', core_1.getInput('workdir'));
+        TempPaths_1.default.debug();
+    }
+}
+exports.default = InitTempPathsAction;
+
+
+/***/ }),
+
 /***/ 872:
 /***/ (function(__unusedmodule, exports, __webpack_require__) {
 
@@ -3915,9 +4122,10 @@ const cachedData = {
  * @param string cmd  Command to be executed
  * @param Array<string> args Command arguments
  * @param string cwd Where to execute
+ * @param object env Environment variables data
  */
-function execCommand(cmd, args, cwd) {
-    execCommandAndReturn(cmd, args, cwd);
+function execCommand(cmd, args, cwd, env = {}) {
+    execCommandAndReturn(cmd, args, cwd, env);
 }
 exports.execCommand = execCommand;
 /**
@@ -3926,11 +4134,15 @@ exports.execCommand = execCommand;
  * @param string cmd  Command to be executed
  * @param Array<string> args Command arguments
  * @param string cwd Where to execute
+ * @param object env Environment variables data
+ *
+ * @return string
  */
-function execCommandAndReturn(cmd, args, cwd) {
+function execCommandAndReturn(cmd, args, cwd, env = {}) {
     var _a;
     core_1.debug(` Executing ${cmd} ${args.join(' ')} in ${cwd}...`);
-    const proc = child_process_1.spawnSync(cmd, args, { cwd });
+    const envOptions = Object.assign({}, process.env, env);
+    const proc = child_process_1.spawnSync(cmd, args, { cwd, env: envOptions });
     const out = (_a = proc.output) === null || _a === void 0 ? void 0 : _a.join('\n').trim().replace(/\n/g, os_1.EOL);
     for (const outputLine of out.split(os_1.EOL)) {
         core_1.debug(outputLine.trim());
@@ -3987,6 +4199,17 @@ function getGlobalComposerPath() {
     return cachedData.composerGlobalPath;
 }
 exports.getGlobalComposerPath = getGlobalComposerPath;
+/**
+ * Replace Windows path separator with Unix
+ *
+ * @param string path Path to replace
+ *
+ * @return string
+ */
+function replaceWinPathCharToUnix(path) {
+    return path.replace(/\\/g, '/');
+}
+exports.replaceWinPathCharToUnix = replaceWinPathCharToUnix;
 
 
 /***/ }),
@@ -3996,10 +4219,14 @@ exports.getGlobalComposerPath = getGlobalComposerPath;
 
 "use strict";
 
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 const fs_1 = __webpack_require__(747);
 const helpers_1 = __webpack_require__(872);
 const path_1 = __webpack_require__(622);
+const TempPaths_1 = __importDefault(__webpack_require__(511));
 class RestoreComposerFiles {
     /**
      * @inheritDoc
@@ -4019,24 +4246,29 @@ class RestoreComposerFiles {
      */
     exec() {
         const globalPath = helpers_1.getGlobalComposerPath();
-        const files = [
-            'composer.lock',
-            'composer.json',
-            globalPath.concat('/composer.lock'),
-            globalPath.concat('/composer.json'),
-            globalPath.concat('/config.json')
-        ];
-        for (const file of files) {
-            if (fs_1.existsSync(file)) {
-                fs_1.unlinkSync(file);
-            }
-            const fileName = path_1.basename(file);
-            const path = path_1.dirname(file);
-            const bkpFilename = path.concat('/.', fileName, '.bkp');
-            if (fs_1.existsSync(bkpFilename)) {
-                fs_1.renameSync(bkpFilename, file);
-            }
+        this.restoreFile('composer.lock', 'composer-local-backup', process.cwd());
+        this.restoreFile('composer.json', 'composer-local-backup', process.cwd());
+        this.restoreFile('composer.lock', 'composer-global-backup', globalPath);
+        this.restoreFile('composer.json', 'composer-global-backup', globalPath);
+        this.restoreFile('config.json', 'composer-global-backup', globalPath);
+    }
+    /**
+     * Restores backup file
+     *
+     * @param string shortFilename File to restore
+     * @param string srcType Source temp path type
+     * @param string dstPath Where to restore
+     */
+    restoreFile(shortFilename, srcType, dstPath) {
+        const bkpFilename = path_1.join(TempPaths_1.default.get(srcType), shortFilename);
+        if (!fs_1.existsSync(bkpFilename)) {
+            return;
         }
+        const dstFile = path_1.join(dstPath, shortFilename);
+        if (fs_1.existsSync(dstFile)) {
+            fs_1.unlinkSync(dstFile);
+        }
+        fs_1.renameSync(bkpFilename, dstFile);
     }
 }
 exports.default = RestoreComposerFiles;
@@ -4049,9 +4281,12 @@ exports.default = RestoreComposerFiles;
 
 "use strict";
 
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
-const core_1 = __webpack_require__(470);
 const helpers_1 = __webpack_require__(872);
+const TempPaths_1 = __importDefault(__webpack_require__(511));
 class CopyOldGitDataToNewPlaceAction {
     /**
      * @inheritDoc
@@ -4069,8 +4304,8 @@ class CopyOldGitDataToNewPlaceAction {
      * @inheritDoc
      */
     exec() {
-        const newDocs = core_1.getInput('temp_docs_folder');
-        const oldDocs = newDocs.concat('.old');
+        const newDocs = TempPaths_1.default.get('new-docs-main');
+        const oldDocs = TempPaths_1.default.get('old-docs-main');
         helpers_1.execCommand('cp', ['-r', oldDocs.concat('/.git'), newDocs.concat('/.git')], process.cwd());
     }
 }

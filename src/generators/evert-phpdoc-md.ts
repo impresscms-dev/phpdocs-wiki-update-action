@@ -1,11 +1,19 @@
 import GeneratorInterface from '../GeneratorInterface'
-import {composer, execCommand, getGlobalComposerPath} from '../helpers'
+import {composer, execCommand, getGlobalComposerPath, replaceWinPathCharToUnix} from '../helpers'
 import GeneratorActionStepDefinition from '../GeneratorActionStepDefinition'
 import {getInput} from '@actions/core'
-import {mkdirSync, renameSync} from 'fs'
+import {renameSync} from 'fs'
 import {join} from 'path'
+import TempPaths from '../handlers/TempPaths'
 
 export default class implements GeneratorInterface {
+  /**
+   * @inheritDoc
+   */
+  getNeededTemporalPathPlaces(): string[] {
+    return ['xml', 'cache']
+  }
+
   /**
    * @inheritDoc
    */
@@ -55,22 +63,10 @@ export default class implements GeneratorInterface {
     return [
       new GeneratorActionStepDefinition(
         null,
-        'Deleting XML data...',
-        this.deleteFolder,
-        getInput('temp_docs_folder').concat('.xml')
-      ),
-      new GeneratorActionStepDefinition(
-        null,
-        'Deleting Cache data...',
-        this.deleteFolder,
-        getInput('temp_docs_folder').concat('.cache')
-      ),
-      new GeneratorActionStepDefinition(
-        null,
         'Renaming ApiIndex.md to Home.md...',
         renameSync,
-        getInput('temp_docs_folder').concat('/ApiIndex.md'),
-        getInput('temp_docs_folder').concat('/HOME.md')
+        TempPaths.get('new-docs-workdir').concat('/ApiIndex.md'),
+        TempPaths.get('new-docs-workdir').concat('/HOME.md')
       )
     ]
   }
@@ -89,19 +85,13 @@ export default class implements GeneratorInterface {
         this,
         'Generating XML data...',
         this.generateXML,
-        getInput('temp_docs_folder').concat('.xml'),
-        getInput('temp_docs_folder').concat('.cache')
+        TempPaths.get('xml'),
+        TempPaths.get('cache')
       ),
       new GeneratorActionStepDefinition(
         this,
         'Install dev requirements...',
         this.installDevRequirements
-      ),
-      new GeneratorActionStepDefinition(
-        null,
-        'Creating docs folder...',
-        mkdirSync,
-        getInput('temp_docs_folder')
       )
     ]
   }
@@ -110,15 +100,15 @@ export default class implements GeneratorInterface {
    * @inheritDoc
    */
   generate(): void {
-    const basePath = join(process.cwd(), getInput('temp_docs_folder')).replace(
-      /\\/g,
-      '/'
-    )
+    const basePath = join(
+      process.cwd(),
+      TempPaths.get('new-docs-workdir')
+    ).replace(/\\/g, '/')
     composer([
       'global',
       'exec',
       'phpdocmd',
-      join(basePath.concat('.xml'), 'structure.xml').replace(/\\/g, '/'),
+      join(TempPaths.get('xml'), 'structure.xml').replace(/\\/g, '/'),
       basePath,
       '-v'
     ])
@@ -141,34 +131,28 @@ export default class implements GeneratorInterface {
     }
     const args = [
       '--cache-folder',
-      cachePath,
+      replaceWinPathCharToUnix(
+        cachePath
+      ),
       '-d',
-      process.cwd().replace(/\\/g, '/'),
+      replaceWinPathCharToUnix(
+        process.cwd()
+      ),
       '-t',
-      dstPath,
+      replaceWinPathCharToUnix(dstPath),
       '--template=xml',
       '-v',
       '--ansi',
       '--no-interaction',
       '--extensions=php'
-    ]
-    const ignoreFiles = getInput('ignore_files')
-      .split('\n')
-      .map(line => line.trim())
-      .filter(line => line && line.length > 0)
-    if (ignoreFiles.length > 0) {
-      args.push('--ignore='.concat(ignoreFiles.join(',')))
-    }
-    execCommand(cmd, args, process.cwd())
-  }
-
-  /**
-   * Removes data folder
-   *
-   * @param string pathToDelete Path to delete
-   */
-  private deleteFolder(pathToDelete: string): void {
-    execCommand('rm', ['-rf', pathToDelete], process.cwd())
+    ].concat(
+      getInput('ignore_files')
+        .split('\n')
+        .map(line => line.trim())
+        .filter(line => line && line.length > 0)
+        .map(line => '--ignore='.concat(line))
+    )
+    execCommand(cmd, args, process.cwd(), {APP_ENV: 'dev'})
   }
 
   /**

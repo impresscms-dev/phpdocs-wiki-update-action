@@ -2,9 +2,9 @@ import ActionInterface from '../ActionInterface'
 import {getInput} from '@actions/core'
 import {existsSync, mkdirSync} from 'fs'
 import {execCommand} from '../helpers'
-import GitInfo from '../GitInfo'
-import GeneratorInterface from '../GeneratorInterface'
 import {basename, dirname} from 'path'
+import GitInfo from '../handlers/GitInfo'
+import TempPaths from '../handlers/TempPaths'
 
 export default class CloneWikiAction implements ActionInterface {
   /**
@@ -24,7 +24,7 @@ export default class CloneWikiAction implements ActionInterface {
   /**
    * @inheritDoc
    */
-  exec(generator: GeneratorInterface, gitInfo: GitInfo): void {
+  exec(): void {
     const oldDocsDir = this.getOldDocsPath()
     if (existsSync(oldDocsDir)) {
       throw new Error(oldDocsDir.concat(" already exists but shouldn't"))
@@ -34,20 +34,20 @@ export default class CloneWikiAction implements ActionInterface {
       'git',
       [
         'clone',
-        `https://${this.getUpdateUser()}:${this.getUpdateToken()}@github.com/${gitInfo.getCurrentRepositoryName()}.wiki.git`,
+        `https://${this.getUpdateUser()}:${this.getUpdateToken()}@github.com/${GitInfo.getCurrentRepositoryName()}.wiki.git`,
         basename(oldDocsDir)
       ],
       dirname(oldDocsDir)
     )
     execCommand('git', ['config', '--local', 'gc.auto', '0'], oldDocsDir)
     execCommand('git', ['branch', '-r'], oldDocsDir)
-    if (this.branchExist(gitInfo.branchOrTagName, oldDocsDir)) {
-      execCommand('git', ['checkout', gitInfo.branchOrTagName], oldDocsDir)
+    if (this.branchExist(GitInfo.branchOrTagName, oldDocsDir)) {
+      execCommand('git', ['checkout', GitInfo.branchOrTagName], oldDocsDir)
       execCommand('git', ['pull'], oldDocsDir)
     } else {
       execCommand(
         'git',
-        ['checkout', '-b', gitInfo.branchOrTagName],
+        ['checkout', '-b', GitInfo.branchOrTagName],
         oldDocsDir
       )
     }
@@ -88,6 +88,6 @@ export default class CloneWikiAction implements ActionInterface {
    * Get old docs path
    */
   protected getOldDocsPath(): string {
-    return getInput('temp_docs_folder').concat('.old')
+    return TempPaths.get('old-docs-main')
   }
 }

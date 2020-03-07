@@ -1,4 +1,3 @@
-import GitInfo from './GitInfo'
 import GeneratorActionStepDefinition from './GeneratorActionStepDefinition'
 
 export default interface GeneratorInterface {
@@ -14,24 +13,18 @@ export default interface GeneratorInterface {
 
   /**
    * Executes this action before generating documentation
-   *
-   * @param GitInfo info Main branch git info
    */
-  getBeforeActions(info: GitInfo): GeneratorActionStepDefinition[]
+  getBeforeActions(): GeneratorActionStepDefinition[]
 
   /**
    * Generate documentation
-   *
-   * @param GitInfo info Main branch git info
    */
-  generate(info: GitInfo): void
+  generate(): void
 
   /**
    * Executes this action after generation
-   *
-   * @param GitInfo info Main branch git info
    */
-  getAfterActions(info: GitInfo): GeneratorActionStepDefinition[]
+  getAfterActions(): GeneratorActionStepDefinition[]
 
   /**
    * Checks if all required input options are defined for generator
@@ -53,4 +46,11 @@ export default interface GeneratorInterface {
    * @return object
    */
   getGlobalComposerConfig(): {[key: string]: string}
+
+  /**
+   * Gets places names that should be linked with temporal paths
+   *
+   * @return string[]
+   */
+  getNeededTemporalPathPlaces(): string[]
 }

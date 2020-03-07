@@ -1,6 +1,6 @@
 import ActionInterface from '../ActionInterface'
-import {getInput} from '@actions/core'
-import {execCommand} from '../helpers'
+import {execCommand, replaceWinPathCharToUnix} from '../helpers'
+import TempPaths from '../handlers/TempPaths'
 
 export default class RemoveNotRequiredFilesAction implements ActionInterface {
   /**
@@ -21,8 +21,12 @@ export default class RemoveNotRequiredFilesAction implements ActionInterface {
    * @inheritDoc
    */
   exec(): void {
-    const newDocs = getInput('temp_docs_folder')
-    const oldDocs = newDocs.concat('.old')
-    execCommand('rm', ['-rf', newDocs, oldDocs, '.phpdoc-md'], process.cwd())
+    execCommand(
+      'rm',
+      ['-rf'].concat(
+        TempPaths.getAllPaths().map(path => replaceWinPathCharToUnix(path))
+      ),
+      process.cwd()
+    )
   }
 }

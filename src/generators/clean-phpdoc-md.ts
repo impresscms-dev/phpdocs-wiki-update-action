@@ -1,12 +1,21 @@
 import GeneratorInterface from '../GeneratorInterface'
 import {debug, getInput} from '@actions/core'
-import {composer /*, execCommand*/, execCommandAndReturn} from '../helpers'
+import {composer, execCommandAndReturn} from '../helpers'
 import {renameSync, writeFileSync} from 'fs'
 import {EOL} from 'os'
 import GeneratorActionStepDefinition from '../GeneratorActionStepDefinition'
+import TempPaths from '../handlers/TempPaths'
+
 import picomatch = require('picomatch')
 
 export default class implements GeneratorInterface {
+  /**
+   * @inheritDoc
+   */
+  getNeededTemporalPathPlaces(): string[] {
+    return []
+  }
+
   /**
    * @inheritDoc
    */
@@ -54,8 +63,8 @@ export default class implements GeneratorInterface {
         null,
         'Renaming README.md to Home.md...',
         renameSync,
-        getInput('temp_docs_folder').concat('/README.md'),
-        getInput('temp_docs_folder').concat('/HOME.md')
+        TempPaths.get('new-docs-workdir').concat('/README.md'),
+        TempPaths.get('new-docs-workdir').concat('/HOME.md')
       )
     ]
   }
@@ -76,7 +85,7 @@ export default class implements GeneratorInterface {
           .split(EOL)
           .map(x => x.trim())
           .filter(x => x.length > 0),
-        getInput('temp_docs_folder')
+        TempPaths.get('new-docs-workdir')
       )
     ]
   }

@@ -15,9 +15,15 @@ const cachedData: {composerGlobalPath: null | string} = {
  * @param string cmd  Command to be executed
  * @param Array<string> args Command arguments
  * @param string cwd Where to execute
+ * @param object env Environment variables data
  */
-export function execCommand(cmd: string, args: string[], cwd: string): void {
-  execCommandAndReturn(cmd, args, cwd)
+export function execCommand(
+  cmd: string,
+  args: string[],
+  cwd: string,
+  env: {[x: string]: string} = {}
+): void {
+  execCommandAndReturn(cmd, args, cwd, env)
 }
 
 /**
@@ -26,14 +32,19 @@ export function execCommand(cmd: string, args: string[], cwd: string): void {
  * @param string cmd  Command to be executed
  * @param Array<string> args Command arguments
  * @param string cwd Where to execute
+ * @param object env Environment variables data
+ *
+ * @return string
  */
 export function execCommandAndReturn(
   cmd: string,
   args: string[],
-  cwd: string
+  cwd: string,
+  env: {[x: string]: string} = {}
 ): string {
   debug(` Executing ${cmd} ${args.join(' ')} in ${cwd}...`)
-  const proc = spawnSync(cmd, args, {cwd})
+  const envOptions = Object.assign({}, process.env, env)
+  const proc = spawnSync(cmd, args, {cwd, env: envOptions})
   const out = proc.output
     ?.join('\n')
     .trim()
@@ -100,4 +111,15 @@ export function getGlobalComposerPath(): string {
     ]).trim()
   }
   return cachedData.composerGlobalPath
+}
+
+/**
+ * Replace Windows path separator with Unix
+ *
+ * @param string path Path to replace
+ *
+ * @return string
+ */
+export function replaceWinPathCharToUnix(path: string): string {
+  return path.replace(/\\/g, '/')
 }

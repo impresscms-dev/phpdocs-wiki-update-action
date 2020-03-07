@@ -1,8 +1,7 @@
 import ActionInterface from '../ActionInterface'
-import {getInput} from '@actions/core'
-import GeneratorInterface from '../GeneratorInterface'
-import GitInfo from '../GitInfo'
 import {execCommand} from '../helpers'
+import GitInfo from '../handlers/GitInfo'
+import TempPaths from '../handlers/TempPaths'
 
 export default class PushUpdateAction implements ActionInterface {
   /**
@@ -22,13 +21,13 @@ export default class PushUpdateAction implements ActionInterface {
   /**
    * @inheritDoc
    */
-  exec(generator: GeneratorInterface, info: GitInfo): void {
-    const cwd = getInput('temp_docs_folder')
+  exec(): void {
+    const cwd = TempPaths.get('new-docs-main')
     try {
-      execCommand('git', ['push', '-u', 'origin', info.branchOrTagName], cwd)
+      execCommand('git', ['push', '-u', 'origin', GitInfo.branchOrTagName], cwd)
     } catch (e) {
       execCommand('git', ['pull'], cwd)
-      execCommand('git', ['push', '.', info.branchOrTagName], cwd)
+      execCommand('git', ['push', '.', GitInfo.branchOrTagName], cwd)
     }
   }
 }

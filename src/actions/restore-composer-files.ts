@@ -2,7 +2,8 @@ import ActionInterface from '../ActionInterface'
 import GeneratorInterface from '../GeneratorInterface'
 import {existsSync, renameSync, unlinkSync} from 'fs'
 import {getGlobalComposerPath} from '../helpers'
-import {basename, dirname} from 'path'
+import {join} from 'path'
+import TempPaths from '../handlers/TempPaths'
 
 export default class RestoreComposerFiles implements ActionInterface {
   /**
@@ -27,23 +28,33 @@ export default class RestoreComposerFiles implements ActionInterface {
    */
   exec(): void {
     const globalPath = getGlobalComposerPath()
-    const files = [
-      'composer.lock',
-      'composer.json',
-      globalPath.concat('/composer.lock'),
-      globalPath.concat('/composer.json'),
-      globalPath.concat('/config.json')
-    ]
-    for (const file of files) {
-      if (existsSync(file)) {
-        unlinkSync(file)
-      }
-      const fileName = basename(file)
-      const path = dirname(file)
-      const bkpFilename = path.concat('/.', fileName, '.bkp')
-      if (existsSync(bkpFilename)) {
-        renameSync(bkpFilename, file)
-      }
+    this.restoreFile('composer.lock', 'composer-local-backup', process.cwd())
+    this.restoreFile('composer.json', 'composer-local-backup', process.cwd())
+    this.restoreFile('composer.lock', 'composer-global-backup', globalPath)
+    this.restoreFile('composer.json', 'composer-global-backup', globalPath)
+    this.restoreFile('config.json', 'composer-global-backup', globalPath)
+  }
+
+  /**
+   * Restores backup file
+   *
+   * @param string shortFilename File to restore
+   * @param string srcType Source temp path type
+   * @param string dstPath Where to restore
+   */
+  protected restoreFile(
+    shortFilename: string,
+    srcType: string,
+    dstPath: string
+  ): void {
+    const bkpFilename = join(TempPaths.get(srcType), shortFilename)
+    if (!existsSync(bkpFilename)) {
+      return
     }
+    const dstFile = join(dstPath, shortFilename)
+    if (existsSync(dstFile)) {
+      unlinkSync(dstFile)
+    }
+    renameSync(bkpFilename, dstFile)
   }
 }

@@ -1,6 +1,6 @@
-import {execCommandAndReturn} from './helpers'
+import {execCommandAndReturn} from '../helpers'
 
-export = class GitInfo {
+class GitInfoHandler {
   /**
    * Last commit author name
    */
@@ -82,11 +82,6 @@ export = class GitInfo {
       this.cwd
     )
   }
-
-  /**
-   * Creates GitInfo for current process
-   */
-  static createInstance(): GitInfo {
-    return new GitInfo(process.cwd())
-  }
 }
+
+export default new GitInfoHandler(process.cwd())

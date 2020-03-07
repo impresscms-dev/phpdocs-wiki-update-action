@@ -1,6 +1,5 @@
 import ActionInterface from '../ActionInterface'
 import GeneratorInterface from '../GeneratorInterface'
-import GitInfo from '../GitInfo'
 
 export default class GenerateAction implements ActionInterface {
   /**
@@ -20,7 +19,7 @@ export default class GenerateAction implements ActionInterface {
   /**
    * @inheritDoc
    */
-  exec(generator: GeneratorInterface, info: GitInfo): void {
-    generator.generate(info)
+  exec(generator: GeneratorInterface): void {
+    generator.generate()
   }
 }

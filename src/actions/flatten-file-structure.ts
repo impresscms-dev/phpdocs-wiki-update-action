@@ -1,8 +1,9 @@
 import ActionInterface from '../ActionInterface'
-import {debug, getInput} from '@actions/core'
+import {debug} from '@actions/core'
 import {readFileSync, renameSync, writeFileSync} from 'fs'
 import {basename, dirname, extname} from 'path'
 import {execCommand} from '../helpers'
+import TempPaths from '../handlers/TempPaths'
 import readDirSync = require('recursive-readdir-sync')
 
 export default class FlattenFileStructureAction implements ActionInterface {
@@ -24,7 +25,7 @@ export default class FlattenFileStructureAction implements ActionInterface {
    * @inheritDoc
    */
   exec(): void {
-    const newDocs = getInput('temp_docs_folder')
+    const newDocs = TempPaths.get('new-docs-workdir')
     const filenames = this.generateNewStructData(newDocs)
     const flippedFilenames = this.flipKeysWithValues(filenames)
     for (const newFilename in filenames) {

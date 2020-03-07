@@ -1,6 +1,6 @@
 import ActionInterface from '../ActionInterface'
-import {getInput} from '@actions/core'
 import {execCommand} from '../helpers'
+import TempPaths from '../handlers/TempPaths'
 
 export default class CopyOldGitDataToNewPlaceAction implements ActionInterface {
   /**
@@ -21,8 +21,8 @@ export default class CopyOldGitDataToNewPlaceAction implements ActionInterface {
    * @inheritDoc
    */
   exec(): void {
-    const newDocs = getInput('temp_docs_folder')
-    const oldDocs = newDocs.concat('.old')
+    const newDocs = TempPaths.get('new-docs-main')
+    const oldDocs = TempPaths.get('old-docs-main')
     execCommand(
       'cp',
       ['-r', oldDocs.concat('/.git'), newDocs.concat('/.git')],

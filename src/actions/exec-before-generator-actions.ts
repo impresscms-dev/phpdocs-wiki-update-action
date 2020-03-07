@@ -1,6 +1,5 @@
 import ActionInterface from '../ActionInterface'
 import GeneratorInterface from '../GeneratorInterface'
-import GitInfo from '../GitInfo'
 
 export default class ExecBeforeGeneratorActionsAction
   implements ActionInterface {
@@ -14,16 +13,16 @@ export default class ExecBeforeGeneratorActionsAction
   /**
    * @inheritDoc
    */
-  shouldRun(generator: GeneratorInterface, info: GitInfo): boolean {
-    return generator.getBeforeActions(info).length > 0
+  shouldRun(generator: GeneratorInterface): boolean {
+    return generator.getBeforeActions().length > 0
   }
 
   /**
    * @inheritDoc
    */
-  exec(generator: GeneratorInterface, info: GitInfo): void {
-    for (const definition of generator.getBeforeActions(info)) {
-      definition.exec(info)
+  exec(generator: GeneratorInterface): void {
+    for (const definition of generator.getBeforeActions()) {
+      definition.exec()
     }
   }
 }

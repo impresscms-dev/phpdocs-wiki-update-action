@@ -20,11 +20,13 @@ import GlobalInstallAction from '../actions/global-install'
 import GlobalUninstallAction from '../actions/global-uninstall'
 import GlobalSetConfigAction from '../actions/global-set-config'
 import SetConfigAction from '../actions/set-config'
-import BackupComposerFiles from '../actions/backup-composer-files'
+import BackupComposerFilesAction from '../actions/backup-composer-files-action'
 import RestoreComposerFiles from '../actions/restore-composer-files'
+import InitTempPathsAction from '../actions/init-tmp-paths'
 
 const actions: ActionInterface[] = [
-  new BackupComposerFiles(),
+  new InitTempPathsAction(),
+  new BackupComposerFilesAction(),
   new GlobalSetConfigAction(),
   new GlobalInstallAction(),
   new SetConfigAction(),

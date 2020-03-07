@@ -2,6 +2,7 @@ import {EOL} from 'os'
 import ActionInterface from '../ActionInterface'
 import {debug, getInput} from '@actions/core'
 import {readFileSync, writeFileSync} from 'fs'
+import TempPaths from '../handlers/TempPaths'
 import readDirSync = require('recursive-readdir-sync')
 
 export default class PrefixAction implements ActionInterface {
@@ -23,7 +24,7 @@ export default class PrefixAction implements ActionInterface {
    * @inheritDoc
    */
   exec(): void {
-    const newDocs = getInput('temp_docs_folder')
+    const newDocs = TempPaths.get('new-docs-workdir')
     const prefix = this.getPrefixLines()
     for (const file of readDirSync(newDocs)) {
       debug(' '.concat(file.toString()))

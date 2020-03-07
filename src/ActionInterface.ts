@@ -1,14 +1,12 @@
 import GeneratorInterface from './GeneratorInterface'
-import GitInfo from './GitInfo'
 
 export default interface ActionInterface {
   /**
    * Executes action
    *
    * @param GeneratorInterface generator linked generator
-   * @param GitInfo info Linked git info
    */
-  exec(generator: GeneratorInterface, info: GitInfo): void
+  exec(generator: GeneratorInterface): void
 
   /**
    * Gets action description
@@ -19,7 +17,6 @@ export default interface ActionInterface {
    * Should this action run?
    *
    * @param GeneratorInterface generator linked generator
-   * @param GitInfo info Linked git info
    */
-  shouldRun(generator: GeneratorInterface, info: GitInfo): boolean
+  shouldRun(generator: GeneratorInterface): boolean
 }
