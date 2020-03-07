@@ -78,7 +78,7 @@ export default class implements GeneratorInterface {
   getBeforeActions(): GeneratorActionStepDefinition[] {
     return [
       new GeneratorActionStepDefinition(
-        this,
+        Composer,
         'Removing dev requirements...',
         Composer.removeDevRequirements
       ),
@@ -90,7 +90,7 @@ export default class implements GeneratorInterface {
         TempPaths.get('cache')
       ),
       new GeneratorActionStepDefinition(
-        this,
+        Composer,
         'Install dev requirements...',
         Composer.installDevRequirements
       )

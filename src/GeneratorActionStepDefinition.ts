@@ -1,5 +1,4 @@
 import {info} from '@actions/core'
-import GeneratorInterface from './GeneratorInterface'
 
 /**
  * Class to define generator action step
@@ -23,18 +22,18 @@ export default class GeneratorActionStepDefinition {
   /**
    * Linked generator
    */
-  readonly generator: GeneratorInterface | null
+  readonly generator: object | null
 
   /**
    * Constructor
    *
-   * @param GeneratorInterface|null generator Linked generator
+   * @param object|null generator Linked generator
    * @param string description Description to print for step
    * @param Function execCallback Callback that will be executed for action
    * @param args any extra args
    */
   constructor(
-    generator: GeneratorInterface | null,
+    generator: object | null,
     description: string,
     execCallback: Function,
     ...args: (

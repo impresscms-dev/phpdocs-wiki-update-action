@@ -1058,7 +1058,7 @@ class GeneratorActionStepDefinition {
     /**
      * Constructor
      *
-     * @param GeneratorInterface|null generator Linked generator
+     * @param object|null generator Linked generator
      * @param string description Description to print for step
      * @param Function execCallback Callback that will be executed for action
      * @param args any extra args
@@ -2683,9 +2683,9 @@ class default_1 {
      */
     getBeforeActions() {
         return [
-            new GeneratorActionStepDefinition_1.default(this, 'Removing dev requirements...', Composer_1.default.removeDevRequirements),
+            new GeneratorActionStepDefinition_1.default(Composer_1.default, 'Removing dev requirements...', Composer_1.default.removeDevRequirements),
             new GeneratorActionStepDefinition_1.default(this, 'Generating XML data...', this.generateXML, TempPaths_1.default.get('xml'), TempPaths_1.default.get('cache')),
-            new GeneratorActionStepDefinition_1.default(this, 'Install dev requirements...', Composer_1.default.installDevRequirements)
+            new GeneratorActionStepDefinition_1.default(Composer_1.default, 'Install dev requirements...', Composer_1.default.installDevRequirements)
         ];
     }
     /**
