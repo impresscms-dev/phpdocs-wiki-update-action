@@ -1,6 +1,7 @@
 import {error, getInput, info, setFailed} from '@actions/core'
 import actions from './data/actions'
 import generators from './data/generators'
+import Execution from "./handlers/Execution";
 
 try {
   const generatorName = getInput('engine')
