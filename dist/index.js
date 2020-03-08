@@ -4175,7 +4175,6 @@ class PrefixAction {
                 .map(line => line.trimRight())
                 .join(os_1.EOL));
             fs_1.writeFileSync(file.toString(), newContent);
-            throw new Error('Test');
         }
     }
     /**

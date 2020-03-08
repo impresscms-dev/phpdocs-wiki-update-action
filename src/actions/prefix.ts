@@ -36,7 +36,6 @@ export default class PrefixAction implements ActionInterface {
           .join(EOL)
       )
       writeFileSync(file.toString(), newContent)
-      throw new Error('Test')
     }
   }
 
