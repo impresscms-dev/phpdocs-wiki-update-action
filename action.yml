@@ -10,10 +10,6 @@ inputs:
   wiki_github_update_user:
     description: GitHub username for whom this token belongs
     required: true
-  temp_docs_folder:
-    description: Temporaly doc folder where project documenation will be generated
-    required: false
-    default: .docs
   engine:
     description: What documentation generator should be used
     required: false
