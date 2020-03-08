@@ -30,7 +30,6 @@
   "dependencies": {
     "@actions/core": "^1.1.0",
     "@actions/github": "^1.1.0",
-    "@types/fs-extra": "^8.0.1",
     "@zeit/ncc": "^0.21.1",
     "child_process": "^1.0.2",
     "flow-bin": "^0.118.0",
@@ -38,6 +37,7 @@
     "recursive-readdir-sync": "^1.0.6"
   },
   "devDependencies": {
+    "@types/fs-extra": "^8.0.1",
     "@types/node": "^12.7.12",
     "@typescript-eslint/parser": "^2.20.0",
     "eslint": "^5.0.0",
