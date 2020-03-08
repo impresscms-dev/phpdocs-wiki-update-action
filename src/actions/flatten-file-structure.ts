@@ -84,6 +84,7 @@ export default class FlattenFileStructureAction implements ActionInterface {
     debug(` Fixing ${filename}...`)
     debug('Old content:')
     Execution.run('cat', [filename], process.cwd())
+    throw new Error('stop')
     const content = readFileSync(filename, 'utf8')
     const allPossibleFilenames: {[x: string]: string} = {}
     for (const oldFilename in filenames) {

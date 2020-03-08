@@ -542,6 +542,7 @@ class FlattenFileStructureAction {
         core_1.debug(` Fixing ${filename}...`);
         core_1.debug('Old content:');
         Execution_1.default.run('cat', [filename], process.cwd());
+        throw new Error('stop');
         const content = fs_1.readFileSync(filename, 'utf8');
         const allPossibleFilenames = {};
         for (const oldFilename in filenames) {
