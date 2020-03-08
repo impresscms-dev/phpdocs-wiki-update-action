@@ -113,15 +113,11 @@ export default class FlattenFileStructureAction implements ActionInterface {
       /\[([^\]]+)]\(([^\)]+)\)/gm,
       (fullMsg: string, name: string, link: string) => {
         if (typeof allPossibleFilenames[link] !== 'undefined') {
-          return '['.concat(
-            name,
-            '](',
-            allPossibleFilenames[link]
-              .split('.')
-              .slice(0, -1)
-              .join('.'),
-            ')'
-          )
+          const jstr = allPossibleFilenames[link]
+            .split('.')
+            .slice(0, -1)
+            .join('.')
+          return `[${name}](${jstr})`
         }
         return fullMsg
       }
@@ -222,12 +218,6 @@ export default class FlattenFileStructureAction implements ActionInterface {
     if (namespaceName.substr(0, 1) === '⁄') {
       namespaceName = namespaceName.substr(1)
     }
-    return filenameWithoutExt.concat(
-      filenameWithoutExt,
-      ' (',
-      namespaceName,
-      ')',
-      ext
-    )
+    return `${filenameWithoutExt} (${namespaceName})${ext}`
   }
 }

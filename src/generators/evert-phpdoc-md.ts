@@ -66,8 +66,8 @@ export default class implements GeneratorInterface {
         null,
         'Renaming ApiIndex.md to Home.md...',
         renameSync,
-        TempPaths.get('new-docs-workdir').concat('/ApiIndex.md'),
-        TempPaths.get('new-docs-workdir').concat('/HOME.md')
+        TempPaths.getFilename('new-docs-workdir', 'ApiIndex.md'),
+        TempPaths.getFilename('new-docs-workdir', 'HOME.md')
       )
     ]
   }
@@ -106,7 +106,7 @@ export default class implements GeneratorInterface {
       'exec',
       'phpdocmd',
       Execution.replaceWinPathCharToUnix(
-        join(TempPaths.get('xml'), 'structure.xml')
+        TempPaths.getFilename('xml', 'structure.xml')
       ),
       Execution.replaceWinPathCharToUnix(TempPaths.get('new-docs-workdir')),
       '-v'
@@ -143,7 +143,7 @@ export default class implements GeneratorInterface {
         .split('\n')
         .map(line => line.trim())
         .filter(line => line && line.length > 0)
-        .map(line => '--ignore='.concat(line))
+        .map(line => `--ignore=${line}`)
     )
     Execution.run(cmd, args, process.cwd(), {APP_ENV: 'dev'})
   }

@@ -27,7 +27,7 @@ export default class PrefixAction implements ActionInterface {
     const newDocs = TempPaths.get('new-docs-workdir')
     const prefix = this.getPrefixLines()
     for (const file of readDirSync(newDocs)) {
-      debug(' '.concat(file.toString()))
+      debug(`  ${file.toString()}`)
       const content = readFileSync(file.toString(), 'utf8')
       const newContent = prefix.concat(
         content

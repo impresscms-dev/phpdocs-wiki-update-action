@@ -192,7 +192,7 @@ class BackupComposerFilesAction {
             return;
         }
         const fileName = path_1.basename(file);
-        fs_1.copyFileSync(file, path_1.join(TempPaths_1.default.get(dstType), fileName));
+        fs_1.copyFileSync(file, TempPaths_1.default.getFilename(dstType, fileName));
     }
 }
 exports.default = BackupComposerFilesAction;
@@ -235,6 +235,65 @@ class ExecutionHandler {
         this.getResults(cmd, args, cwd, env);
     }
     /**
+     * Prints running command
+     *
+     * @param string cmd  Command to be executed
+     * @param Array<string> args Command arguments
+     * @param string cwd Where to execute
+     * @param object env Environment variables data
+     */
+    printRunningCommand(cmd, args, cwd, env) {
+        const fullCommand = Object.entries(env)
+            .map(([key, value]) => {
+            let escVal = value.replace(/\\/g, '\\\\').replace(/"/g, '\\"');
+            if (escVal.includes(' ') || escVal.includes('*')) {
+                escVal = `"${escVal}"`;
+            }
+            return `${key}=${escVal}`;
+        })
+            .join(' ')
+            .concat(' ', this.render(cmd, args));
+        core_1.debug(` Executing ${fullCommand} in ${cwd}...`);
+    }
+    /**
+     * Renders command
+     *
+     * @param string cmd Command to render
+     * @param string[] args Command arguments
+     */
+    render(cmd, args = []) {
+        return cmd
+            .concat(' ', args.map(arg => this.escapeShellArg(arg)).join(' '))
+            .trim();
+    }
+    /**
+     * Prepares ENV options array
+     *
+     * @param object env Env data
+     *
+     * @return object
+     */
+    prepareEnvOptions(env) {
+        return Object.assign({}, process.env, env);
+    }
+    /**
+     * Escapes shell arg
+     *
+     * @param string arg Argument to escape
+     *
+     * @return string
+     */
+    escapeShellArg(arg) {
+        let ret = '';
+        ret = arg.replace(/[^\\]'/g, (m) => {
+            return m.slice(0, 1).concat("\\'");
+        });
+        if (ret.includes(' ') || ret.includes('*')) {
+            return `'${ret}'`;
+        }
+        return ret;
+    }
+    /**
      * Executes command and return result as string
      *
      * @param string cmd  Command to be executed
@@ -246,8 +305,8 @@ class ExecutionHandler {
      */
     getResults(cmd, args, cwd, env = {}) {
         var _a;
-        core_1.debug(` Executing ${cmd} ${args.join(' ')} in ${cwd}...`);
-        const envOptions = Object.assign({}, process.env, env);
+        this.printRunningCommand(cmd, args, cwd, env);
+        const envOptions = this.prepareEnvOptions(env);
         const proc = child_process_1.spawnSync(cmd, args, { cwd, env: envOptions });
         const out = (_a = proc.output) === null || _a === void 0 ? void 0 : _a.join('\n').trim().replace(/\n/g, os_1.EOL);
         for (const outputLine of out.split(os_1.EOL)) {
@@ -504,10 +563,11 @@ class FlattenFileStructureAction {
         }
         const newContent = content.replace(/\[([^\]]+)]\(([^\)]+)\)/gm, (fullMsg, name, link) => {
             if (typeof allPossibleFilenames[link] !== 'undefined') {
-                return '['.concat(name, '](', allPossibleFilenames[link]
+                const jstr = allPossibleFilenames[link]
                     .split('.')
                     .slice(0, -1)
-                    .join('.'), ')');
+                    .join('.');
+                return `[${name}](${jstr})`;
             }
             return fullMsg;
         });
@@ -585,7 +645,7 @@ class FlattenFileStructureAction {
         if (namespaceName.substr(0, 1) === '⁄') {
             namespaceName = namespaceName.substr(1);
         }
-        return filenameWithoutExt.concat(filenameWithoutExt, ' (', namespaceName, ')', ext);
+        return `${filenameWithoutExt} (${namespaceName})${ext}`;
     }
 }
 exports.default = FlattenFileStructureAction;
@@ -655,7 +715,7 @@ class CloneWikiAction {
      */
     branchExist(branch, oldDocsDir) {
         try {
-            Execution_1.default.run('git', ['show-branch', 'origin/'.concat(branch)], oldDocsDir);
+            Execution_1.default.run('git', ['show-branch', `origin/${branch}`], oldDocsDir);
             return true;
         }
         catch (e) {
@@ -2122,6 +2182,17 @@ class TempPathsHandler {
     getAllPaths() {
         return Object.values(this.paths);
     }
+    /**
+     * Get filename for type
+     *
+     * @param string type Type of path
+     * @param string relativePath Filename to get (relative)
+     *
+     * @return string
+     */
+    getFilename(type, relativePath) {
+        return path_1.join(this.get(type), relativePath);
+    }
 }
 exports.default = new TempPathsHandler();
 
@@ -2675,7 +2746,7 @@ class default_1 {
      */
     getAfterActions() {
         return [
-            new GeneratorActionStepDefinition_1.default(null, 'Renaming ApiIndex.md to Home.md...', fs_1.renameSync, TempPaths_1.default.get('new-docs-workdir').concat('/ApiIndex.md'), TempPaths_1.default.get('new-docs-workdir').concat('/HOME.md'))
+            new GeneratorActionStepDefinition_1.default(null, 'Renaming ApiIndex.md to Home.md...', fs_1.renameSync, TempPaths_1.default.getFilename('new-docs-workdir', 'ApiIndex.md'), TempPaths_1.default.getFilename('new-docs-workdir', 'HOME.md'))
         ];
     }
     /**
@@ -2696,7 +2767,7 @@ class default_1 {
             'global',
             'exec',
             'phpdocmd',
-            Execution_1.default.replaceWinPathCharToUnix(path_1.join(TempPaths_1.default.get('xml'), 'structure.xml')),
+            Execution_1.default.replaceWinPathCharToUnix(TempPaths_1.default.getFilename('xml', 'structure.xml')),
             Execution_1.default.replaceWinPathCharToUnix(TempPaths_1.default.get('new-docs-workdir')),
             '-v'
         ]);
@@ -2726,7 +2797,7 @@ class default_1 {
             .split('\n')
             .map(line => line.trim())
             .filter(line => line && line.length > 0)
-            .map(line => '--ignore='.concat(line)));
+            .map(line => `--ignore=${line}`));
         Execution_1.default.run(cmd, args, process.cwd(), { APP_ENV: 'dev' });
     }
 }
@@ -2828,7 +2899,7 @@ class default_1 {
      */
     getAfterActions() {
         return [
-            new GeneratorActionStepDefinition_1.default(null, 'Renaming README.md to Home.md...', fs_1.renameSync, TempPaths_1.default.get('new-docs-workdir').concat('/README.md'), TempPaths_1.default.get('new-docs-workdir').concat('/HOME.md'))
+            new GeneratorActionStepDefinition_1.default(null, 'Renaming README.md to Home.md...', fs_1.renameSync, TempPaths_1.default.getFilename('new-docs-workdir', 'README.md'), TempPaths_1.default.getFilename('new-docs-workdir', 'HOME.md'))
         ];
     }
     /**
@@ -4101,7 +4172,7 @@ class PrefixAction {
         const newDocs = TempPaths_1.default.get('new-docs-workdir');
         const prefix = this.getPrefixLines();
         for (const file of readDirSync(newDocs)) {
-            core_1.debug(' '.concat(file.toString()));
+            core_1.debug(`  ${file.toString()}`);
             const content = fs_1.readFileSync(file.toString(), 'utf8');
             const newContent = prefix.concat(content
                 .split(/\n/g)
@@ -4228,7 +4299,7 @@ class RestoreComposerFiles {
      * @param string dstPath Where to restore
      */
     restoreFile(shortFilename, srcType, dstPath) {
-        const bkpFilename = path_1.join(TempPaths_1.default.get(srcType), shortFilename);
+        const bkpFilename = TempPaths_1.default.getFilename(srcType, shortFilename);
         if (!fs_1.existsSync(bkpFilename)) {
             return;
         }

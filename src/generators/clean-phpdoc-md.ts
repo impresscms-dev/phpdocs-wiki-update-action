@@ -64,8 +64,8 @@ export default class implements GeneratorInterface {
         null,
         'Renaming README.md to Home.md...',
         renameSync,
-        TempPaths.get('new-docs-workdir').concat('/README.md'),
-        TempPaths.get('new-docs-workdir').concat('/HOME.md')
+        TempPaths.getFilename('new-docs-workdir', 'README.md'),
+        TempPaths.getFilename('new-docs-workdir', 'HOME.md')
       )
     ]
   }

@@ -47,7 +47,7 @@ export default class RestoreComposerFiles implements ActionInterface {
     srcType: string,
     dstPath: string
   ): void {
-    const bkpFilename = join(TempPaths.get(srcType), shortFilename)
+    const bkpFilename = TempPaths.getFilename(srcType, shortFilename)
     if (!existsSync(bkpFilename)) {
       return
     }

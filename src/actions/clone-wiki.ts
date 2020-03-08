@@ -63,11 +63,7 @@ export default class CloneWikiAction implements ActionInterface {
    */
   private branchExist(branch: string, oldDocsDir: string): boolean {
     try {
-      Execution.run(
-        'git',
-        ['show-branch', 'origin/'.concat(branch)],
-        oldDocsDir
-      )
+      Execution.run('git', ['show-branch', `origin/${branch}`], oldDocsDir)
       return true
     } catch (e) {
       return false

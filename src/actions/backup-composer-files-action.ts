@@ -46,6 +46,6 @@ export default class BackupComposerFilesAction implements ActionInterface {
       return
     }
     const fileName = basename(file)
-    copyFileSync(file, join(TempPaths.get(dstType), fileName))
+    copyFileSync(file, TempPaths.getFilename(dstType, fileName))
   }
 }

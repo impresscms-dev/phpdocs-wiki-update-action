@@ -118,6 +118,18 @@ class TempPathsHandler {
   getAllPaths(): string[] {
     return Object.values(this.paths)
   }
+
+  /**
+   * Get filename for type
+   *
+   * @param string type Type of path
+   * @param string relativePath Filename to get (relative)
+   *
+   * @return string
+   */
+  getFilename(type: string, relativePath: string): string {
+    return join(this.get(type), relativePath)
+  }
 }
 
 export default new TempPathsHandler()
