@@ -1,6 +1,6 @@
 import GeneratorInterface from '../GeneratorInterface'
 import {debug, getInput} from '@actions/core'
-import {renameSync, writeFileSync} from 'fs'
+import {renameSync, unlinkSync, writeFileSync} from 'fs'
 import {EOL} from 'os'
 import GeneratorActionStepDefinition from '../GeneratorActionStepDefinition'
 import TempPaths from '../handlers/TempPaths'
@@ -66,6 +66,12 @@ export default class implements GeneratorInterface {
         renameSync,
         TempPaths.getFilename('new-docs-workdir', 'README.md'),
         TempPaths.getFilename('new-docs-workdir', 'HOME.md')
+      ),
+      new GeneratorActionStepDefinition(
+        null,
+        'Deleting config...',
+        unlinkSync,
+        TempPaths.getFilename('new-docs-workdir', '.phpdoc-md')
       )
     ]
   }

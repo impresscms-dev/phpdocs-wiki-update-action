@@ -2934,7 +2934,8 @@ class default_1 {
      */
     getAfterActions() {
         return [
-            new GeneratorActionStepDefinition_1.default(null, 'Renaming README.md to Home.md...', fs_1.renameSync, TempPaths_1.default.getFilename('new-docs-workdir', 'README.md'), TempPaths_1.default.getFilename('new-docs-workdir', 'HOME.md'))
+            new GeneratorActionStepDefinition_1.default(null, 'Renaming README.md to Home.md...', fs_1.renameSync, TempPaths_1.default.getFilename('new-docs-workdir', 'README.md'), TempPaths_1.default.getFilename('new-docs-workdir', 'HOME.md')),
+            new GeneratorActionStepDefinition_1.default(null, 'Deleting config...', fs_1.unlinkSync, TempPaths_1.default.getFilename('new-docs-workdir', '.phpdoc-md'))
         ];
     }
     /**
