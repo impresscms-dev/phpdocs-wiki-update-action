@@ -43,7 +43,7 @@ export default class PrefixAction implements ActionInterface {
    * Gets prefix that should be used for each file
    */
   protected getPrefixLines(): string {
-    let lines = getInput('prefix_lines')
+    let lines = getInput('prefix_lines', {required: false})
     if (typeof lines == 'string' && lines.length > 0) {
       lines = lines.concat(EOL)
     } else {

@@ -62,16 +62,18 @@ Update wiki with PHP project documentation action supports multiple engines for 
 This engine is default for the action. It needs to specify classes that should be included in generated wiki code, but it works much faster than `evert/phpdoc-md`. Sadly, not for every project right now is possible to use this one.
 
 This engine supports such extra arguments:
+
 | Argument | Required | Default value | Description |
 |----------|----------|---------------|-------------|
-| class_root_namespace | No | | Root class namespace that should be used for documentation |
-| include | No | | Defines what classes should be included in generated documentation (supports glob style wildcards syntax; each line means one rule) |
+| class_root_namespace | Yes | | Root class namespace that should be used for documentation |
+| include | Yes | | Defines what classes should be included in generated documentation (supports glob style wildcards syntax; each line means one rule) |
 
 ### `evert/phpdoc-md` [🔗](https://github.com/evert/phpdoc-md)
 
 This engine first generates an XML data tree with the help of PHPDocumentator and then it is converted to MarkDown format, which is then uploaded to a project wiki. That's why is much slower than `clean/phpdoc-md` but generates much better results.
 
 This engine supports such extra arguments:
+
 | Argument | Required | Default value | Description |
 |----------|----------|---------------|-------------|
 | ignore_files | No | | Defines files that can be ignored (supports glob rules; each line means one rule) |

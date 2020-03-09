@@ -143,6 +143,43 @@ module.exports = require("os");
 
 /***/ }),
 
+/***/ 112:
+/***/ (function(__unusedmodule, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+const core_1 = __webpack_require__(470);
+class ValidateMainParamsAction {
+    /**
+     * @inheritDoc
+     */
+    getDescription() {
+        return 'Validating main parameters...';
+    }
+    /**
+     * @inheritDoc
+     */
+    shouldRun() {
+        return true;
+    }
+    /**
+     * @inheritDoc
+     */
+    exec() {
+        core_1.getInput('wiki_github_update_user', { required: true });
+        if (core_1.getInput('wiki_github_update_token', {
+            required: true
+        }).length < 40) {
+            throw new Error('wiki_github_update_token must have at least 40 characters');
+        }
+    }
+}
+exports.default = ValidateMainParamsAction;
+
+
+/***/ }),
+
 /***/ 115:
 /***/ (function(__unusedmodule, exports, __webpack_require__) {
 
@@ -722,13 +759,13 @@ class CloneWikiAction {
      * Gets GitHub token that will be used for update action
      */
     getUpdateToken() {
-        return core_1.getInput('wiki_github_update_token');
+        return core_1.getInput('wiki_github_update_token', { required: true });
     }
     /**
      * Get GitHub user for witch token belongs
      */
     getUpdateUser() {
-        return core_1.getInput('wiki_github_update_user');
+        return core_1.getInput('wiki_github_update_user', { required: true });
     }
     /**
      * Get old docs path
@@ -1072,7 +1109,9 @@ const set_config_1 = __importDefault(__webpack_require__(1));
 const backup_composer_files_action_1 = __importDefault(__webpack_require__(115));
 const restore_composer_files_1 = __importDefault(__webpack_require__(920));
 const init_tmp_paths_1 = __importDefault(__webpack_require__(854));
+const validate_main_params_1 = __importDefault(__webpack_require__(112));
 const actions = [
+    new validate_main_params_1.default(),
     new init_tmp_paths_1.default(),
     new backup_composer_files_action_1.default(),
     new global_set_config_1.default(),
@@ -1209,7 +1248,7 @@ const core_1 = __webpack_require__(470);
 const actions_1 = __importDefault(__webpack_require__(269));
 const generators_1 = __importDefault(__webpack_require__(14));
 try {
-    const generatorName = core_1.getInput('engine');
+    const generatorName = core_1.getInput('engine', { required: false });
     if (typeof generators_1.default[generatorName] == 'undefined') {
         throw new Error('Unknown selected generator name');
     }
@@ -2789,7 +2828,7 @@ class default_1 {
             '--ansi',
             '--no-interaction',
             '--extensions=php'
-        ].concat(core_1.getInput('ignore_files')
+        ].concat(core_1.getInput('ignore_files', { required: false })
             .split('\n')
             .map(line => line.trim())
             .filter(line => line && line.length > 0)
@@ -2887,8 +2926,8 @@ class default_1 {
      * @inheritDoc
      */
     checkIfAllInputOptionsDefined() {
-        return (core_1.getInput('class_root_namespace').length > 0 &&
-            core_1.getInput('include').length > 0);
+        return (core_1.getInput('class_root_namespace', { required: true }).length > 0 &&
+            core_1.getInput('include', { required: true }).length > 0);
     }
     /**
      * @inheritDoc
@@ -2903,7 +2942,7 @@ class default_1 {
      */
     getBeforeActions() {
         return [
-            new GeneratorActionStepDefinition_1.default(this, 'Generating generator config...', this.generateConfig, process.cwd(), core_1.getInput('class_root_namespace'), core_1.getInput('include')
+            new GeneratorActionStepDefinition_1.default(this, 'Generating generator config...', this.generateConfig, process.cwd(), core_1.getInput('class_root_namespace', { required: true }), core_1.getInput('include', { required: true })
                 .replace(/\n/g, os_1.EOL)
                 .split(os_1.EOL)
                 .map(x => x.trim())
@@ -4181,7 +4220,7 @@ class PrefixAction {
      * Gets prefix that should be used for each file
      */
     getPrefixLines() {
-        let lines = core_1.getInput('prefix_lines');
+        let lines = core_1.getInput('prefix_lines', { required: false });
         if (typeof lines == 'string' && lines.length > 0) {
             lines = lines.concat(os_1.EOL);
         }
@@ -4238,8 +4277,8 @@ class InitTempPathsAction {
             TempPaths_1.default.add(place, true);
         }
         TempPaths_1.default.add('old-docs-main', false);
-        TempPaths_1.default.addSubpathAlias('old-docs-workdir', 'old-docs-main', core_1.getInput('workdir'));
-        TempPaths_1.default.addSubpathAlias('new-docs-workdir', 'new-docs-main', core_1.getInput('workdir'));
+        TempPaths_1.default.addSubpathAlias('old-docs-workdir', 'old-docs-main', core_1.getInput('workdir', { required: false }));
+        TempPaths_1.default.addSubpathAlias('new-docs-workdir', 'new-docs-main', core_1.getInput('workdir', { required: false }));
         TempPaths_1.default.debug();
     }
 }

@@ -23,8 +23,10 @@ import SetConfigAction from '../actions/set-config'
 import BackupComposerFilesAction from '../actions/backup-composer-files-action'
 import RestoreComposerFiles from '../actions/restore-composer-files'
 import InitTempPathsAction from '../actions/init-tmp-paths'
+import ValidateMainParamsAction from '../actions/validate-main-params'
 
 const actions: ActionInterface[] = [
+  new ValidateMainParamsAction(),
   new InitTempPathsAction(),
   new BackupComposerFilesAction(),
   new GlobalSetConfigAction(),

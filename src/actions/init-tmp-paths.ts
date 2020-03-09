@@ -39,12 +39,12 @@ export default class InitTempPathsAction implements ActionInterface {
     TempPaths.addSubpathAlias(
       'old-docs-workdir',
       'old-docs-main',
-      getInput('workdir')
+      getInput('workdir', {required: false})
     )
     TempPaths.addSubpathAlias(
       'new-docs-workdir',
       'new-docs-main',
-      getInput('workdir')
+      getInput('workdir', {required: false})
     )
     TempPaths.debug()
   }

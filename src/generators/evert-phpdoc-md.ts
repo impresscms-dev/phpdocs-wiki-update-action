@@ -139,7 +139,7 @@ export default class implements GeneratorInterface {
       '--no-interaction',
       '--extensions=php'
     ].concat(
-      getInput('ignore_files')
+      getInput('ignore_files', {required: false})
         .split('\n')
         .map(line => line.trim())
         .filter(line => line && line.length > 0)

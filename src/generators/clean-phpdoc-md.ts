@@ -50,8 +50,8 @@ export default class implements GeneratorInterface {
    */
   checkIfAllInputOptionsDefined(): boolean {
     return (
-      getInput('class_root_namespace').length > 0 &&
-      getInput('include').length > 0
+      getInput('class_root_namespace', {required: true}).length > 0 &&
+      getInput('include', {required: true}).length > 0
     )
   }
 
@@ -80,8 +80,8 @@ export default class implements GeneratorInterface {
         'Generating generator config...',
         this.generateConfig,
         process.cwd(),
-        getInput('class_root_namespace'),
-        getInput('include')
+        getInput('class_root_namespace', {required: true}),
+        getInput('include', {required: true})
           .replace(/\n/g, EOL)
           .split(EOL)
           .map(x => x.trim())

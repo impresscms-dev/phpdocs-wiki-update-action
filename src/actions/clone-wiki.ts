@@ -74,14 +74,14 @@ export default class CloneWikiAction implements ActionInterface {
    * Gets GitHub token that will be used for update action
    */
   protected getUpdateToken(): string {
-    return getInput('wiki_github_update_token')
+    return getInput('wiki_github_update_token', {required: true})
   }
 
   /**
    * Get GitHub user for witch token belongs
    */
   protected getUpdateUser(): string {
-    return getInput('wiki_github_update_user')
+    return getInput('wiki_github_update_user', {required: true})
   }
 
   /**

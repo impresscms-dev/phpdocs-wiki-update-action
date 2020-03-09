@@ -3,7 +3,7 @@ import actions from './data/actions'
 import generators from './data/generators'
 
 try {
-  const generatorName = getInput('engine')
+  const generatorName = getInput('engine', {required: false})
   if (typeof generators[generatorName] == 'undefined') {
     throw new Error('Unknown selected generator name')
   }
