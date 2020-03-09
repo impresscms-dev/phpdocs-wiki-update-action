@@ -9,7 +9,9 @@ Works only if project has definitions in [composer.json](https://getcomposer.org
 
 ## Usage
 
-Before starting to use this action make sure that `Wiki` is enabled in project settings and at least one page there exist.
+**Before starting to use this action make sure:** 
+* `Wiki` is enabled in project settings 
+* at least one page in project Wiki exist
 
 To use this action in your project, create workflow in your project similar
 to this code (Note: some parts and arguments needs to be altered):
