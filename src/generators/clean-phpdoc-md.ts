@@ -2,6 +2,7 @@ import GeneratorInterface from '../GeneratorInterface'
 import {debug, getInput} from '@actions/core'
 import {renameSync, unlinkSync, writeFileSync} from 'fs'
 import {EOL} from 'os'
+import {join} from 'path'
 import GeneratorActionStepDefinition from '../GeneratorActionStepDefinition'
 import TempPaths from '../handlers/TempPaths'
 import Execution from '../handlers/Execution'
@@ -71,7 +72,7 @@ export default class implements GeneratorInterface {
         null,
         'Deleting config...',
         unlinkSync,
-        TempPaths.getFilename('new-docs-workdir', '.phpdoc-md')
+        join(process.cwd(), '.phpdoc-md')
       )
     ]
   }

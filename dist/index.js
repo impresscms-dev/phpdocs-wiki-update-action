@@ -2886,6 +2886,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const core_1 = __webpack_require__(470);
 const fs_1 = __webpack_require__(747);
 const os_1 = __webpack_require__(87);
+const path_1 = __webpack_require__(622);
 const GeneratorActionStepDefinition_1 = __importDefault(__webpack_require__(279));
 const TempPaths_1 = __importDefault(__webpack_require__(511));
 const Execution_1 = __importDefault(__webpack_require__(117));
@@ -2935,7 +2936,7 @@ class default_1 {
     getAfterActions() {
         return [
             new GeneratorActionStepDefinition_1.default(null, 'Renaming README.md to Home.md...', fs_1.renameSync, TempPaths_1.default.getFilename('new-docs-workdir', 'README.md'), TempPaths_1.default.getFilename('new-docs-workdir', 'HOME.md')),
-            new GeneratorActionStepDefinition_1.default(null, 'Deleting config...', fs_1.unlinkSync, TempPaths_1.default.getFilename('new-docs-workdir', '.phpdoc-md'))
+            new GeneratorActionStepDefinition_1.default(null, 'Deleting config...', fs_1.unlinkSync, path_1.join(process.cwd(), '.phpdoc-md'))
         ];
     }
     /**
