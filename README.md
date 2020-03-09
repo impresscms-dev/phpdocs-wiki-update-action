@@ -5,6 +5,8 @@
 
 Updates GitHub project wiki with automatic generated project documentation.
 
+Works only if project has definitions in [composer.json](https://getcomposer.org/doc/01-basic-usage.md).
+
 ## Usage
 
 Before starting to use this action make sure that `Wiki` is enabled in project settings and at least one page there exist.
@@ -20,8 +22,6 @@ on:
       - master
     tags:
       - 'v*'
-    paths:
-      - '**.php'
 
 jobs:
   update_wiki:
@@ -55,7 +55,7 @@ Some engines supports or requires extra parameters. See [engines section](#engin
 
 ## Engines
 
-Update wiki with PHP project documentation action supports multiple engines for generating content. Usually names for engines are same as composer packages that they are using.
+Update wiki with PHP project documentation action supports multiple engines for generating content. Usually names for engines are same as composer packages that they are using. Different engines can provide different results (f.e. output; some engines can crash with same parameters when others can work).
 
 ### `clean/phpdoc-md` [🔗](https://github.com/clean/phpdoc-md)
 
