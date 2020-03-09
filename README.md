@@ -20,8 +20,6 @@ on:
       - master
     tags:
       - 'v*'
-    paths:
-      - '**.php'
 
 jobs:
   update_wiki:
