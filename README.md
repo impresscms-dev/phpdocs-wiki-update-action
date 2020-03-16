@@ -1,7 +1,7 @@
-[![License](https://img.shields.io/github/license/imponeer/phpdocs-wiki-update-action.svg)](LICENSE)
-[![GitHub release](https://img.shields.io/github/release/imponeer/phpdocs-wiki-update-action.svg)](https://github.com/imponeer/phpdocs-wiki-update-action/releases)
-
 # Update wiki with PHP project documentation action
+
+[![License](https://img.shields.io/github/license/impresscms-dev/phpdocs-wiki-update-action.svg)](LICENSE)
+[![GitHub release](https://img.shields.io/github/release/impresscms-dev/phpdocs-wiki-update-action.svg)](https://github.com/impresscms-dev/phpdocs-wiki-update-action/releases) [![Maintainability](https://api.codeclimate.com/v1/badges/4fd000d25f3d24e04752/maintainability)](https://codeclimate.com/github/impresscms-dev/phpdocs-wiki-update-action/maintainability) 
 
 Updates GitHub project wiki with automatic generated project documentation.
 
