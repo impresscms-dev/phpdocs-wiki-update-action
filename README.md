@@ -39,7 +39,7 @@ jobs:
           engine: clean/phpdoc-md
           class_root_namespace: My Project
           include: |
-            \\MyProject\\**\\
+            MyProject\**
 ```
 
 ## Arguments 
