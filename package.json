@@ -28,7 +28,7 @@
   "author": "Imponeer",
   "license": "MIT",
   "dependencies": {
-    "@actions/core": "^1.2.3",
+    "@actions/core": "^1.2.6",
     "@actions/github": "^1.1.0",
     "@zeit/ncc": "^0.21.1",
     "child_process": "^1.0.2",
