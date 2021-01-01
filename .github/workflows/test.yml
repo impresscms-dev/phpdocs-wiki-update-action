@@ -16,8 +16,6 @@ jobs:
     strategy:
       matrix:
         node-version: 
-          - 10.x
-          - 12.x
           - 14.x
 
     steps:
@@ -26,5 +24,13 @@ jobs:
       uses: actions/setup-node@v1
       with:
         node-version: ${{ matrix.node-version }}
-    - name: Install package
+    - name: Install
       run: npm install
+    - name: Build  
+      run: npm build
+    - name: Format
+      run: npm run format
+    - name: Lint
+      run: npm run lint
+    - name: Pack
+      run: npm run pack
