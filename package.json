@@ -39,7 +39,7 @@
   "devDependencies": {
     "@types/fs-extra": "^9.0.6",
     "@types/node": "^12.12.30",
-    "@typescript-eslint/parser": "^2.23.0",
+    "@typescript-eslint/parser": "^4.11.1",
     "eslint": "^5.16.0",
     "eslint-plugin-github": "^2.0.0",
     "prettier": "^2.2.1",
