@@ -33,7 +33,7 @@
     "@zeit/ncc": "^0.22.3",
     "child_process": "^1.0.2",
     "flow-bin": "^0.141.0",
-    "picomatch": "^2.2.1",
+    "picomatch": "^2.2.2",
     "recursive-readdir-sync": "^1.0.6"
   },
   "devDependencies": {
