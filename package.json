@@ -32,7 +32,7 @@
     "@actions/github": "^4.0.0",
     "@zeit/ncc": "^0.22.3",
     "child_process": "^1.0.2",
-    "flow-bin": "^0.142.0",
+    "flow-bin": "^0.143.1",
     "picomatch": "^2.2.2",
     "recursive-readdir-sync": "^1.0.6"
   },
