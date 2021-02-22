@@ -38,7 +38,7 @@
   },
   "devDependencies": {
     "@types/fs-extra": "^9.0.7",
-    "@types/node": "^14.14.28",
+    "@types/node": "^14.14.31",
     "@typescript-eslint/parser": "^4.15.1",
     "eslint": "^7.20.0",
     "eslint-plugin-github": "^4.1.1",
