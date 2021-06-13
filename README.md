@@ -32,7 +32,7 @@ jobs:
       - name: Checkouting project code...
         uses: actions/checkout@v2
       - name: Updating wiki...
-        uses: impresscms-dev/phpdocs-wiki-update-action
+        uses: impresscms-dev/phpdocs-wiki-update-action@v1.0.0
         with:
           wiki_github_update_token: ${{ secrets.WIKI_GITHUB_UPDATE_TOKEN }}
           wiki_github_update_user: ${{ secrets.WIKI_GITHUB_UPDATE_USER }}
