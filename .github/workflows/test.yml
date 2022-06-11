@@ -28,13 +28,13 @@ jobs:
         run: npm install
 
       - name: NPM build
-        run: npm build
-
-      - name: NPM format check
-        run: npm run format-check
+        run: npm run build
 
       - name: NPM format
         run: npm run format
+
+      - name: NPM format check
+        run: npm run format-check
 
       - name: Lint
         run: npm run lint
