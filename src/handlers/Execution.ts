@@ -1,6 +1,7 @@
 import {debug} from '@actions/core'
 import {spawnSync} from 'child_process'
 import {EOL} from 'os'
+import ExecutionFailedError from "../errors/ExecutionFailedError";
 
 /**
  * Works with files executions
@@ -129,14 +130,14 @@ class ExecutionHandler {
     const out = proc.output
       ?.join('\n')
       .trim()
-      .replace(/\n/g, EOL)
+      .replace(/\n/g, EOL);
     for (const outputLine of out.split(EOL)) {
-      debug(outputLine.trim())
+      debug(outputLine.trim());
     }
     if (proc.status === 0) {
-      return out
+      return out;
     }
-    throw new Error(`Execution failed`)
+    throw new ExecutionFailedError(out);
   }
 
   /**

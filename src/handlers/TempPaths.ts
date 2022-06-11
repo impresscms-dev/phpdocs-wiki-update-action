@@ -3,6 +3,8 @@ import {createHash} from 'crypto'
 import {existsSync, mkdirSync} from 'fs'
 import {join} from 'path'
 import {debug} from '@actions/core'
+import PathAlreadyAddedError from "../errors/PathAlreadyAddedError";
+import PathIsNotYetAddedError from "../errors/PathIsNotYetAddedError";
 
 /**
  * Deals with temp paths
@@ -11,7 +13,7 @@ class TempPathsHandler {
   /**
    * Stores paths
    */
-  protected paths: {[x: string]: string} = {}
+  protected paths: { [x: string]: string } = {}
 
   /**
    * Checks if such path is already added
@@ -32,7 +34,7 @@ class TempPathsHandler {
    */
   add(type: string, create: boolean = true): void {
     if (this.isSet(type)) {
-      throw new Error(`${type} path is already added`)
+      throw new PathAlreadyAddedError(type);
     }
     this.paths[type] = this.generateUniqueTmpDirPath(type)
     if (create) {
@@ -69,7 +71,7 @@ class TempPathsHandler {
    */
   get(type: string): string {
     if (!this.isSet(type)) {
-      throw new Error(`${type} path is not yet added`)
+      throw new PathIsNotYetAddedError(type);
     }
     return this.paths[type]
   }
@@ -93,10 +95,10 @@ class TempPathsHandler {
    */
   addSubpathAlias(type: string, originalType: string, path: string): void {
     if (this.isSet(type)) {
-      throw new Error(`${type} path is already added`)
+      throw new PathAlreadyAddedError(type);
     }
     if (!this.isSet(originalType)) {
-      throw new Error(`${originalType} path is not yet added`)
+      throw new PathIsNotYetAddedError(originalType);
     }
     this.paths[type] = join(this.get(originalType), path)
   }
