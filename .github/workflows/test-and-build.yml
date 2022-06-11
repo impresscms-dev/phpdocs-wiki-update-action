@@ -18,6 +18,8 @@ jobs:
     steps:
       - name: Checkouting code...
         uses: actions/checkout@v2
+        with:
+          ref: ${{ github.head_ref }}
 
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v1
@@ -47,5 +49,5 @@ jobs:
         with:
           commit_message: Automatically builded and updated
           file_pattern: dist/*.js
-          skip_fetch: false
+          skip_fetch: true
           skip_checkout: true
