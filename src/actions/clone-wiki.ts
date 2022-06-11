@@ -5,7 +5,7 @@ import {basename, dirname} from 'path'
 import GitInfo from '../handlers/GitInfo'
 import TempPaths from '../handlers/TempPaths'
 import Execution from '../handlers/Execution'
-import OldDocsDirExistButShouldntError from "../errors/OldDocsDirExistButShouldntError";
+import OldDocsDirExistButShouldntError from "../errors/OldDocsDirExistButShouldntError"
 
 export default class CloneWikiAction implements ActionInterface {
   /**
@@ -28,7 +28,7 @@ export default class CloneWikiAction implements ActionInterface {
   exec(): void {
     const oldDocsDir = this.getOldDocsPath()
     if (existsSync(oldDocsDir)) {
-      throw new OldDocsDirExistButShouldntError(oldDocsDir);
+      throw new OldDocsDirExistButShouldntError(oldDocsDir)
     }
     mkdirSync(oldDocsDir)
     Execution.run(

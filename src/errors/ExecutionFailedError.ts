@@ -1,9 +1,9 @@
 export default class extends Error {
 
   constructor(out: string) {
-    super(`Execution failed`);
+    super(`Execution failed`)
 
-    this.stack = out;
+    this.stack = out
   }
 
 }

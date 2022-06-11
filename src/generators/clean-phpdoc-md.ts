@@ -7,8 +7,8 @@ import GeneratorActionStepDefinition from '../GeneratorActionStepDefinition'
 import TempPaths from '../handlers/TempPaths'
 import Execution from '../handlers/Execution'
 import Composer from '../handlers/Composer'
-import NoClassesMatchesIncludeRulesError from "../errors/NoClassesMatchesIncludeRulesError";
-import picomatch = require('picomatch');
+import NoClassesMatchesIncludeRulesError from "../errors/NoClassesMatchesIncludeRulesError"
+import picomatch = require('picomatch')
 
 export default class implements GeneratorInterface {
   /**
@@ -161,7 +161,7 @@ export default class implements GeneratorInterface {
       debug('  (none)')
     }
     if (classes.length === 0) {
-      throw new NoClassesMatchesIncludeRulesError();
+      throw new NoClassesMatchesIncludeRulesError()
     }
     const generated = '<?php'.concat(
       EOL,

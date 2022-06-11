@@ -3,8 +3,8 @@ import {createHash} from 'crypto'
 import {existsSync, mkdirSync} from 'fs'
 import {join} from 'path'
 import {debug} from '@actions/core'
-import PathAlreadyAddedError from "../errors/PathAlreadyAddedError";
-import PathIsNotYetAddedError from "../errors/PathIsNotYetAddedError";
+import PathAlreadyAddedError from "../errors/PathAlreadyAddedError"
+import PathIsNotYetAddedError from "../errors/PathIsNotYetAddedError"
 
 /**
  * Deals with temp paths
@@ -32,9 +32,9 @@ class TempPathsHandler {
    * @param string type Path short name (aka type)
    * @param boolean create Do we need automatically to create path?
    */
-  add(type: string, create: boolean = true): void {
+  add(type: string, create = true): void {
     if (this.isSet(type)) {
-      throw new PathAlreadyAddedError(type);
+      throw new PathAlreadyAddedError(type)
     }
     this.paths[type] = this.generateUniqueTmpDirPath(type)
     if (create) {
@@ -71,7 +71,7 @@ class TempPathsHandler {
    */
   get(type: string): string {
     if (!this.isSet(type)) {
-      throw new PathIsNotYetAddedError(type);
+      throw new PathIsNotYetAddedError(type)
     }
     return this.paths[type]
   }
@@ -95,10 +95,10 @@ class TempPathsHandler {
    */
   addSubpathAlias(type: string, originalType: string, path: string): void {
     if (this.isSet(type)) {
-      throw new PathAlreadyAddedError(type);
+      throw new PathAlreadyAddedError(type)
     }
     if (!this.isSet(originalType)) {
-      throw new PathIsNotYetAddedError(originalType);
+      throw new PathIsNotYetAddedError(originalType)
     }
     this.paths[type] = join(this.get(originalType), path)
   }
