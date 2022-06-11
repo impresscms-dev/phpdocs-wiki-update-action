@@ -1,4 +1,4 @@
-name: Tests
+name: Test and build
 
 on:
   pull_request:
@@ -41,3 +41,9 @@ jobs:
 
       - name: Pack
         run: npm run pack
+
+      - name: push
+        uses: actions-x/commit@v6
+        with:
+          message: Automatically builded and updated
+          files: dist/index.js
