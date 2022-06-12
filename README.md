@@ -46,12 +46,12 @@ jobs:
 
 This action supports such arguments (used in `with` keyword):
 
-| Argument | Required | Default value | Description |
-|----------|----------|---------------|-------------|
-| wiki_github_update_token | Yes | | GitHub token to use for updating project wiki. [This token must have all repo permissions](https://github.com/settings/tokens/new?scopes=repo). |
-| wiki_github_update_user | Yes | | GitHub username for whom this token belongs |
-| engine | No | clean/phpdoc-md | What documentation generator should be used? See [engines section](#engines) about possible values |
-| prefix_lines | No | `##### Notice: Wiki was automatic generated from project sources as project API documentation. Do not edit manually!` | Lines that will be used to prefix generated wiki content |
+| Argument                 | Required | Default value                                                                                                         | Description                                                                                                                                     |
+|--------------------------|----------|-----------------------------------------------------------------------------------------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------|
+| wiki_github_update_token | Yes      |                                                                                                                       | GitHub token to use for updating project wiki. [This token must have all repo permissions](https://github.com/settings/tokens/new?scopes=repo). |
+| wiki_github_update_user  | Yes      |                                                                                                                       | GitHub username for whom this token belongs                                                                                                     |
+| engine                   | No       | clean/phpdoc-md                                                                                                       | What documentation generator should be used? See [engines section](#engines) about possible values                                              |
+| prefix_lines             | No       | `##### Notice: Wiki was automatic generated from project sources as project API documentation. Do not edit manually!` | Lines that will be used to prefix generated wiki content                                                                                        |
 
 Some engines supports or requires extra parameters. See [engines section](#engines) about more info.
 
@@ -76,9 +76,9 @@ This engine first generates an XML data tree with the help of PHPDocumentator an
 
 This engine supports such extra arguments:
 
-| Argument | Required | Default value | Description |
-|----------|----------|---------------|-------------|
-| ignore_files | No | | Defines files that can be ignored (supports glob rules; each line means one rule) |
+| Argument      | Required | Default value | Description                                                                       |
+|---------------|----------|---------------|-----------------------------------------------------------------------------------|
+| ignored_files | No       |               | Defines files that can be ignored (supports glob rules; each line means one rule) |
 
 ## How to contribute? 
 
