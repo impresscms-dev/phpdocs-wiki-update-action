@@ -21,6 +21,6 @@ export default class GlobalUninstallAction implements ActionInterface {
    * @inheritDoc
    */
   exec(): void {
-    Composer.run(['global', 'install', '--dev', '--no-progress'])
+    Composer.run(['global', 'install', '--no-interaction', '--no-progress'])
   }
 }
