@@ -25,7 +25,7 @@ export default class InstallAction implements ActionInterface {
       ([key, value]) => `${key}=${value}`
     )
     Composer.run(
-      ['require', '--dev', '--no-progress', '--no-suggest'].concat(packages)
+      ['require', '--no-interaction', '--no-progress'].concat(packages)
     )
     Composer.run(['exec'])
   }

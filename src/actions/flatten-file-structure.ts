@@ -59,8 +59,8 @@ export default class FlattenFileStructureAction implements ActionInterface {
       if (Execution.isRunningOnWindows()) {
         oldFilePath = oldFilePath.replace(/\\/g, '/')
       }
-      if (oldFilePath.substr(0, 1) === '/') {
-        oldFilePath = oldFilePath.substr(1)
+      if (oldFilePath.startsWith('/')) {
+        oldFilePath = oldFilePath.substring(1)
       }
       if (typeof newStructData[fileInfo.filename] == 'undefined') {
         newStructData[fileInfo.filename] = oldFilePath
@@ -152,7 +152,7 @@ export default class FlattenFileStructureAction implements ActionInterface {
     return readDirSync(cwd).map((file: string) => {
       const shortFilename = basename(file)
       const pathWithoutFilename = dirname(file)
-      const pathPrefix = pathWithoutFilename.substr(cwd.length)
+      const pathPrefix = pathWithoutFilename.substring(cwd.length)
       return {
         filename: shortFilename,
         shortPath: pathPrefix
@@ -211,8 +211,8 @@ export default class FlattenFileStructureAction implements ActionInterface {
       .join('.')
     const ext = extname(fileInfo.filename)
     let namespaceName = fileInfo.shortPath.replace(/\//g, '⁄')
-    if (namespaceName.substr(0, 1) === '⁄') {
-      namespaceName = namespaceName.substr(1)
+    if (namespaceName.startsWith('⁄')) {
+      namespaceName = namespaceName.substring(1)
     }
     return `${filenameWithoutExt} (${namespaceName})${ext}`
   }

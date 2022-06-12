@@ -21,6 +21,6 @@ export default class UninstallAction implements ActionInterface {
    * @inheritDoc
    */
   exec(): void {
-    Composer.run(['install', '--no-progress', '--no-suggest'])
+    Composer.run(['install', '--no-progress', '--no-interaction'])
   }
 }
