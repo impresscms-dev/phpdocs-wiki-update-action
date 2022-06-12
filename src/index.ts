@@ -2,8 +2,7 @@ import {error, getInput, info, setFailed} from '@actions/core'
 import actions from './data/actions'
 import generators from './data/generators'
 import UnknownSelectedGeneratorNameError from './errors/UnknownSelectedGeneratorNameError'
-import NotAllRequiredArgumentsDefinedForSelectedEngineError
-  from './errors/NotAllRequiredArgumentsDefinedForSelectedEngineError'
+import NotAllRequiredArgumentsDefinedForSelectedEngineError from './errors/NotAllRequiredArgumentsDefinedForSelectedEngineError'
 
 try {
   const generatorName = getInput('engine', {required: false})
