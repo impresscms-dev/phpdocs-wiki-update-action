@@ -5736,7 +5736,7 @@ class default_1 {
             '--ansi',
             '--no-interaction',
             '--extensions=php'
-        ].concat((0, core_1.getInput)('ignore_files', { required: false })
+        ].concat((0, core_1.getInput)('ignored_files', { required: false })
             .split('\n')
             .map(line => line.trim())
             .filter(line => line && line.length > 0)
