@@ -4762,7 +4762,15 @@ class GlobalInstallAction {
      */
     exec(generator) {
         const packages = Object.entries(generator.getGlobalComposerRequirements()).map(([key, value]) => `${key}=${value}`);
-        Composer_1.default.run(['global', 'require', '--no-progress', '--no-interaction'].concat(packages));
+        Composer_1.default.run([
+            'global',
+            'require',
+            '--no-progress',
+            '--no-interaction',
+            '--no-scripts',
+            '--no-plugins',
+            '--ansi',
+        ].concat(packages));
         Composer_1.default.run(['global', 'exec']);
     }
 }
@@ -4836,7 +4844,15 @@ class GlobalUninstallAction {
      * @inheritDoc
      */
     exec() {
-        Composer_1.default.run(['global', 'install', '--no-interaction', '--no-progress']);
+        Composer_1.default.run([
+            'global',
+            'install',
+            '--no-interaction',
+            '--no-progress',
+            '--no-scripts',
+            '--no-plugins',
+            '--ansi',
+        ]);
     }
 }
 exports["default"] = GlobalUninstallAction;
@@ -4930,7 +4946,8 @@ class InstallAction {
             '--no-progress',
             '--ignore-platform-reqs',
             '--no-plugins',
-            '--no-scripts'
+            '--no-scripts',
+            '--ansi',
         ].concat(packages));
         Composer_1.default.run(['exec']);
     }
@@ -5215,7 +5232,8 @@ class UninstallAction {
             '--no-interaction',
             '--ignore-platform-reqs',
             '--no-plugins',
-            '--no-scripts'
+            '--no-scripts',
+            '--ansi',
         ]);
     }
 }
