@@ -4924,7 +4924,14 @@ class InstallAction {
      */
     exec(generator) {
         const packages = Object.entries(generator.getComposerRequirements()).map(([key, value]) => `${key}=${value}`);
-        Composer_1.default.run(['require', '--no-interaction', '--no-progress'].concat(packages));
+        Composer_1.default.run([
+            'require',
+            '--no-interaction',
+            '--no-progress',
+            '--ignore-platform-reqs',
+            '--no-plugins',
+            '--no-scripts'
+        ].concat(packages));
         Composer_1.default.run(['exec']);
     }
 }
@@ -5202,7 +5209,14 @@ class UninstallAction {
      * @inheritDoc
      */
     exec() {
-        Composer_1.default.run(['install', '--no-progress', '--no-interaction']);
+        Composer_1.default.run([
+            'install',
+            '--no-progress',
+            '--no-interaction',
+            '--ignore-platform-reqs',
+            '--no-plugins',
+            '--no-scripts'
+        ]);
     }
 }
 exports["default"] = UninstallAction;
