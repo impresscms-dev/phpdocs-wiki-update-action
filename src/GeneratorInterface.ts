@@ -7,11 +7,6 @@ export default interface GeneratorInterface {
   getComposerRequirements(): {[key: string]: string}
 
   /**
-   * If some global composer packages are needed gets list names for installation
-   */
-  getGlobalComposerRequirements(): {[key: string]: string}
-
-  /**
    * Executes this action before generating documentation
    */
   getBeforeActions(): GeneratorActionStepDefinition[]

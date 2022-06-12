@@ -35,17 +35,6 @@ export default class implements GeneratorInterface {
   /**
    * @inheritDoc
    */
-  getGlobalComposerRequirements(): {[key: string]: string} {
-    return {
-      'phpdocumentor/phpdocumentor': '3.*',
-      //'symfony/process': '~2.0',
-      'evert/phpdoc-md': '~0.2.0'
-    }
-  }
-
-  /**
-   * @inheritDoc
-   */
   getComposerRequirements(): {[key: string]: string} {
     return {}
   }
@@ -76,31 +65,14 @@ export default class implements GeneratorInterface {
    * @inheritDoc
    */
   getBeforeActions(): GeneratorActionStepDefinition[] {
-    return [
-      new GeneratorActionStepDefinition(
-        Composer,
-        'Removing dev requirements...',
-        Composer.removeDevRequirements
-      ),
-      new GeneratorActionStepDefinition(
-        this,
-        'Generating XML data...',
-        this.generateXML,
-        TempPaths.get('xml'),
-        TempPaths.get('cache')
-      ),
-      new GeneratorActionStepDefinition(
-        Composer,
-        'Install dev requirements...',
-        Composer.installDevRequirements
-      )
-    ]
+    return []
   }
 
   /**
    * @inheritDoc
    */
   generate(): void {
+    // TODO: Change here
     Composer.run([
       'global',
       'exec',
@@ -119,7 +91,8 @@ export default class implements GeneratorInterface {
    * @param string dstPath Where to place result?
    * @param string cachePath Cache path
    */
-  private generateXML(dstPath: string, cachePath: string): void {
+  private generateXML(dstPath: string, cachePath: string): void
+  {
     const path = Composer.getGlobalPath()
     const cmd = Execution.replaceWinPathCharToUnix(
       Execution.suffixExtIfRunningOnWindows(

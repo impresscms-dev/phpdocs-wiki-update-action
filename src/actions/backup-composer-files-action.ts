@@ -18,7 +18,6 @@ export default class BackupComposerFilesAction implements ActionInterface {
    */
   shouldRun(generator: GeneratorInterface): boolean {
     return (
-      Object.keys(generator.getGlobalComposerRequirements()).length > 0 ||
       Object.keys(generator.getComposerRequirements()).length > 0
     )
   }
