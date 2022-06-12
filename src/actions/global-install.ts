@@ -25,7 +25,15 @@ export default class GlobalInstallAction implements ActionInterface {
       generator.getGlobalComposerRequirements()
     ).map(([key, value]) => `${key}=${value}`)
     Composer.run(
-      ['global', 'require', '--no-progress', '--no-interaction'].concat(
+      [
+        'global',
+        'require',
+        '--no-progress',
+        '--no-interaction',
+        '--no-scripts',
+        '--no-plugins',
+        '--ansi',
+      ].concat(
         packages
       )
     )
