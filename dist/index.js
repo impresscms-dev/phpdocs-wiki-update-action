@@ -4574,8 +4574,8 @@ class FlattenFileStructureAction {
             if (Execution_1.default.isRunningOnWindows()) {
                 oldFilePath = oldFilePath.replace(/\\/g, '/');
             }
-            if (oldFilePath.substr(0, 1) === '/') {
-                oldFilePath = oldFilePath.substr(1);
+            if (oldFilePath.startsWith('/')) {
+                oldFilePath = oldFilePath.substring(1);
             }
             if (typeof newStructData[fileInfo.filename] == 'undefined') {
                 newStructData[fileInfo.filename] = oldFilePath;
@@ -4649,7 +4649,7 @@ class FlattenFileStructureAction {
         return readDirSync(cwd).map((file) => {
             const shortFilename = (0, path_1.basename)(file);
             const pathWithoutFilename = (0, path_1.dirname)(file);
-            const pathPrefix = pathWithoutFilename.substr(cwd.length);
+            const pathPrefix = pathWithoutFilename.substring(cwd.length);
             return {
                 filename: shortFilename,
                 shortPath: pathPrefix
@@ -4692,8 +4692,8 @@ class FlattenFileStructureAction {
             .join('.');
         const ext = (0, path_1.extname)(fileInfo.filename);
         let namespaceName = fileInfo.shortPath.replace(/\//g, '⁄');
-        if (namespaceName.substr(0, 1) === '⁄') {
-            namespaceName = namespaceName.substr(1);
+        if (namespaceName.startsWith('⁄')) {
+            namespaceName = namespaceName.substring(1);
         }
         return `${filenameWithoutExt} (${namespaceName})${ext}`;
     }
@@ -4762,7 +4762,7 @@ class GlobalInstallAction {
      */
     exec(generator) {
         const packages = Object.entries(generator.getGlobalComposerRequirements()).map(([key, value]) => `${key}=${value}`);
-        Composer_1.default.run(['global', 'require', '--dev', '--no-progress', '--no-suggest'].concat(packages));
+        Composer_1.default.run(['global', 'require', '--no-progress', '--no-interaction'].concat(packages));
         Composer_1.default.run(['global', 'exec']);
     }
 }
@@ -4836,7 +4836,7 @@ class GlobalUninstallAction {
      * @inheritDoc
      */
     exec() {
-        Composer_1.default.run(['global', 'install', '--dev', '--no-progress']);
+        Composer_1.default.run(['global', 'install', '--no-interaction', '--no-progress']);
     }
 }
 exports["default"] = GlobalUninstallAction;
@@ -4924,7 +4924,14 @@ class InstallAction {
      */
     exec(generator) {
         const packages = Object.entries(generator.getComposerRequirements()).map(([key, value]) => `${key}=${value}`);
-        Composer_1.default.run(['require', '--dev', '--no-progress', '--no-suggest'].concat(packages));
+        Composer_1.default.run([
+            'require',
+            '--no-interaction',
+            '--no-progress',
+            '--ignore-platform-reqs',
+            '--no-plugins',
+            '--no-scripts'
+        ].concat(packages));
         Composer_1.default.run(['exec']);
     }
 }
@@ -5202,7 +5209,14 @@ class UninstallAction {
      * @inheritDoc
      */
     exec() {
-        Composer_1.default.run(['install', '--no-progress', '--no-suggest']);
+        Composer_1.default.run([
+            'install',
+            '--no-progress',
+            '--no-interaction',
+            '--ignore-platform-reqs',
+            '--no-plugins',
+            '--no-scripts'
+        ]);
     }
 }
 exports["default"] = UninstallAction;
