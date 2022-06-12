@@ -27,7 +27,8 @@ export default class UninstallAction implements ActionInterface {
       '--no-interaction',
       '--ignore-platform-reqs',
       '--no-plugins',
-      '--no-scripts'
+      '--no-scripts',
+      '--ansi',
     ])
   }
 }

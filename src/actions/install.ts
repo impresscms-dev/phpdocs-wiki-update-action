@@ -31,7 +31,8 @@ export default class InstallAction implements ActionInterface {
         '--no-progress',
         '--ignore-platform-reqs',
         '--no-plugins',
-        '--no-scripts'
+        '--no-scripts',
+        '--ansi',
       ].concat(packages)
     )
     Composer.run(['exec'])
