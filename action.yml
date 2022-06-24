@@ -47,35 +47,15 @@ runs:
         ACTION_SUFFIX="${{ github.sha }}-${{ github.run_id }}-${{ github.github.run_attempt }}"
         OLD_WIKI_CHECKOUT_PATH="${{ runner.temp }}/old-wiki-${ACTION_SUFFIX}"
         NEW_WIKI_CHECKOUT_PATH="${{ runner.temp }}/new-wiki-${ACTION_SUFFIX}"
-        NEEDED_PHP_VERSION=8.1
-        
-        if [ "${{ inputs.engine }}" == "evert/phpdoc-md" ]; then
-          NEEDED_PHP_VERSION=7.4
-        fi;
-        
+        NEEDED_PHP_VERSION=$(bash ${{ github.action_path }}/detect_needed_php.sh "${{ inputs.engine }}")
+                
         echo "OLD_WIKI_CHECKOUT_PATH=$OLD_WIKI_CHECKOUT_PATH" >> $GITHUB_ENV
         echo "NEW_WIKI_CHECKOUT_PATH=$NEW_WIKI_CHECKOUT_PATH" >> $GITHUB_ENV
         echo "NEEDED_PHP_VERSION=$NEEDED_PHP_VERSION" >> $GITHUB_ENV
       shell: bash
 
     - name: Creating tmp folders...
-      run: |
-        rm -rf "$OLD_WIKI_CHECKOUT_PATH" || true
-        rm -rf "$NEW_WIKI_CHECKOUT_PATH" || true
-        
-        mkdir -p "$NEW_WIKI_CHECKOUT_PATH"
-      shell: bash
-
-    - name: Checkouting original wiki with needed branch...
-      run: |
-        git clone -q https://${{ inputs.wiki_github_update_token }}@github.com/${{github.repository}}.wiki.git "${{ env.OLD_WIKI_CHECKOUT_PATH }}"
-        pushd "${{ env.OLD_WIKI_CHECKOUT_PATH }}";
-          if git show-ref -q --heads "${{ github.ref }}"; then
-            git checkout --force "${{ github.ref }}";
-          else
-            git checkout -b "${{ github.ref }}";
-          fi;
-        popd;
+      run: bash ${{ github.action_path }}/bin/create_tmp_data.sh
       shell: bash
 
     - name: Installing PHP...
@@ -93,6 +73,10 @@ runs:
       shell: bash
       if: inputs.setup_php == 'true'
 
+    - name: Checkouting original wiki with needed branch...
+      run: bash ${{ github.action_path }}/bin/checkout.sh "${{ inputs.wiki_github_update_token }}"
+      shell: bash
+
     - name: Generating new documentation with clean/phpdoc-md...
       uses: impresscms-dev/generate-phpdocs-with-clean-phpdoc-md-action@v0.1.4
       with:
@@ -109,9 +93,7 @@ runs:
       if: inputs.engine == 'evert/phpdoc-md'
 
     - name: Failing because of unknown engine...
-      run: |
-        echo 'ERROR: unknown engine';
-        exit 1
+      run: bash ${{ github.action_path }}/bin/unknown_engine.sh
       shell: bash
       if: inputs.engine != 'evert/phpdoc-md' && inputs.engine != 'clean/phpdoc-md'
 
@@ -140,11 +122,9 @@ runs:
         repository: ${{ env.NEW_WIKI_CHECKOUT_PATH }}
         skip_fetch: true
         skip_checkout: true
-        branch: ${{ github.ref }}
+        branch: ${{ github.ref_name }}
         create_branch: true
 
     - name: Clearing temp paths...
-      run: |
-        rm -rf "$OLD_WIKI_CHECKOUT_PATH" || true
-        rm -rf "$NEW_WIKI_CHECKOUT_PATH" || true
+      run: bash ${{ github.action_path }}/bin/clear_tmp_data.sh
       shell: bash
