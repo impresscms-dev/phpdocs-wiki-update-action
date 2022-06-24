@@ -107,6 +107,9 @@ runs:
         skip_checkout: true
         branch: ${{ github.ref_name }}
         create_branch: true
+        commit_user_name: ${{ inputs.wiki_github_update_user }}
+        commit_user_email: ${{ inputs.wiki_github_update_user }}@users.noreply.github.com
+        token: ${{ inputs.wiki_github_update_token }}
 
     - name: Clearing temp paths...
       run: bash ${{ github.action_path }}/bin/clear_tmp_data.sh
