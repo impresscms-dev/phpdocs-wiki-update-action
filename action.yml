@@ -57,7 +57,7 @@ runs:
       if: inputs.setup_php == 'true'
 
     - name: Running composer...
-      run: composer install --no-scripts --no-plugins -n
+      run: composer install --no-scripts --no-plugins -n -o
       shell: bash
       if: inputs.setup_php == 'true'
 
