@@ -74,7 +74,7 @@ runs:
         ref: ${{ github.ref }}
         token: ${{ inputs.wiki_github_update_token }}
         repository: ${{ env.WIKI_URL }}
-        path: ${{ env.OLD_WIKI_CHECKOUT_PATH }}
+      working-directory: ${{ env.OLD_WIKI_CHECKOUT_PATH }}
 
     - name: Installing PHP...
       uses: shivammathur/setup-php@2.19.1
