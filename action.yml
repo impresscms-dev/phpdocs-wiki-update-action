@@ -42,20 +42,8 @@ inputs:
 runs:
   using: 'composite'
   steps:
-    - name: Setting env variables...
-      run: |
-        ACTION_SUFFIX="${{ github.sha }}-${{ github.run_id }}-${{ github.github.run_attempt }}"
-        OLD_WIKI_CHECKOUT_PATH="${{ runner.temp }}/old-wiki-${ACTION_SUFFIX}"
-        NEW_WIKI_CHECKOUT_PATH="${{ runner.temp }}/new-wiki-${ACTION_SUFFIX}"
-        NEEDED_PHP_VERSION=$(bash ${{ github.action_path }}/bin/detect_needed_php.sh "${{ inputs.engine }}")
-                
-        echo "OLD_WIKI_CHECKOUT_PATH=$OLD_WIKI_CHECKOUT_PATH" >> $GITHUB_ENV
-        echo "NEW_WIKI_CHECKOUT_PATH=$NEW_WIKI_CHECKOUT_PATH" >> $GITHUB_ENV
-        echo "NEEDED_PHP_VERSION=$NEEDED_PHP_VERSION" >> $GITHUB_ENV
-      shell: bash
-
-    - name: Creating tmp folders...
-      run: bash ${{ github.action_path }}/bin/create_tmp_data.sh
+    - name: Setuping...
+      run: bash ${GITHUB_ACTION_PATH}/bin/setup.sh "${{ inputs.engine }}"
       shell: bash
 
     - name: Installing PHP...
