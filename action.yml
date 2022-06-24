@@ -43,7 +43,7 @@ runs:
   using: 'composite'
   steps:
     - name: Setuping...
-      run: bash ${GITHUB_ACTION_PATH}/bin/setup.sh "${{ inputs.engine }}"
+      run: bash "$GITHUB_ACTION_PATH/bin/setup.sh" "${{ inputs.engine }}"
       shell: bash
 
     - name: Installing PHP...
@@ -79,11 +79,6 @@ runs:
         ignored_files: ${{ inputs.ignored_files }}
         output_path: ${{ env.NEW_WIKI_CHECKOUT_PATH }}
       if: inputs.engine == 'evert/phpdoc-md'
-
-    - name: Failing because of unknown engine...
-      run: bash ${{ github.action_path }}/bin/unknown_engine.sh
-      shell: bash
-      if: inputs.engine != 'evert/phpdoc-md' && inputs.engine != 'clean/phpdoc-md'
 
     - name: Prefixing files...
       uses: impresscms-dev/prefix-or-suffix-text-files-action@v0.1
