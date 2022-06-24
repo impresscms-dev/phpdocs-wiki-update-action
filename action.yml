@@ -47,7 +47,7 @@ runs:
         ACTION_SUFFIX="${{ github.sha }}-${{ github.run_id }}-${{ github.github.run_attempt }}"
         OLD_WIKI_CHECKOUT_PATH="${{ runner.temp }}/old-wiki-${ACTION_SUFFIX}"
         NEW_WIKI_CHECKOUT_PATH="${{ runner.temp }}/new-wiki-${ACTION_SUFFIX}"
-        NEEDED_PHP_VERSION=$(bash ${{ github.action_path }}/detect_needed_php.sh "${{ inputs.engine }}")
+        NEEDED_PHP_VERSION=$(bash ${{ github.action_path }}/bin/detect_needed_php.sh "${{ inputs.engine }}")
                 
         echo "OLD_WIKI_CHECKOUT_PATH=$OLD_WIKI_CHECKOUT_PATH" >> $GITHUB_ENV
         echo "NEW_WIKI_CHECKOUT_PATH=$NEW_WIKI_CHECKOUT_PATH" >> $GITHUB_ENV
