@@ -111,15 +111,15 @@ runs:
         echo 'ERROR: unknown engine';
         exit 1
       shell: bash
-      if: inputs.engine != 'evert/phpdoc-md' and inputs.engine != 'clean/phpdoc-md'
+      if: inputs.engine != 'evert/phpdoc-md' && inputs.engine != 'clean/phpdoc-md'
 
     - name: Prefixing files...
       uses: impresscms-dev/prefix-or-suffix-text-files-action@v0.1
       with:
         path: ${{ env.NEW_WIKI_CHECKOUT_PATH }}
-        text: ${{ input.prefix_lines }}
+        text: ${{ inputs.prefix_lines }}
         suffix: false
-      if: input.prefix_lines != ''
+      if: inputs.prefix_lines != ''
 
     - name: Flattering new documentation...
       uses: impresscms-dev/flattern-markdown-folder-structure-action@v0.2
