@@ -98,7 +98,11 @@ runs:
       shell: bash
 
     - name: Commit and push wiki changes...
-      run: bash ${{ github.action_path }}/bin/commit_and_push.sh "${{ github.event.commits[0].message }}"
+      run: |
+        bash ${{ github.action_path }}/bin/commit_and_push.sh \
+          "${{ github.event.commits[0].message }}" \
+          "${{ inputs.wiki_github_update_user }}" \
+          "${{ inputs.wiki_github_update_user }}@users.noreply.github.com"
       shell: bash
 
     - name: Clearing temp paths...

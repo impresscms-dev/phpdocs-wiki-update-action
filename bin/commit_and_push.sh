@@ -1,9 +1,14 @@
 #!/usr/bin/env bash
 
 COMMIT_MESSAGE="$1"
+COMMITER_NAME="$2"
+COMMITER_EMAIL="$3"
 
 # shellcheck disable=SC2164
 pushd "$NEW_WIKI_CHECKOUT_PATH"
+
+  git config user.email "$COMMITER_EMAIL"
+  git config user.name "$COMMITER_NAME"
 
   # idea from https://stackoverflow.com/a/10135446/1762839
   git ls-files --modified | grep '\.md$' | xargs git add
