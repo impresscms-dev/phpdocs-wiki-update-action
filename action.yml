@@ -83,6 +83,10 @@ runs:
         output_path: ${{ env.NEW_WIKI_CHECKOUT_PATH }}
       if: inputs.engine == 'evert/phpdoc-md'
 
+    - name: Renaming index file...
+      run: bash ${{ github.action_path }}/bin/rename_index.sh "${{ inputs.engine }}"
+      shell: bash
+
     - name: Prefixing files...
       uses: impresscms-dev/prefix-or-suffix-text-files-action@v0.1
       with:
