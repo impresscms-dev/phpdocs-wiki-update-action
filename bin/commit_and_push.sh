@@ -10,6 +10,7 @@ pushd "$NEW_WIKI_CHECKOUT_PATH"
   git config user.email "$COMMITER_EMAIL" || exit 1
   git config user.name "$COMMITER_NAME" || exit 2
   git config advice.addEmptyPathspec false
+  git config pull.rebase true
 
   git pull
 
