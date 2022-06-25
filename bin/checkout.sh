@@ -11,11 +11,11 @@ pushd "$OLD_WIKI_CHECKOUT_PATH"
 
   if git show-ref -q --heads "$GITHUB_REF_NAME"; then
     git checkout "$GITHUB_REF_NAME"
-    git branch --set-upstream-to=origin/$GITHUB_REF_NAME "$GITHUB_REF_NAME"
-    git pull
   else
     git checkout -b "$GITHUB_REF_NAME"
   fi;
+
+  git branch --set-upstream-to=origin/$GITHUB_REF_NAME "$GITHUB_REF_NAME"
 
 # shellcheck disable=SC2164
 popd
