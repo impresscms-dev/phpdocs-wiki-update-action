@@ -11,7 +11,7 @@ pushd "$NEW_WIKI_CHECKOUT_PATH"
   git config user.name "$COMMITER_NAME" || exit 2
   git config advice.addEmptyPathspec false
 
-  git fetch
+  git pull
 
   # idea from https://stackoverflow.com/a/10135446/1762839
   git ls-files --modified | grep '\.md$' | xargs git add
