@@ -12,6 +12,7 @@ pushd "$NEW_WIKI_CHECKOUT_PATH"
   git config advice.addEmptyPathspec false
   git config pull.rebase true
   git config advice.skippedCherryPicks false
+  git config advice.setUpstreamFailure false
 
   git pull
 
