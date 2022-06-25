@@ -11,6 +11,7 @@ pushd "$NEW_WIKI_CHECKOUT_PATH"
   git config user.name "$COMMITER_NAME" || exit 2
   git config advice.addEmptyPathspec false
 
+  git branch --set-upstream-to=origin/$GITHUB_REF_NAME "$GITHUB_REF_NAME"
   git pull || true
 
   # idea from https://stackoverflow.com/a/10135446/1762839
