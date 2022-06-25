@@ -7,8 +7,9 @@ COMMITER_EMAIL="$3"
 # shellcheck disable=SC2164
 pushd "$NEW_WIKI_CHECKOUT_PATH"
 
-  git config user.email "$COMMITER_EMAIL"
-  git config user.name "$COMMITER_NAME"
+  git config user.email "$COMMITER_EMAIL" || exit 1
+  git config user.name "$COMMITER_NAME" || exit 2
+  git config advice.addEmptyPathspec false
 
   # idea from https://stackoverflow.com/a/10135446/1762839
   git ls-files --modified | grep '\.md$' | xargs git add
@@ -17,7 +18,7 @@ pushd "$NEW_WIKI_CHECKOUT_PATH"
 
   git commit -m "$COMMIT_MESSAGE"
 
-  git push --set-upstream origin "$GITHUB_REF_NAME"
+  git push --set-upstream origin "$GITHUB_REF_NAME" || exit 3
 
 # shellcheck disable=SC2164
 popd

@@ -62,7 +62,10 @@ runs:
       if: inputs.setup_php == 'true'
 
     - name: Checkouting original wiki with needed branch...
-      run: bash ${{ github.action_path }}/bin/checkout.sh "${{ inputs.wiki_github_update_token }}"
+      run: |
+        bash ${{ github.action_path }}/bin/checkout.sh \
+          "${{ inputs.wiki_github_update_token }}" \
+          "${{ inputs.wiki_github_update_user }}"
       shell: bash
 
     - name: Generating new documentation with clean/phpdoc-md...

@@ -1,9 +1,10 @@
 #!/usr/bin/env bash
 
 PRIVATE_TOKEN="$1"
+GITHUB_USER="$2"
 
 # shellcheck disable=SC2086
-git clone -q https://$PRIVATE_TOKEN@github.com/$GITHUB_REPOSITORY.wiki.git "$OLD_WIKI_CHECKOUT_PATH"
+git clone -q https://$GITHUB_USER:$PRIVATE_TOKEN@github.com/$GITHUB_REPOSITORY.wiki.git "$OLD_WIKI_CHECKOUT_PATH"
 
 # shellcheck disable=SC2164
 pushd "$OLD_WIKI_CHECKOUT_PATH"
