@@ -20,7 +20,10 @@ pushd "$NEW_WIKI_CHECKOUT_PATH"
 
   git commit -m "$COMMIT_MESSAGE"
 
-  git push --force --set-upstream origin "$GITHUB_REF_NAME" || exit 3
+  git branch --set-upstream-to=origin/$GITHUB_REF_NAME "$GITHUB_REF_NAME"
+  git pull -s recursive -X ours || true
+
+  git push || exit 3
 
 # shellcheck disable=SC2164
 popd
