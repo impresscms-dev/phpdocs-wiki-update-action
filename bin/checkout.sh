@@ -10,9 +10,11 @@ git clone -q https://$GITHUB_USER:$PRIVATE_TOKEN@github.com/$GITHUB_REPOSITORY.w
 pushd "$OLD_WIKI_CHECKOUT_PATH"
 
   if git show-ref -q --heads "$GITHUB_REF_NAME"; then
-    git checkout --force "$GITHUB_REF_NAME";
+    git checkout "$GITHUB_REF_NAME"
+    git branch --set-upstream-to=origin/$GITHUB_REF_NAME "$GITHUB_REF_NAME"
+    git pull
   else
-    git checkout -b "$GITHUB_REF_NAME";
+    git checkout -b "$GITHUB_REF_NAME"
   fi;
 
 # shellcheck disable=SC2164
