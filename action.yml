@@ -98,18 +98,8 @@ runs:
       shell: bash
 
     - name: Commit and push wiki changes...
-      uses: stefanzweifel/git-auto-commit-action@v4
-      with:
-        commit_message: ${{ github.event.commits[0].message }}
-        file_pattern: "*.md"
-        repository: ${{ env.NEW_WIKI_CHECKOUT_PATH }}
-        skip_fetch: true
-        skip_checkout: true
-        branch: ${{ github.ref_name }}
-        create_branch: true
-        commit_user_name: ${{ inputs.wiki_github_update_user }}
-        commit_user_email: ${{ inputs.wiki_github_update_user }}@users.noreply.github.com
-        token: ${{ inputs.wiki_github_update_token }}
+      run: bash ${{ github.action_path }}/bin/commit_and_push.sh "${{ github.event.commits[0].message }}"
+      shell: bash
 
     - name: Clearing temp paths...
       run: bash ${{ github.action_path }}/bin/clear_tmp_data.sh
