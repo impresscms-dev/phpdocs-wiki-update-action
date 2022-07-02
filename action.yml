@@ -69,7 +69,7 @@ runs:
       shell: bash
 
     - name: Generating new documentation with clean/phpdoc-md...
-      uses: impresscms-dev/generate-phpdocs-with-clean-phpdoc-md-action@v0.1.4
+      uses: impresscms-dev/generate-phpdocs-with-clean-phpdoc-md-action@v0.1.5
       with:
         class_root_namespace: ${{ inputs.class_root_namespace }}
         included_classes: ${{ inputs.include }}
