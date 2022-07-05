@@ -7,7 +7,7 @@ COMMITER_EMAIL="$3"
 # shellcheck disable=SC2164
 pushd "$NEW_WIKI_CHECKOUT_PATH"
 
-  git branch -r
+  git branch -a
 
   echo "Adding changes to GIT..."
   git add -A --verbose
