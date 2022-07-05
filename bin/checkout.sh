@@ -22,7 +22,7 @@ pushd "$OLD_WIKI_CHECKOUT_PATH"
   else
     echo "Remote $GITHUB_REF_NAME not found. Creating."
     git checkout -b "$GITHUB_REF_NAME"
-    git branch --set-upstream-to=origin/$GITHUB_REF_NAME "$GITHUB_REF_NAME"
+    git push --set-upstream origin "$GITHUB_REF_NAME"
   fi;
 
 # shellcheck disable=SC2164
