@@ -15,11 +15,8 @@ pushd "$NEW_WIKI_CHECKOUT_PATH"
   git config advice.skippedCherryPicks false
   git config advice.setUpstreamFailure false
 
-  # idea from https://stackoverflow.com/a/10135446/1762839
   echo "Adding changes to GIT..."
-  git ls-files --modified | grep '\.md$' | xargs git add
-  git ls-files . --exclude-standard --others | grep '\.md$' | xargs git add
-  git ls-files --deleted | grep '\.md$' | xargs git add
+  git add -A --verbose
 
   echo "Commiting..."
   git commit -m "$COMMIT_MESSAGE"
