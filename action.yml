@@ -61,11 +61,22 @@ runs:
       shell: bash
       if: inputs.setup_php == 'true'
 
-    - name: Checkouting original wiki with needed branch...
+    - name: Cloning original wiki...
       run: |
         bash ${{ github.action_path }}/bin/checkout.sh \
           "${{ inputs.wiki_github_update_token }}" \
           "${{ inputs.wiki_github_update_user }}"
+      shell: bash
+
+    - name: Configuring GIT...
+      run: |
+        bash ${{ github.action_path }}/bin/configure_git.sh \
+          "${{ inputs.wiki_github_update_user }}" \
+          "${{ inputs.wiki_github_update_user }}@users.noreply.github.com"
+      shell: bash
+
+    - name: Checkouting needed branch...
+      run: bash ${{ github.action_path }}/bin/checkout.sh
       shell: bash
 
     - name: Generating new documentation with clean/phpdoc-md...
@@ -107,9 +118,7 @@ runs:
     - name: Commit and push wiki changes...
       run: |
         bash ${{ github.action_path }}/bin/commit_and_push.sh \
-          "${{ github.event.commits[0].message }}" \
-          "${{ inputs.wiki_github_update_user }}" \
-          "${{ inputs.wiki_github_update_user }}@users.noreply.github.com"
+          "${{ github.event.commits[0].message }}"
       shell: bash
 
     - name: Clearing temp paths...

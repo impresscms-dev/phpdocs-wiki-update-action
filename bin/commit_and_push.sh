@@ -22,7 +22,6 @@ pushd "$NEW_WIKI_CHECKOUT_PATH"
   git commit -m "$COMMIT_MESSAGE"
 
   echo "Pulling and merging from remote..."
-  git branch --set-upstream-to=origin/$GITHUB_REF_NAME "$GITHUB_REF_NAME" || true
   git pull -s recursive -X ours || true
 
   echo "Pushing to remote..."
