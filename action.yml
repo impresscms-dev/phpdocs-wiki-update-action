@@ -63,7 +63,7 @@ runs:
 
     - name: Cloning original wiki...
       run: |
-        bash ${{ github.action_path }}/bin/checkout.sh \
+        bash ${{ github.action_path }}/bin/cloning.sh \
           "${{ inputs.wiki_github_update_token }}" \
           "${{ inputs.wiki_github_update_user }}"
       shell: bash
