@@ -52,7 +52,11 @@ runs:
       shell: bash
 
     - name: Setup yq environment
-      uses: shiipou/setup-yq-action@v2.0.2
+      run: |
+        wget -qO /usr/local/bin/yq https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64
+        chmod a+x /usr/local/bin/yq
+        yq --version
+      shell: bash
 
     - name: Installing PHP...
       uses: shivammathur/setup-php@2.20.1
