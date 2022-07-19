@@ -32,7 +32,7 @@ jobs:
       - name: Checkouting project code...
         uses: actions/checkout@v2
       - name: Updating wiki...
-        uses: impresscms-dev/phpdocs-wiki-update-action@v1.0.0
+        uses: impresscms-dev/phpdocs-wiki-update-action@v2.2.0
         with:
           engine: clean/phpdoc-md
           class_root_namespace: My Project
