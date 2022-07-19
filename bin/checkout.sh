@@ -3,7 +3,7 @@
 # shellcheck disable=SC2164
 pushd "$OLD_WIKI_CHECKOUT_PATH"
 
-  WIKI_BRANCH=$("$ACTION_BIN_PATH"/get-mapped-branch.sh)
+  WIKI_BRANCH=$(bash "$ACTION_BIN_PATH"/get-mapped-branch.sh)
 
   git ls-remote -q --heads --exit-code origin "$WIKI_BRANCH" > /dev/null
   REMOTE_CHECK_EXIT_CODE=$?
