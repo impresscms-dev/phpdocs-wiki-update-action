@@ -3,19 +3,21 @@
 # shellcheck disable=SC2164
 pushd "$OLD_WIKI_CHECKOUT_PATH"
 
-  git ls-remote -q --heads --exit-code origin "$GITHUB_REF_NAME" > /dev/null
+  WIKI_BRANCH=$(bash "$ACTION_BIN_PATH"/get-mapped-branch.sh)
+
+  git ls-remote -q --heads --exit-code origin "$WIKI_BRANCH" > /dev/null
   REMOTE_CHECK_EXIT_CODE=$?
 
-  git show-ref -q --heads "$GITHUB_REF_NAME" > /dev/null
+  git show-ref -q --heads "$WIKI_BRANCH" > /dev/null
   LOCAL_CHECK_EXIT_CODE=$?
 
   if [ "$REMOTE_CHECK_EXIT_CODE" -gt 0 ] || [ "$LOCAL_CHECK_EXIT_CODE" -gt 0 ]; then
-    echo "Remote '$GITHUB_REF_NAME' found."
-    git checkout "$GITHUB_REF_NAME"
+    echo "Remote '$WIKI_BRANCH' found."
+    git checkout "$WIKI_BRANCH"
   else
-    echo "Remote '$GITHUB_REF_NAME' not found. Creating."
-    git checkout -b "$GITHUB_REF_NAME"
-    git push --set-upstream origin "$GITHUB_REF_NAME"
+    echo "Remote '$WIKI_BRANCH' not found. Creating."
+    git checkout -b "$WIKI_BRANCH"
+    git push --set-upstream origin "$WIKI_BRANCH"
   fi;
 
 # shellcheck disable=SC2164

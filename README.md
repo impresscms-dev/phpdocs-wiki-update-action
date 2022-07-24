@@ -32,10 +32,8 @@ jobs:
       - name: Checkouting project code...
         uses: actions/checkout@v2
       - name: Updating wiki...
-        uses: impresscms-dev/phpdocs-wiki-update-action@v1.0.0
+        uses: impresscms-dev/phpdocs-wiki-update-action@v2.2.0
         with:
-          wiki_github_update_token: ${{ secrets.WIKI_GITHUB_UPDATE_TOKEN }}
-          wiki_github_update_user: ${{ secrets.WIKI_GITHUB_UPDATE_USER }}
           engine: clean/phpdoc-md
           class_root_namespace: My Project
           include: |
@@ -50,9 +48,10 @@ This action supports such arguments (used in `with` keyword):
 |--------------------------|----------|-----------------------------------------------------------------------------------------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | wiki_github_update_token | No       | *github_token*                                                                                                        | GitHub token to use for updating project wiki. [This token must have all repo permissions](https://github.com/settings/tokens/new?scopes=repo).                         |
 | wiki_github_update_user  | No       | *current_user*                                                                                                        | GitHub username for whom this token belongs                                                                                                                             |
-| engine                   | No       | clean/phpdoc-md                                                                                                       | What documentation generator should be used? See [engines section](#engines) about possible values                                                                      |
-| prefix_lines             | No       | `##### Notice: Wiki was automatic generated from project sources as project API documentation. Do not edit manually!` | Lines that will be used to prefix generated wiki content                                                                                                                |
- | setup_php | No | True                                                                                                                  | If true, automatically runs commands to setup PHP and install composer dependencies. Set to false, if your package use custom logic or needs some custom PHP extensions | 
+| engine                   | No       | <pre lang="yaml">clean/phpdoc-md</pre>                                                                                                       | What documentation generator should be used? See [engines section](#engines) about possible values                                                                      |
+| prefix_lines             | No       | ```##### Notice: Wiki was automatic generated from project sources as project API documentation. Do not edit manually!``` | Lines that will be used to prefix generated wiki content                                                                                                                |
+ | setup_php | No | <pre lang="yaml">true</pre>                                                                                                                  | If true, automatically runs commands to setup PHP and install composer dependencies. Set to false, if your package use custom logic or needs some custom PHP extensions | 
+ | branches_map | No | <pre lang="yaml">main: master</pre> | At least for now project wiki can't have changed default branch. For such cases is possible to specify branches mapping in YAML format (key is repo branch name and value is wiki branch name) |
 
 Some engines supports or requires extra parameters. See [engines section](#engines) about more info.
 

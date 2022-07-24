@@ -38,12 +38,24 @@ inputs:
     description: Automatically setups PHP for action (default)
     required: false
     default: 'true'
+  branches_map:
+    description: "This is used to map repo branches with wiki branches (format: local repo branch: wiki repo branch)"
+    required: false
+    default: |
+      main: master
 
 runs:
   using: 'composite'
   steps:
     - name: Setuping...
       run: bash "$GITHUB_ACTION_PATH/bin/setup.sh" "${{ inputs.engine }}"
+      shell: bash
+
+    - name: Setup yq environment
+      run: |
+        wget -qO /usr/local/bin/yq https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64
+        chmod a+x /usr/local/bin/yq
+        yq --version
       shell: bash
 
     - name: Installing PHP...
@@ -55,6 +67,13 @@ runs:
         coverage: none
         tools: composer:v2
       if: inputs.setup_php == 'true'
+
+    - name: Writing tmp branches map file...
+      uses: DamianReeves/write-file-action@master
+      with:
+        path: ${{ env.TMP_BRANCH_MAP_FILE }}
+        contents: ${{ inputs.branches_map }}
+        write-mode: overwrite
 
     - name: Running composer...
       run: composer install --no-scripts --no-plugins -n -o
