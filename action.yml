@@ -129,6 +129,11 @@ runs:
       uses: impresscms-dev/flattern-markdown-folder-structure-action@v0.2
       with:
         path: ${{ env.NEW_WIKI_CHECKOUT_PATH }}
+        
+    - name: Stripping MarkDown file extensions...
+      uses:  impresscms-dev/strip-markdown-extensions-from-links-action@main
+      with:
+        path: ${{ env.NEW_WIKI_CHECKOUT_PATH }}
 
     - name: Moving old .git data to new docs folder...
       run: mv "$OLD_WIKI_CHECKOUT_PATH"/.git "$NEW_WIKI_CHECKOUT_PATH/"
