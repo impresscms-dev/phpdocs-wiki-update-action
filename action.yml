@@ -107,7 +107,7 @@ runs:
       if: inputs.engine == 'clean/phpdoc-md'
 
     - name: Generating new documentation with evert/phpdoc-md...
-      uses: impresscms-dev/generate-phpdocs-with-evert-phpdoc-md-action@v1.0.3
+      uses: impresscms-dev/generate-phpdocs-with-evert-phpdoc-md-action@v1.0.4
       with:
         ignored_files: ${{ inputs.ignored_files }}
         output_path: ${{ env.NEW_WIKI_CHECKOUT_PATH }}
