@@ -1,0 +1,35 @@
+# Based on code from https://andre.arko.net/2022/05/15/automatic-dependabot-merges/
+
+name: "Merge updates"
+
+on:
+  pull_request:
+    branches:
+      - "main"
+    types:
+      - "opened"
+      - "synchronize"
+      - "reopened"
+      - "ready_for_review"
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  merge:
+    name: "Merge"
+    runs-on: "ubuntu-latest"
+    if: ${{ github.actor == 'dependabot[bot]' }}
+    steps:
+      - name: "Approve pull request"
+        uses: "juliangruber/approve-pull-request-action@v2"
+        with:
+          github-token: "${{ secrets.GITHUB_TOKEN }}"
+          number: "${{ github.event.pull_request.number }}"
+
+      - name: "Enable auto-merge for Dependabot pull requests"
+        run: gh pr merge --auto --squash "$PR_URL"
+        env:
+          PR_URL: ${{ github.event.pull_request.html_url }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
