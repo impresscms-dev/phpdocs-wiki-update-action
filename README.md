@@ -21,7 +21,7 @@ name: Automatic update project documentation
 on:
   push:
     branches:
-      - master
+      - main
     tags:
       - 'v*'
 
