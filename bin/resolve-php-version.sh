@@ -2,6 +2,10 @@
 
 ENGINE="$1"
 
+has_node() {
+  command -v node > /dev/null 2>&1
+}
+
 get_default_version() {
   case "$1" in
     "evert/phpdoc-md")
@@ -18,73 +22,60 @@ get_default_version() {
 }
 
 get_constraint_from_composer_json() {
-  if [ ! -f "composer.json" ]; then
+  if [ ! -f "composer.json" ] || ! has_node; then
     return 0
   fi
 
-  python3 - <<'PY'
-import json
-
-try:
-    with open("composer.json", "r", encoding="utf-8") as file:
-        data = json.load(file)
-except Exception:
-    raise SystemExit(0)
-
-require = data.get("require", {})
-if isinstance(require, dict):
-    php_constraint = require.get("php")
-    if isinstance(php_constraint, str) and php_constraint.strip():
-        print(php_constraint.strip())
-        raise SystemExit(0)
-
-config = data.get("config", {})
-if isinstance(config, dict):
-    platform = config.get("platform", {})
-    if isinstance(platform, dict):
-        php_constraint = platform.get("php")
-        if isinstance(php_constraint, str) and php_constraint.strip():
-            print(php_constraint.strip())
-PY
+  node -e "
+const fs = require('fs');
+try {
+  const data = JSON.parse(fs.readFileSync('composer.json', 'utf8'));
+  const requirePhp = data?.require?.php;
+  if (typeof requirePhp === 'string' && requirePhp.trim() !== '') {
+    process.stdout.write(requirePhp.trim());
+    process.exit(0);
+  }
+  const platformPhp = data?.config?.platform?.php;
+  if (typeof platformPhp === 'string' && platformPhp.trim() !== '') {
+    process.stdout.write(platformPhp.trim());
+  }
+} catch (_) {}
+"
 }
 
 get_constraint_from_composer_lock() {
-  if [ ! -f "composer.lock" ]; then
+  if [ ! -f "composer.lock" ] || ! has_node; then
     return 0
   fi
 
-  python3 - <<'PY'
-import json
-
-try:
-    with open("composer.lock", "r", encoding="utf-8") as file:
-        data = json.load(file)
-except Exception:
-    raise SystemExit(0)
-
-for key in ("platform", "platform-overrides"):
-    values = data.get(key, {})
-    if isinstance(values, dict):
-        php_constraint = values.get("php")
-        if isinstance(php_constraint, str) and php_constraint.strip():
-            print(php_constraint.strip())
-            raise SystemExit(0)
-PY
+  node -e "
+const fs = require('fs');
+try {
+  const data = JSON.parse(fs.readFileSync('composer.lock', 'utf8'));
+  const platformPhp = data?.platform?.php;
+  if (typeof platformPhp === 'string' && platformPhp.trim() !== '') {
+    process.stdout.write(platformPhp.trim());
+    process.exit(0);
+  }
+  const overriddenPhp = data?.['platform-overrides']?.php;
+  if (typeof overriddenPhp === 'string' && overriddenPhp.trim() !== '') {
+    process.stdout.write(overriddenPhp.trim());
+  }
+} catch (_) {}
+"
 }
 
 normalize_constraint_to_version() {
   local php_constraint
   php_constraint="$1"
 
-  python3 - "$php_constraint" <<'PY'
-import re
-import sys
-
-constraint = sys.argv[1]
-match = re.search(r'(\d+)\.(\d+)', constraint)
-if match:
-    print(f"{int(match.group(1))}.{int(match.group(2))}")
-PY
+  if [[ "$php_constraint" =~ ([0-9]+)\.([0-9]+) ]]; then
+    local major
+    local minor
+    major="${BASH_REMATCH[1]}"
+    minor="${BASH_REMATCH[2]}"
+    echo "$((10#$major)).$((10#$minor))"
+  fi
 }
 
 DEFAULT_VERSION=$(get_default_version "$ENGINE") || exit 1
