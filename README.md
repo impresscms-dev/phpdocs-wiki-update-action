@@ -82,6 +82,6 @@ This engine supports such extra arguments:
 
 ## How to contribute? 
 
-If you want to add some functionality or fix bugs, you can fork, change and create pull request. If you not sure how this works, try [interactive GitHub tutorial](https://skills.github.com).
+If you want to add some functionality or fix bugs, you can fork, change and create pull request. If you are not sure how this works, read [GitHub's repositories quickstart guide](https://docs.github.com/en/repositories/creating-and-managing-repositories/quickstart-for-repositories).
 
 If you found any bug or have some questions, use [issues tab](https://github.com/impresscms-dev/phpdocs-wiki-update-action/issues) and write there your questions.
